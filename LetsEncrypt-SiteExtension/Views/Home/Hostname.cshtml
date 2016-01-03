@@ -1,0 +1,114 @@
+﻿@model LetsEncrypt.SiteExtension.Models.HostnameModel
+
+@{
+    ViewBag.Title = "Custom Domains and SSL";
+}
+
+<h2>@ViewBag.Title</h2>
+<p>
+    At least one custom must be registed with the web application before you can request any Let's Encrypt SSL certificate for it. 
+
+    Read <a href="https://azure.microsoft.com/en-us/documentation/articles/web-sites-custom-domain-name/">here</a> how to setup custom domain names. Ensure that DNS settings are correct before you continue. 
+</p>
+    <div>
+        <hr />
+        @if (Model.Error)
+        {
+            <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
+        }
+        @if (Model.InstalledCertificateThumbprint != null)
+        {
+            <div class="alert alert-success" role="alert">Certificate successfully installed</div>
+        }
+        <h2>Hostnames</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var hostName in Model.HostNames)
+            {
+                    <tr>
+                        <td>@Html.DisplayTextFor(h => hostName)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <h2>Hostname SSL bindings</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        SslState
+                    </th>
+                    <th>
+                        Thumbprint
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var hostName in Model.HostNameSslStates)
+                {
+                    <tr>
+
+                        <td>@Html.DisplayTextFor(h => hostName.Name)</td>
+                        <td>@Html.DisplayTextFor(h => hostName.SslState)</td>
+                        <td>@Html.DisplayTextFor(h => hostName.Thumbprint)</td>
+                        <td>@((!String.IsNullOrEmpty(Model.InstalledCertificateThumbprint) && hostName.Thumbprint == Model.InstalledCertificateThumbprint) ? "Updated" : "")</td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+        <h2>Certificates</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Thumbprint
+                    </th>
+                    <th>
+                        Expiration Date
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var certificate in Model.Certificates)
+                {                                         
+                    <tr>
+                        <td>
+                            @Html.DisplayTextFor(c => certificate.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayTextFor(c => certificate.Thumbprint)
+                        </td>
+                        <td>
+                            @Html.DisplayTextFor(c => certificate.ExpirationDate)
+                        </td>
+                        <td>
+                            @(certificate.Thumbprint == Model.InstalledCertificateThumbprint ? "New" : "")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <p>
+        @Html.ActionLink("Back", "Index", null, new { @class = "btn btn-default" })
+        @if (Model.Error == false)
+        {
+            @Html.ActionLink("Next", "Install", null, new { @class = "btn btn-primary pull-right" })
+       }
+    </p>
