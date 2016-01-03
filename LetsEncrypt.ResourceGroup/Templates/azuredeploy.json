@@ -42,7 +42,9 @@
     "clientId": {
       "type": "string"
     },
-    "clientSecret": { "type": "string" }
+    "clientSecret": { "type": "string" },
+    "hostnames": { "type": "string" },
+    "email": { "type": "string"}
   },
   "variables": {
     "webAppName": "[concat('webApp', uniqueString(resourceGroup().id))]",
@@ -96,19 +98,19 @@
             "appSettings": [
               {
                 "Name": "SCM_SITEEXTENSIONS_FEED_URL",
-                "Value": "https://www.myget.org/F/sjkp/api/v2/"
+                "Value": "https://www.siteextensions.net/api/v2/"
               },
               {
-                "Name": "letsencrypt:hostnames",
-                "Value": "letsencrypt.sjkp.dk"
+                "Name": "letsencrypt:Hostnames",
+                "Value": "[parameters('hostnames')]"
               },
               {
-                "Name": "letsencrypt:email",
-                "Value": "mail@sjkp.dk"
+                "Name": "letsencrypt:Email",
+                "Value": "[parameters('email')]"
               },
               {
-                "Name": "letsencrypt:acmeBaseUri",
-                "Value": "https://acme-staging.api.letsencrypt.org/"
+                "Name": "letsencrypt:AcmeBaseUri",
+                "Value": "https://acme-v01.api.letsencrypt.org/"
               },
               {
                 "Name": "letsencrypt:SubscriptionId",

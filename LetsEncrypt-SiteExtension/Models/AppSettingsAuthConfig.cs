@@ -13,9 +13,9 @@ namespace LetsEncrypt.SiteExtension.Models
         public const string tenantKey = "letsencrypt:Tenant";
         public const string subscriptionIdKey = "letsencrypt:SubscriptionId";
         public const string resourceGroupNameKey = "letsencrypt:ResourceGroupName";
-        public const string hostNamesKey = "letsencrypt:hostnames";
-        public const string emailKey = "letsencrypt:email";
-        public const string acmeBaseUriKey = "letsencrypt:acmeBaseUri";
+        public const string hostNamesKey = "letsencrypt:Hostnames";
+        public const string emailKey = "letsencrypt:Email";
+        public const string acmeBaseUriKey = "letsencrypt:AcmeBaseUri";
 
         public Guid ClientId
         {

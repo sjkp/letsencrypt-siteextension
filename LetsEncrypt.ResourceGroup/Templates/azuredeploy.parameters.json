@@ -6,6 +6,8 @@
       "appServicePlanSKU": { "value": "Standard" },
       "tenant": { "value": "tenant.onmicrosoft.com" },
       "clientId": { "value": "" },
-      "clientSecret": {"value": ""}
+      "clientSecret": { "value": "" },
+      "hostnames": { "value": "" },
+      "email": { "value": ""}
   }
 }
