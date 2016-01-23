@@ -22,8 +22,13 @@ namespace LetsEncrypt.SiteExtension
             var config = new JobHostConfiguration();
             config.UseTimers();
             var host = new JobHost(config);
+            try {
+                host.Start();
+            }
+             catch(Exception ex)
+            {
 
-            host.Start();
+            }
         }
     }
 }

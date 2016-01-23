@@ -15,7 +15,7 @@
     <AssemblyName>LetsEncrypt.SiteExtension</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>44300</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -72,6 +72,10 @@
     </Reference>
     <Reference Include="ManagedOpenSsl, Version=0.6.1.0, Culture=neutral, processorArchitecture=x86">
       <HintPath>..\packages\ManagedOpenSsl32.0.6.1.1\lib\net20\ManagedOpenSsl.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Azure.Graph.RBAC, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.Graph.RBAC.2.1.1-preview\lib\net45\Microsoft.Azure.Graph.RBAC.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Azure.Management.Websites, Version=1.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -146,6 +150,11 @@
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.identitymodel.services" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt">
+      <HintPath>..\dlls\System.IdentityModel.Tokens.Jwt.dll</HintPath>
     </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
@@ -231,6 +240,8 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="ArmHelper.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\HyakUtils.cs" />
+    <Compile Include="Controllers\Utils.cs" />
     <Compile Include="Models\HostnameModel.cs" />
     <Compile Include="Controllers\SettingsController.cs" />
     <Compile Include="Functions.cs" />
@@ -245,6 +256,10 @@
     <Compile Include="Models\INamedObject.cs" />
     <Compile Include="Models\RequestAndInstallModel.cs" />
     <Compile Include="Models\SettingEntry.cs" />
+    <Compile Include="Modules\AADOAuth2AccessToken.cs" />
+    <Compile Include="Modules\ARMOAuthModule.cs" />
+    <Compile Include="Modules\Extensions.cs" />
+    <Compile Include="Modules\OpenIdConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SettingsStore.cs" />
     <Compile Include="Target.cs" />
@@ -263,6 +278,7 @@
     <Content Include="Views\Home\Hostname.cshtml" />
     <Content Include="Views\Home\Install.cshtml" />
     <Content Include="Views\Home\AddHostname.cshtml" />
+    <Content Include="Views\Home\CreateServicePrincipal.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -317,7 +333,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>20050</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:20050/</IISUrl>
+          <IISUrl>https://localhost:44300</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.SiteExtension",
 EndProject
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "LetsEncrypt.ResourceGroup", "LetsEncrypt.ResourceGroup\LetsEncrypt.ResourceGroup.deployproj", "{8D564C1F-D94F-488C-AB13-F42C0511F76E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.SiteExtension.Test", "LetsEncrypt.SiteExtension.Test\LetsEncrypt.SiteExtension.Test.csproj", "{279DE1A9-4C87-4780-A64E-6FC2E049852A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{8D564C1F-D94F-488C-AB13-F42C0511F76E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8D564C1F-D94F-488C-AB13-F42C0511F76E}.Release|x86.ActiveCfg = Release|Any CPU
 		{8D564C1F-D94F-488C-AB13-F42C0511F76E}.Release|x86.Build.0 = Release|Any CPU
+		{279DE1A9-4C87-4780-A64E-6FC2E049852A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{279DE1A9-4C87-4780-A64E-6FC2E049852A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{279DE1A9-4C87-4780-A64E-6FC2E049852A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{279DE1A9-4C87-4780-A64E-6FC2E049852A}.Debug|x86.Build.0 = Debug|Any CPU
+		{279DE1A9-4C87-4780-A64E-6FC2E049852A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{279DE1A9-4C87-4780-A64E-6FC2E049852A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{279DE1A9-4C87-4780-A64E-6FC2E049852A}.Release|x86.ActiveCfg = Release|Any CPU
+		{279DE1A9-4C87-4780-A64E-6FC2E049852A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
