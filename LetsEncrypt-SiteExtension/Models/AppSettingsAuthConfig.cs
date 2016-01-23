@@ -16,6 +16,12 @@ namespace LetsEncrypt.SiteExtension.Models
         public const string hostNamesKey = "letsencrypt:Hostnames";
         public const string emailKey = "letsencrypt:Email";
         public const string acmeBaseUriKey = "letsencrypt:AcmeBaseUri";
+        private readonly WebAppEnviromentVariables environemntVariables;
+
+        public AppSettingsAuthConfig()
+        {
+            this.environemntVariables = new WebAppEnviromentVariables();
+        }
 
         public Guid ClientId
         {
@@ -49,7 +55,11 @@ namespace LetsEncrypt.SiteExtension.Models
             get
             {
                 Guid g;
-                Guid.TryParse(ConfigurationManager.AppSettings[subscriptionIdKey], out g);
+                if (!Guid.TryParse(ConfigurationManager.AppSettings[subscriptionIdKey], out g))
+                {
+                    g = environemntVariables.SubscriptionId;
+                }
+                
                 return g;
             }
         }
@@ -66,7 +76,10 @@ namespace LetsEncrypt.SiteExtension.Models
         {
             get
             {
-                return ConfigurationManager.AppSettings[resourceGroupNameKey]; 
+                var resourceGroupName = ConfigurationManager.AppSettings[resourceGroupNameKey];
+                if (string.IsNullOrEmpty(resourceGroupName))
+                    resourceGroupName = environemntVariables.ResourceGroupName;
+                return resourceGroupName;
             }            
         }
 

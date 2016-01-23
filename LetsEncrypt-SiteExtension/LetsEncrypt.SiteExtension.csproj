@@ -256,6 +256,7 @@
     <Compile Include="Models\INamedObject.cs" />
     <Compile Include="Models\RequestAndInstallModel.cs" />
     <Compile Include="Models\SettingEntry.cs" />
+    <Compile Include="Models\WebAppEnviromentVariables.cs" />
     <Compile Include="Modules\AADOAuth2AccessToken.cs" />
     <Compile Include="Modules\ARMOAuthModule.cs" />
     <Compile Include="Modules\Extensions.cs" />
