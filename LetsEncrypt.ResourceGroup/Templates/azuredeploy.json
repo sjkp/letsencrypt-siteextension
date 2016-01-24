@@ -126,7 +126,8 @@
           "type": "siteextensions",
           "dependsOn": [
             "[resourceId('Microsoft.Web/Sites', variables('webAppName'))]",
-            "[resourceId('Microsoft.Web/Sites/config', variables('webAppName'), 'web')]"
+            "[resourceId('Microsoft.Web/Sites/config', variables('webAppName'), 'appsettings')]",
+            "[resourceId('Microsoft.Web/Sites/config', variables('webAppName'), 'connectionstrings')]"
           ],
           "properties": {
             "test": "key1"

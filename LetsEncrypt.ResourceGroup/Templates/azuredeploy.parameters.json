@@ -1,13 +1,14 @@
 ﻿{
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {
-      "appServicePlanName": { "value": "sjkp.testplan" }   ,
-      "appServicePlanSKU": { "value": "Standard" },
-      "tenant": { "value": "tenant.onmicrosoft.com" },
-      "clientId": { "value": "" },
-      "clientSecret": { "value": "" },
-      "hostnames": { "value": "" },
-      "email": { "value": ""}
+  "parameters": {
+    "webAppName": { "value": "your-web-app-name"},
+    "appServicePlanName": { "value": "sjkp.testplan" },
+    "appServicePlanSKU": { "value": "Standard" },
+    "tenant": { "value": "tenant.onmicrosoft.com" },
+    "clientId": { "value": "" },
+    "clientSecret": { "value": "" },
+    "hostnames": { "value": "" },
+    "email": { "value": "" }
   }
 }
