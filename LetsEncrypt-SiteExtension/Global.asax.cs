@@ -7,7 +7,6 @@ using System.Web.Routing;
 using System.Web.Security;
 using System.Web.SessionState;
 using System.Web.Http;
-using Microsoft.Azure.WebJobs;
 
 namespace LetsEncrypt.SiteExtension
 {
@@ -19,16 +18,7 @@ namespace LetsEncrypt.SiteExtension
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            var config = new JobHostConfiguration();
-            config.UseTimers();
-            var host = new JobHost(config);
-            try {
-                host.Start();
-            }
-             catch(Exception ex)
-            {
-
-            }
+           
         }
     }
 }

@@ -2,16 +2,9 @@
 using ACMESharp.HTTP;
 using ACMESharp.JOSE;
 using ACMESharp.PKI;
-using LetsEncrypt.SiteExtension;
 using LetsEncrypt.SiteExtension.Models;
-using Microsoft.Azure.Management.Resources;
 using Microsoft.Azure.Management.WebSites;
 using Microsoft.Azure.Management.WebSites.Models;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Timers;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.Rest;
-using Microsoft.Rest.Azure.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,31 +12,13 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading;
-using System.Web;
+using System.Threading.Tasks;
 
-namespace LetsEncrypt.SiteExtension
+namespace LetsEncrypt.SiteExtension.Core
 {
-    public class MyDailySchedule : DailySchedule
-    {
-        public MyDailySchedule() : base(DateTime.Now.TimeOfDay)
-        {
-
-        }
-    }
-
-    public class MonthlySchedule : TimerSchedule
-    {
-        public MonthlySchedule()
-        { }
-
-        public override DateTime GetNextOccurrence(DateTime now)
-        {
-            return now.AddMonths(1);
-        }
-    }
-
-    public class Functions
+    public class CertificateManager
     {
         static AcmeClient client;
         static string configPath = "";
@@ -58,7 +33,7 @@ namespace LetsEncrypt.SiteExtension
  </configuration>";
         private static WebSiteManagementClient webSiteClient;
 
-        public static void SetupHostNameAndCertificate([TimerTrigger(typeof(MonthlySchedule), RunOnStartup = true)] TimerInfo timerInfo)
+        public void SetupHostnameAndCertificate()
         {
             Trace.TraceInformation("Setup hostname and certificates");
             var settings = new AppSettingsAuthConfig();
@@ -96,7 +71,7 @@ namespace LetsEncrypt.SiteExtension
             }
         }
 
-        public static void RenewCertificate([TimerTrigger(typeof(MyDailySchedule), RunOnStartup = true)] TimerInfo timerInfo)
+        public void RenewCertificate()
         {
             Trace.TraceInformation("Checking certificate");
             var settings = new AppSettingsAuthConfig();
@@ -117,7 +92,7 @@ namespace LetsEncrypt.SiteExtension
                         continue;
                     }
                     var ss = SettingsStore.Instance.Load();
-                    RequestAndInstall(new Target()
+                    RequestAndInstallInternal(new Target()
                     {
                         WebAppName = settings.WebAppName,
                         Tenant = settings.Tenant,
@@ -145,22 +120,18 @@ namespace LetsEncrypt.SiteExtension
             return Path.Combine(Environment.ExpandEnvironmentVariables("%HOME%"), "site", "wwwroot");
         }
 
-        public static void RequestAndInstall([QueueTrigger("letsencrypt")] Target target)
+        public static string RequestAndInstallInternal(Target target)
         {
-            RequestAndInstallInternal(target);
-        }
-
-        internal static string RequestAndInstallInternal(Target target)
-        {            
             BaseURI = target.BaseUri ?? "https://acme-staging.api.letsencrypt.org/";
             configPath = ConfigPath(BaseURI);
-            try {
+            try
+            {
                 webSiteClient = ArmHelper.GetWebSiteManagementClient(target);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Trace.TraceError("Unabled to create Azure Web Site Management client " + ex.ToString());
-                return null;
+                throw;
             }
 
             if (!Directory.Exists(configPath))
@@ -251,6 +222,7 @@ namespace LetsEncrypt.SiteExtension
                 {
                     Trace.TraceError(e.ToString());
                 }
+                throw;
             }
             return null;
         }
@@ -455,18 +427,19 @@ namespace LetsEncrypt.SiteExtension
 
             Trace.TraceInformation($"\nAuthorizing Identifier {dnsIdentifier} Using Challenge Type {AcmeProtocol.CHALLENGE_TYPE_HTTP}");
             var authzState = client.AuthorizeIdentifier(dnsIdentifier);
+            
             var challenge = client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
-            var answerPath = Environment.ExpandEnvironmentVariables(Path.Combine(webRootPath, challenge.ChallengeAnswer.Key));
+            var answerPath = Environment.ExpandEnvironmentVariables(Path.Combine(webRootPath, challenge.OldChallengeAnswer.Key));
 
             Trace.TraceInformation($" Writing challenge answer to {answerPath}");
             var directory = Path.GetDirectoryName(answerPath);
 
             Directory.CreateDirectory(directory);
-            File.WriteAllText(answerPath, challenge.ChallengeAnswer.Value);
+            File.WriteAllText(answerPath, challenge.OldChallengeAnswer.Value);
             File.WriteAllText(Path.Combine(directory, "web.config"), webConfig);
 
 
-            var answerUri = new Uri(new Uri("http://" + dnsIdentifier), challenge.ChallengeAnswer.Key);
+            var answerUri = new Uri(new Uri("http://" + dnsIdentifier), challenge.OldChallengeAnswer.Key);
             Trace.TraceInformation($" Answer should now be browsable at {answerUri}");
 
             try
@@ -505,7 +478,5 @@ namespace LetsEncrypt.SiteExtension
                 }
             }
         }
-
     }
-
 }

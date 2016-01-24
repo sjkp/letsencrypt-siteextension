@@ -1,6 +1,7 @@
 ﻿using ARMExplorer.Controllers;
 using ARMExplorer.Modules;
 using LetsEncrypt.SiteExtension;
+using LetsEncrypt.SiteExtension.Core;
 using LetsEncrypt.SiteExtension.Models;
 using Microsoft.Azure.Graph.RBAC;
 using Microsoft.Azure.Graph.RBAC.Models;
@@ -26,7 +27,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
         // GET: Authentication
         public ActionResult Index()
         {
-            var model = new AppSettingsAuthConfig();    
+            var model = new AppSettingsAuthConfig();
 
 
             return View(model);
@@ -132,7 +133,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
                     Tenant = settings.Tenant,
                     BaseUri = baseUri,
                 };
-                var thumbprint = Functions.RequestAndInstallInternal(target);
+                var thumbprint = CertificateManager.RequestAndInstallInternal(target);
                 if (thumbprint != null)
                     return RedirectToAction("Hostname", new { id = thumbprint });
             }

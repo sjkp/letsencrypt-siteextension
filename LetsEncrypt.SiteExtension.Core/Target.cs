@@ -8,18 +8,18 @@ namespace LetsEncrypt.SiteExtension
         /// <summary>
         /// The host name the certificate should be issued for.
         /// </summary>
-        public string Host { get; internal set; }
+        public string Host { get; set; }
 
         public string Email { get; set; }
-        public string BaseUri { get; internal set; }
+        public string BaseUri { get; set; }
 
         public Guid ClientId { get; set; }
 
         public string ClientSecret { get; set; }
 
-        public string WebAppName { get; internal set; }
-        public string ResourceGroupName { get; internal set; }
-        public Guid SubscriptionId { get; internal set; }
-        public string Tenant { get; internal set; }      
+        public string WebAppName { get; set; }
+        public string ResourceGroupName { get; set; }
+        public Guid SubscriptionId { get; set; }
+        public string Tenant { get; set; }      
     }
 }

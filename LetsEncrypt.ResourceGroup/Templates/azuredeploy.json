@@ -36,6 +36,12 @@
         "Premium_LRS"
       ]
     },
+    "webAppName": {
+      "type": "string",
+      "metadata": {
+        "description": "The azure web site name"
+      }
+    },
     "tenant": {
       "type": "string"
     },
@@ -44,10 +50,18 @@
     },
     "clientSecret": { "type": "string" },
     "hostnames": { "type": "string" },
-    "email": { "type": "string"}
+    "email": { "type": "string" },
+    "siteExtensionFeedUrl": {
+      "type": "string",
+      "defaultValue": "https://www.siteextensions.net/api/v2/",
+      "metadata": {
+        "description": "The nuget feed to download site extensions from"
+      }
+    }
   },
   "variables": {
-    "webAppName": "[concat('webApp', uniqueString(resourceGroup().id))]",
+    //"webAppName": "[concat('webApp', uniqueString(resourceGroup().id))]",
+    "webAppName": "[parameters('webAppName')]",
     "storageName": "[concat('storage', uniqueString(resourceGroup().id))]"
   },
   "resources": [
@@ -88,51 +102,22 @@
       },
       "resources": [
         {
-          "apiVersion": "2014-04-01",
-          "name": "web",
+          "apiVersion": "2015-08-01",
+          "name": "appsettings",
           "type": "config",
           "dependsOn": [
             "[resourceId('Microsoft.Web/Sites', variables('webAppName'))]"
           ],
           "properties": {
-            "appSettings": [
-              {
-                "Name": "SCM_SITEEXTENSIONS_FEED_URL",
-                "Value": "https://www.siteextensions.net/api/v2/"
-              }, 
-              {
-                "Name": "letsencrypt:Hostnames",
-                "Value": "[parameters('hostnames')]"
-              },
-              {
-                "Name": "letsencrypt:Email",
-                "Value": "[parameters('email')]"
-              },
-              {
-                "Name": "letsencrypt:AcmeBaseUri",
-                "Value": "https://acme-v01.api.letsencrypt.org/"
-              },            
-              {
-                "Name": "letsencrypt:SubscriptionId",
-                "Value": "[subscription().subscriptionId]"
-              },
-              {
-                "Name": "letsencrypt:Tenant",
-                "Value": "[parameters('tenant')]"
-              },
-              {
-                "Name": "letsencrypt:ClientId",
-                "Value": "[parameters('clientId')]"
-              },
-              {
-                "Name": "letsencrypt:ClientSecret",
-                "Value": "[parameters('clientSecret')]"
-              },
-              {
-                "Name": "letsencrypt:ResourceGroupName",
-                "Value": "[resourceGroup().name]"
-              }
-            ]
+            "SCM_SITEEXTENSIONS_FEED_URL": "[parameters('siteExtensionFeedUrl')]",
+            "letsencrypt:Hostnames": "[parameters('hostnames')]",
+            "letsencrypt:Email": "[parameters('email')]",
+            "letsencrypt:AcmeBaseUri": "https://acme-v01.api.letsencrypt.org/",
+            "letsencrypt:SubscriptionId": "[subscription().subscriptionId]",
+            "letsencrypt:Tenant": "[parameters('tenant')]",
+            "letsencrypt:ClientId": "[parameters('clientId')]",
+            "letsencrypt:ClientSecret": "[parameters('clientSecret')]",
+            "letsencrypt:ResourceGroupName": "[resourceGroup().name]"
           }
         },
         {

@@ -24,7 +24,7 @@
         </tr>
         <tr>
             <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.subscriptionIdKey</td>
-            <td>The subscription id</td>            
+            <td>(Optional) The subscription id, if left empty the enviroment variable WEBSITE_OWNER_NAME will be used</td>            
         </tr>
         <tr>
             <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.clientIdKey</td>
@@ -36,7 +36,7 @@
         </tr>
         <tr>
             <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.resourceGroupNameKey</td>
-            <td>The name of the resource group this web app belongs to</td>
+            <td>(Optional) The name of the resource group this web app belongs to, if left empty the enviroment variable WEBSITE_OWNER_NAME will be used</td>
         </tr>        
     </tbody>
 </table>

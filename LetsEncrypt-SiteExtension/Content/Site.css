@@ -16,3 +16,8 @@ textarea {
     max-width: 280px;
 }
 
+.navbar-brand 
+{
+    padding: 10px 15px;
+}
+
