@@ -85,6 +85,10 @@
       <Project>{87f0ff62-16c3-43ce-b154-1b9bc28ded67}</Project>
       <Name>LetsEncrypt.SiteExtension</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LetsEncrypt.SiteExtension.Core\LetsEncrypt.SiteExtension.Core.csproj">
+      <Project>{284f0226-f481-4c10-a408-4146fdbb71cc}</Project>
+      <Name>LetsEncrypt.SiteExtension.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
