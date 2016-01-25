@@ -7,6 +7,9 @@ This Azure Web App Site Extension enables easy installation and configuration of
 The site extension requires that you have configured a DNS entry for you custom domain to point to Azure Web App. 
 *Note with the fully automated mode, you don't even have to configure the custom domain in Azure the extension will do that for you.*
 
+## Step by Step Guide by Nik Molnar
+https://gooroo.io/GoorooTHINK/Article/16420/Lets-Encrypt-Azure-Web-Apps-the-Free-and-Easy-Way/ 
+
 ## Semi-Automated Installation
 With the semi-automated installation you manually add the site extension to your web app. Open the extension and manually click through the 3 step dialog. 
 
