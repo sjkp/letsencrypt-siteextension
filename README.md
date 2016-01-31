@@ -29,11 +29,12 @@ To use the Fully Automated Installtion the following Web App settings must be ad
 | letsencrypt:ClientId	| The value of the clientid of the service principal
 | letsencrypt:ClientSecret	| The secret for the service principal
 | letsencrypt:ResourceGroupName |	The name of the resource group this web app belongs to
+| letsencrypt:ServicePlanResourceGroupName |	The name of the resource group with the app service plan that hosts the web app, if the app service plan is in the same plan as the web app, then this property is optional. 
 | letsencrypt:AcmeBaseUri |	The url to Let's Encrypt servers e.g. https://acme-v01.api.letsencrypt.org/ or https://acme-staging.api.letsencrypt.org/ (defaults to this)
 | letsencrypt:Email	| The Email used for registering with Let's Encrypt
 | letsencrypt:Hostnames |	Comma separated list of custom hostnames (externally hosted setup with CNames), that should automatically be configured for the site.
 
-As it can be seen from the list of App Settings a service principal is needed. The service principal must be assigned permissions to the web app, that is required as the extension use it for installing and updating the certificate. 
+As it can be seen from the list of App Settings a service principal is needed. The service principal must be assigned permissions to the web app, that is required as the extension use it for installing and updating the certificate. (If two resource groups are used, the app service principal must have access to both). 
 
 Besides the App Settings, the two Azure Web Job required connection strings ```AzureWebJobsStorage``` and ```AzureWebJobsDashboard``` must also exists, as the extension relies on an internal Web Job to renew the certificates once they expire. 
 
