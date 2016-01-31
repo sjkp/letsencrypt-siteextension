@@ -16,6 +16,7 @@ namespace LetsEncrypt.SiteExtension.Models
         public const string hostNamesKey = "letsencrypt:Hostnames";
         public const string emailKey = "letsencrypt:Email";
         public const string acmeBaseUriKey = "letsencrypt:AcmeBaseUri";
+        public const string webAppNameKey = "WEBSITE_SITE_NAME";
         private readonly WebAppEnviromentVariables environemntVariables;
 
         public AppSettingsAuthConfig()

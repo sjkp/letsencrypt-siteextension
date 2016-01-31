@@ -57,14 +57,31 @@
       "metadata": {
         "description": "The nuget feed to download site extensions from"
       }
+    },
+    "principalId": {
+      "type": "string",
+      "metadata": {
+        "description": "The principalid/objectid for service principal registered in Azure AD, can e.g. be found with Get-MsolServicePrincipal |? {$_.AppPrincipalId -eq \"<cliendId>\"}"
+      }
     }
   },
   "variables": {
-    //"webAppName": "[concat('webApp', uniqueString(resourceGroup().id))]",
+    "Owner": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
     "webAppName": "[parameters('webAppName')]",
-    "storageName": "[concat('storage', uniqueString(resourceGroup().id))]"
+    "storageName": "[concat('storage', uniqueString(resourceGroup().id))]",
+    "scope": "[resourceGroup().id]"
   },
   "resources": [
+    {
+      "apiVersion": "2014-07-01-preview",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "name": "DCE46385-7B6B-4E6B-87ED-F011289008D3",
+      "properties": {
+        "roleDefinitionId": "[variables('Owner')]",
+        "principalId": "[parameters('principalId')]",
+        "scope": "[variables('scope')]"
+      }
+    },
     {
       "name": "[parameters('appServicePlanName')]",
       "type": "Microsoft.Web/serverfarms",

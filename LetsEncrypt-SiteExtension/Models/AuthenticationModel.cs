@@ -35,6 +35,12 @@ namespace LetsEncrypt.SiteExtension.Models
             get; set;
         }
 
+        [Display(Name = "Update Application Settings")]
+        public bool UpdateAppSettings
+        {
+            get;set;
+        }
+
         public string ErrorMessage
         {
             get; set;
@@ -46,6 +52,19 @@ namespace LetsEncrypt.SiteExtension.Models
             {
                 return !string.IsNullOrEmpty(ErrorMessage);
             }
+        }
+
+        public static explicit operator AuthenticationModel(AppSettingsAuthConfig config)
+        {
+            return new AuthenticationModel()
+            {
+                ClientId = config.ClientId,
+                ClientSecret = config.ClientSecret,
+                ResourceGroupName = config.ResourceGroupName,
+                SubscriptionId = config.SubscriptionId,
+                Tenant = config.Tenant,
+                WebAppName = config.WebAppName
+            };
         }
     }
 }

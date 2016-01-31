@@ -27,9 +27,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
         // GET: Authentication
         public ActionResult Index()
         {
-            var model = new AppSettingsAuthConfig();
-
-
+            var model = (AuthenticationModel)new AppSettingsAuthConfig();
             return View(model);
         }
 
@@ -40,7 +38,49 @@ namespace LetsEncrypt.SiteExtension.Controllers
             {
                 try
                 {
-                    ArmHelper.GetWebSiteManagementClient(model);
+                    using (var client = ArmHelper.GetWebSiteManagementClient(model))
+                    {
+                        //Update web config.
+                        var site = client.Sites.GetSite(model.ResourceGroupName, model.WebAppName);
+                        var webappsettings = client.Sites.ListSiteAppSettings(model.ResourceGroupName, model.WebAppName);
+                        if (model.UpdateAppSettings)
+                        {
+                            var newAppSettingsValues = new Dictionary<string, string>{
+                                { AppSettingsAuthConfig.clientIdKey, model.ClientId.ToString() },
+                                { AppSettingsAuthConfig.clientSecretKey, model.ClientSecret.ToString()},
+                                { AppSettingsAuthConfig.subscriptionIdKey, model.SubscriptionId.ToString() },
+                                { AppSettingsAuthConfig.tenantKey, model.Tenant },
+                                { AppSettingsAuthConfig.resourceGroupNameKey, model.ResourceGroupName }
+                            };
+                            foreach (var appsetting in newAppSettingsValues)
+                            {
+                                if (!webappsettings.Properties.ContainsKey(appsetting.Key))
+                                {
+                                    webappsettings.Properties.Add(appsetting.Key, appsetting.Value);
+                                }
+                                else
+                                {
+                                    webappsettings.Properties[appsetting.Key] = appsetting.Value;
+                                }
+                            }
+                            client.Sites.UpdateSiteAppSettings(model.ResourceGroupName, model.WebAppName, webappsettings);
+                                
+                               
+                        } else { 
+                            var appSetting = new AppSettingsAuthConfig();
+                            if (!ValidateModelVsAppSettings("ClientId", model.ClientId.ToString(), appSetting.ClientId.ToString()) ||
+                            !ValidateModelVsAppSettings("ClientSecret", appSetting.ClientSecret, model.ClientSecret) ||
+                            !ValidateModelVsAppSettings("ResourceGroupName", appSetting.ResourceGroupName, model.ResourceGroupName) ||
+                            !ValidateModelVsAppSettings("SubScriptionId", appSetting.SubscriptionId.ToString(), model.SubscriptionId.ToString()) ||
+                            !ValidateModelVsAppSettings("Tenant", appSetting.Tenant, model.Tenant))
+                            {
+                                model.ErrorMessage = "One or more app settings are different from the values entered, do you want to update the app settings?";
+                                return View(model);
+                            }
+                        }
+                        
+
+                    }
                     return RedirectToAction("Hostname");
                 }
                 catch (Exception ex)
@@ -52,7 +92,17 @@ namespace LetsEncrypt.SiteExtension.Controllers
             }
 
             return View(model);
-        }        
+        }
+
+        private bool ValidateModelVsAppSettings(string name, string appSettingValue, string modelValue)
+        {
+            if (appSettingValue != modelValue)
+            {
+                ModelState.AddModelError(name, string.Format("The {0} registered under application settings {1} does not match the {0} you entered here {2}", name, appSettingValue, modelValue));
+                return false;
+            }
+            return true;
+        }
 
         public ActionResult Hostname(string id)
         {
