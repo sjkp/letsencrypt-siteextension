@@ -53,6 +53,8 @@ namespace LetsEncrypt.SiteExtension.Models
                 return !string.IsNullOrEmpty(ErrorMessage);
             }
         }
+        
+        public string ServicePlanResourceGroupName { get; set; }
 
         public static explicit operator AuthenticationModel(AppSettingsAuthConfig config)
         {
@@ -63,7 +65,8 @@ namespace LetsEncrypt.SiteExtension.Models
                 ResourceGroupName = config.ResourceGroupName,
                 SubscriptionId = config.SubscriptionId,
                 Tenant = config.Tenant,
-                WebAppName = config.WebAppName
+                WebAppName = config.WebAppName,
+                ServicePlanResourceGroupName = config.ServicePlanResourceGroupName,                
             };
         }
     }

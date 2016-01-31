@@ -17,6 +17,7 @@ namespace LetsEncrypt.SiteExtension.Models
         public const string emailKey = "letsencrypt:Email";
         public const string acmeBaseUriKey = "letsencrypt:AcmeBaseUri";
         public const string webAppNameKey = "WEBSITE_SITE_NAME";
+        public const string servicePlanResourceGroupNameKey = "letsencrypt:ServicePlanResourceGroupName";
         private readonly WebAppEnviromentVariables environemntVariables;
 
         public AppSettingsAuthConfig()
@@ -69,7 +70,7 @@ namespace LetsEncrypt.SiteExtension.Models
         {
             get
             {
-                return ConfigurationManager.AppSettings["WEBSITE_SITE_NAME"]; 
+                return ConfigurationManager.AppSettings[webAppNameKey]; 
             }
         }
 
@@ -105,6 +106,19 @@ namespace LetsEncrypt.SiteExtension.Models
             get
             {
                 return ConfigurationManager.AppSettings[acmeBaseUriKey];
+            }
+        }
+
+        public string ServicePlanResourceGroupName
+        {
+            get
+            {
+                var servicePlanResourceGroupName = ConfigurationManager.AppSettings[servicePlanResourceGroupNameKey];
+                if (string.IsNullOrEmpty(servicePlanResourceGroupName))
+                {
+                    return ResourceGroupName;
+                }
+                return servicePlanResourceGroupName;
             }
         }
     }

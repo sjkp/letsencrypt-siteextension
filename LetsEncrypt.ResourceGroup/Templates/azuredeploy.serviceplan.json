@@ -1,0 +1,67 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appServicePlanName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "appServicePlanSKU": {
+      "type": "string",
+      "allowedValues": [
+        "Free",
+        "Shared",
+        "Basic",
+        "Standard"
+      ],
+      "defaultValue": "Standard"
+    },
+    "appServicePlanWorkerSize": {
+      "type": "string",
+      "allowedValues": [
+        "0",
+        "1",
+        "2"
+      ],
+      "defaultValue": "0"
+    },
+    "principalId": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "Owner": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '8e3af657-a8ff-443c-a75c-2fe8c4bcb635')]",
+    "scope": "[resourceGroup().id]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2014-07-01-preview",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "name": "DCE46385-7B6B-4E6B-87ED-F011289008D3",
+      "properties": {
+        "roleDefinitionId": "[variables('Owner')]",
+        "principalId": "[parameters('principalId')]",
+        "scope": "[variables('scope')]"
+      }
+    },
+    {
+      "name": "[parameters('appServicePlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2014-06-01",
+      "dependsOn": [ ],
+      "tags": {
+        "displayName": "appServicePlan"
+      },
+      "properties": {
+        "name": "[parameters('appServicePlanName')]",
+        "sku": "[parameters('appServicePlanSKU')]",
+        "workerSize": "[parameters('appServicePlanWorkerSize')]",
+        "numberOfWorkers": 1
+      }
+    }
+
+  ],
+    "outputs": {
+    }
+}

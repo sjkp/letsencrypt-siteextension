@@ -50,7 +50,8 @@ namespace LetsEncrypt.SiteExtension.Controllers
                                 { AppSettingsAuthConfig.clientSecretKey, model.ClientSecret.ToString()},
                                 { AppSettingsAuthConfig.subscriptionIdKey, model.SubscriptionId.ToString() },
                                 { AppSettingsAuthConfig.tenantKey, model.Tenant },
-                                { AppSettingsAuthConfig.resourceGroupNameKey, model.ResourceGroupName }
+                                { AppSettingsAuthConfig.resourceGroupNameKey, model.ResourceGroupName },
+                                { AppSettingsAuthConfig.servicePlanResourceGroupNameKey, model.ServicePlanResourceGroupName }
                             };
                             foreach (var appsetting in newAppSettingsValues)
                             {
@@ -72,7 +73,8 @@ namespace LetsEncrypt.SiteExtension.Controllers
                             !ValidateModelVsAppSettings("ClientSecret", appSetting.ClientSecret, model.ClientSecret) ||
                             !ValidateModelVsAppSettings("ResourceGroupName", appSetting.ResourceGroupName, model.ResourceGroupName) ||
                             !ValidateModelVsAppSettings("SubScriptionId", appSetting.SubscriptionId.ToString(), model.SubscriptionId.ToString()) ||
-                            !ValidateModelVsAppSettings("Tenant", appSetting.Tenant, model.Tenant))
+                            !ValidateModelVsAppSettings("Tenant", appSetting.Tenant, model.Tenant) ||
+                            !ValidateModelVsAppSettings("ServicePlanResourceGroupName", appSetting.ServicePlanResourceGroupName, model.ServicePlanResourceGroupName))
                             {
                                 model.ErrorMessage = "One or more app settings are different from the values entered, do you want to update the app settings?";
                                 return View(model);
@@ -113,7 +115,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
             var model = new HostnameModel();
             model.HostNames = site.HostNames;
             model.HostNameSslStates = site.HostNameSslStates;
-            model.Certificates = client.Certificates.GetCertificates(settings.ResourceGroupName).Value;
+            model.Certificates = client.Certificates.GetCertificates(settings.ServicePlanResourceGroupName).Value;
             model.InstalledCertificateThumbprint = id;
             if (model.HostNames.Count == 1)
             {
@@ -182,6 +184,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
                     SubscriptionId = settings.SubscriptionId,
                     Tenant = settings.Tenant,
                     BaseUri = baseUri,
+                    ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
                 };
                 var thumbprint = CertificateManager.RequestAndInstallInternal(target);
                 if (thumbprint != null)

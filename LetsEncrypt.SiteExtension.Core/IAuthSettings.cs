@@ -12,5 +12,7 @@ namespace LetsEncrypt.SiteExtension.Models
         Guid SubscriptionId { get; }
         string WebAppName { get; }
         string ResourceGroupName { get; }
+
+        string ServicePlanResourceGroupName { get; }
     }
 }

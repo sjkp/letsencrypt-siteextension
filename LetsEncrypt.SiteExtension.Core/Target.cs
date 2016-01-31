@@ -19,6 +19,9 @@ namespace LetsEncrypt.SiteExtension
 
         public string WebAppName { get; set; }
         public string ResourceGroupName { get; set; }
+
+        public string ServicePlanResourceGroupName { get; set; }
+
         public Guid SubscriptionId { get; set; }
         public string Tenant { get; set; }      
     }

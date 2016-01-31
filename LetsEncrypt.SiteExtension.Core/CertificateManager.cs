@@ -7,6 +7,7 @@ using Microsoft.Azure.Management.WebSites;
 using Microsoft.Azure.Management.WebSites.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,7 @@ namespace LetsEncrypt.SiteExtension.Core
      </system.webServer>
  </configuration>";
         private static WebSiteManagementClient webSiteClient;
+        private static WebSiteManagementClient serverFarmClient;
 
         public void SetupHostnameAndCertificate()
         {
@@ -65,7 +67,8 @@ namespace LetsEncrypt.SiteExtension.Core
                         ResourceGroupName = settings.ResourceGroupName,
                         SubscriptionId = settings.SubscriptionId,
                         Tenant = settings.Tenant,
-                        WebAppName = settings.WebAppName
+                        WebAppName = settings.WebAppName,
+                        ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
                     });
                 }
             }
@@ -103,6 +106,7 @@ namespace LetsEncrypt.SiteExtension.Core
                         Email = settings.Email ?? ss.FirstOrDefault(s => s.Name == "email").Value,
                         Host = sslState.Name,
                         BaseUri = settings.BaseUri ?? ss.FirstOrDefault(s => s.Name == "baseUri").Value,
+                        ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
                     });
                 }
             }
@@ -117,7 +121,7 @@ namespace LetsEncrypt.SiteExtension.Core
 
         private static string WebRootPath()
         {
-            return Path.Combine(Environment.ExpandEnvironmentVariables("%HOME%"), "site", "wwwroot");
+            return Path.Combine(ConfigurationManager.AppSettings["letsencrypt:WebRootPath"] ?? Environment.ExpandEnvironmentVariables("%HOME%"), "site", "wwwroot");
         }
 
         public static string RequestAndInstallInternal(Target target)
@@ -396,7 +400,7 @@ namespace LetsEncrypt.SiteExtension.Core
             var pfx = Convert.ToBase64String(bytes);
 
             var s = webSiteClient.Sites.GetSite(target.ResourceGroupName, target.WebAppName);
-            webSiteClient.Certificates.CreateOrUpdateCertificate(target.ResourceGroupName, certificate.Subject.Replace("CN=", ""), new Certificate()
+            webSiteClient.Certificates.CreateOrUpdateCertificate(target.ServicePlanResourceGroupName, certificate.Subject.Replace("CN=", ""), new Certificate()
             {
                 PfxBlob = pfx,
                 Password = "",

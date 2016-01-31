@@ -26,3 +26,4 @@ nuget.exe
 Kudu.Services.Web/commit.txt
 
 azuredeploy.parameters.local.json
+azuredeploy.parameters.serviceplan.local.json

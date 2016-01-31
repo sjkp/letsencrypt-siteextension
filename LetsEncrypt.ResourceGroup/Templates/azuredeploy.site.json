@@ -57,19 +57,23 @@
       "metadata": {
         "description": "The nuget feed to download site extensions from"
       }
-    },    
-      "acmeUrl": {
-        "type": "string",
-        "defaultValue": "https://acme-v01.api.letsencrypt.org/",
-        "metadata": {
-          "description": "The url of the lets encrypt servers. Staging: (https://acme-staging.api.letsencrypt.org/)"
-        }
-      },
+    },
+
+    "acmeUrl": {
+      "type": "string",
+      "defaultValue": "https://acme-v01.api.letsencrypt.org/",
+      "metadata": {
+        "description": "The url of the lets encrypt servers. Staging: (https://acme-staging.api.letsencrypt.org/)"
+      }
+    },
     "principalId": {
       "type": "string",
       "metadata": {
         "description": "The principalid/objectid for service principal registered in Azure AD, can e.g. be found with Get-MsolServicePrincipal |? {$_.AppPrincipalId -eq \"<cliendId>\"}"
       }
+    },
+    "appServicePlanResourceGroupName": {
+      "type": "string"
     }
   },
   "variables": {
@@ -90,28 +94,11 @@
       }
     },
     {
-      "name": "[parameters('appServicePlanName')]",
-      "type": "Microsoft.Web/serverfarms",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "2014-06-01",
-      "dependsOn": [ ],
-      "tags": {
-        "displayName": "appServicePlan"
-      },
-      "properties": {
-        "name": "[parameters('appServicePlanName')]",
-        "sku": "[parameters('appServicePlanSKU')]",
-        "workerSize": "[parameters('appServicePlanWorkerSize')]",
-        "numberOfWorkers": 1
-      }
-    },
-    {
       "name": "[variables('webAppName')]",
       "type": "Microsoft.Web/sites",
       "location": "[resourceGroup().location]",
       "apiVersion": "2015-08-01",
-      "dependsOn": [
-        "[concat('Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]"
+      "dependsOn": [      
       ],
       "tags": {
         "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]": "Resource",
@@ -119,7 +106,7 @@
       },
       "properties": {
         "name": "[variables('webAppName')]",
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]",
+        "serverFarmId": "[resourceId(parameters('appServicePlanResourceGroupName'), 'Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]",
         "siteConfig": {
           "AlwaysOn": true
         }
