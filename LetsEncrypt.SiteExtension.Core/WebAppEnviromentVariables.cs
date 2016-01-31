@@ -30,7 +30,7 @@ namespace LetsEncrypt.SiteExtension.Models
                 resourceGroupName = string.Join("-", arr.Take(arr.Length - 1));
             } catch(Exception ex)
             {
-                Trace.TraceError(string.Format("unable to parse WEBSITE_OWNER_NAME '{0}'", websiteowner));
+                Trace.TraceWarning(string.Format("unable to parse WEBSITE_OWNER_NAME '{0}'", websiteowner));
             }
         }
 
