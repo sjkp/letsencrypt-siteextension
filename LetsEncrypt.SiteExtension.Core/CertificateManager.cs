@@ -307,6 +307,10 @@ namespace LetsEncrypt.SiteExtension.Core
 
                 return crtPfxFile;
             }
+            if ((int)certRequ.StatusCode == 429)
+            {
+                throw new Exception("Unable to request certificate, too many certificate requests to Let's Encrypt certificate servers for the domain within the last 7 days. Please try again later. (If you are testing, please use the staging enviroment where you can request unlimited number of certificates. During the beta period only 5 certificate requests per domain per week are allowed to the production environment.)"); 
+            }
 
             throw new Exception($"Request status = {certRequ.StatusCode}");
         }
