@@ -46,6 +46,7 @@ namespace LetsEncrypt.SiteExtension.Core
                 {
                     if (s.HostNames.Any(existingHostname => string.Equals(existingHostname, hostname, StringComparison.InvariantCultureIgnoreCase)))
                     {
+                        Trace.TraceInformation("Hostname already configured skipping installation");
                         continue;
                     }
                     Trace.TraceInformation("Setting up hostname and lets encrypt certificate for " + hostname);
@@ -83,6 +84,10 @@ namespace LetsEncrypt.SiteExtension.Core
                 var certs = client.Certificates.GetCertificates(settings.ResourceGroupName).Value;
                 var expireringIn14Days = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(14) && s.Issuer.Contains("Let's Encrypt"));
 
+                if (expireringIn14Days.Count() == 0)
+                {
+                    Trace.TraceInformation("No certificates installed issued by Let's Encrypt that are about to expire within the next 14 days. Skipping.");
+                }
 
                 foreach (var toExpireCert in expireringIn14Days)
                 {
@@ -121,7 +126,7 @@ namespace LetsEncrypt.SiteExtension.Core
 
         private static string WebRootPath()
         {
-            return Path.Combine(ConfigurationManager.AppSettings["letsencrypt:WebRootPath"] ?? Environment.ExpandEnvironmentVariables("%HOME%"), "site", "wwwroot");
+            return ConfigurationManager.AppSettings["letsencrypt:WebRootPath"] ?? Path.Combine(Environment.ExpandEnvironmentVariables("%HOME%"), "site", "wwwroot");
         }
 
         public static string RequestAndInstallInternal(Target target)
