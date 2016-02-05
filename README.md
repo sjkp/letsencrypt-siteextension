@@ -33,6 +33,7 @@ To use the Fully Automated Installtion the following Web App settings must be ad
 | letsencrypt:AcmeBaseUri |	The url to Let's Encrypt servers e.g. https://acme-v01.api.letsencrypt.org/ or https://acme-staging.api.letsencrypt.org/ (defaults to this)
 | letsencrypt:Email	| The Email used for registering with Let's Encrypt
 | letsencrypt:Hostnames |	Comma separated list of custom hostnames (externally hosted setup with CNames), that should automatically be configured for the site.
+| letsencrypt:WebRootPath | Use this setting, if you are not serving the website from site\wwwroot, then you can sepecify the other folder that serves your website here - should be in the format d:\home\site\wwwroot\public or where ever your files are located on the web server. 
 
 As it can be seen from the list of App Settings a service principal is needed. The service principal must be assigned permissions to the web app, that is required as the extension use it for installing and updating the certificate. (If two resource groups are used, the app service principal must have access to both). 
 
