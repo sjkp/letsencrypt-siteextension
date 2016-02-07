@@ -1,4 +1,5 @@
 ﻿using ACMESharp;
+using ACMESharp.ACME;
 using ACMESharp.HTTP;
 using ACMESharp.JOSE;
 using ACMESharp.PKI;
@@ -24,6 +25,7 @@ namespace LetsEncrypt.SiteExtension.Core
         static AcmeClient client;
         static string configPath = "";
         private static string BaseURI;
+        static AppSettingsAuthConfig settings = new AppSettingsAuthConfig();
         const string webConfig = @"<?xml version = ""1.0"" encoding=""UTF-8""?>
  <configuration>
      <system.webServer>
@@ -93,8 +95,8 @@ namespace LetsEncrypt.SiteExtension.Core
                 {
                     Trace.TraceInformation("Starting renew of certificate " + toExpireCert.Name + " expiration date " + toExpireCert.ExpirationDate);
                     var site = client.Sites.GetSite(settings.ResourceGroupName, settings.WebAppName);
-                    var sslState = site.HostNameSslStates.FirstOrDefault(s => s.Thumbprint == toExpireCert.Thumbprint);
-                    if (sslState == null)
+                    var sslStates = site.HostNameSslStates.Where(s => s.Thumbprint == toExpireCert.Thumbprint);
+                    if (!sslStates.Any())
                     {
                         Trace.TraceInformation(String.Format("Certificate {0} was not assigned any hostname, skipping update", toExpireCert.Thumbprint));
                         continue;
@@ -109,9 +111,10 @@ namespace LetsEncrypt.SiteExtension.Core
                         ClientSecret = settings.ClientSecret,
                         ResourceGroupName = settings.ResourceGroupName,
                         Email = settings.Email ?? ss.FirstOrDefault(s => s.Name == "email").Value,
-                        Host = sslState.Name,
+                        Host = sslStates.First().Name,
                         BaseUri = settings.BaseUri ?? ss.FirstOrDefault(s => s.Name == "baseUri").Value,
                         ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
+                        AlternativeNames = sslStates.Skip(1).Select(s => s.Name).ToList()
                     });
                 }
             }
@@ -238,16 +241,40 @@ namespace LetsEncrypt.SiteExtension.Core
 
         public static string GetCertificate(Target binding)
         {
-            var dnsIdentifier = binding.Host;
 
+            var dnsIdentifier = binding.Host;
             var cp = CertificateProvider.GetProvider();
             var rsaPkp = new RsaPrivateKeyParams();
+            try
+            {
+                if (settings.RSAKeyLength >= 1024)
+                {
+                    rsaPkp.NumBits = settings.RSAKeyLength;
+                    Trace.TraceInformation("RSAKeyBits: {RSAKeyBits}", settings.RSAKeyLength);
+                }
+                else
+                {
+                    Trace.TraceWarning("RSA Key Bits less than 1024 is not secure. Letting ACMESharp default key bits. http://openssl.org/docs/manmaster/crypto/RSA_generate_key_ex.html");
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceWarning("Unable to set RSA Key Bits, Letting ACMESharp default key bits, Error: {@ex}", ex);                
+                Console.WriteLine($"Unable to set RSA Key Bits, Letting ACMESharp default key bits, Error: {ex.Message.ToString()}");
+            }
 
             var rsaKeys = cp.GeneratePrivateKey(rsaPkp);
             var csrDetails = new CsrDetails
             {
                 CommonName = dnsIdentifier,
             };
+            if (binding.AlternativeNames != null)
+            {
+                if (binding.AlternativeNames.Count > 0)
+                {
+                    csrDetails.AlternativeNames = binding.AlternativeNames;
+                }
+            }
             var csrParams = new CsrParams
             {
                 Details = csrDetails,
@@ -262,13 +289,14 @@ namespace LetsEncrypt.SiteExtension.Core
             }
             var derB64u = JwsHelper.Base64UrlEncode(derRaw);
 
-            Trace.TraceInformation($"\nRequesting Certificate");
+            Console.WriteLine($"\nRequesting Certificate");
+            Trace.TraceInformation("Requesting Certificate");
             var certRequ = client.RequestCertificate(derB64u);
 
-            Trace.TraceInformation($" Request Status: {certRequ.StatusCode}");
+            Trace.TraceInformation("certRequ {@certRequ}", certRequ);
 
-            //Trace.TraceInformation($"Refreshing Cert Request");
-            //client.RefreshCertificateRequest(certRequ);
+            Console.WriteLine($" Request Status: {certRequ.StatusCode}");
+            Trace.TraceInformation("Request Status: {StatusCode}", certRequ.StatusCode);
 
             if (certRequ.StatusCode == System.Net.HttpStatusCode.Created)
             {
@@ -278,7 +306,11 @@ namespace LetsEncrypt.SiteExtension.Core
                 var csrPemFile = Path.Combine(configPath, $"{dnsIdentifier}-csr.pem");
                 var crtDerFile = Path.Combine(configPath, $"{dnsIdentifier}-crt.der");
                 var crtPemFile = Path.Combine(configPath, $"{dnsIdentifier}-crt.pem");
-                var crtPfxFile = Path.Combine(configPath, $"{dnsIdentifier}-all.pfx");
+                string crtPfxFile = null;
+
+                crtPfxFile = Path.Combine(configPath, $"{dnsIdentifier}-all.pfx");
+
+
 
                 using (var fs = new FileStream(keyGenFile, FileMode.Create))
                     cp.SavePrivateKey(rsaKeys, fs);
@@ -289,7 +321,8 @@ namespace LetsEncrypt.SiteExtension.Core
                 using (var fs = new FileStream(csrPemFile, FileMode.Create))
                     cp.ExportCsr(csr, EncodingFormat.PEM, fs);
 
-                Trace.TraceInformation($" Saving Certificate to {crtDerFile}");
+                Console.WriteLine($" Saving Certificate to {crtDerFile}");
+                Trace.TraceInformation("Saving Certificate to {crtDerFile}", crtDerFile);
                 using (var file = File.Create(crtDerFile))
                     certRequ.SaveCertificate(file);
 
@@ -304,13 +337,28 @@ namespace LetsEncrypt.SiteExtension.Core
                 // To generate a PKCS#12 (.PFX) file, we need the issuer's public certificate
                 var isuPemFile = GetIssuerCertificate(certRequ, cp);
 
-                Trace.TraceInformation($" Saving Certificate to {crtPfxFile} (with no password set)");
+
+
+
+                Console.WriteLine($" Saving Certificate to {crtPfxFile}");
+                Trace.TraceInformation("Saving Certificate to {crtPfxFile}", crtPfxFile);
                 using (FileStream source = new FileStream(isuPemFile, FileMode.Open),
                         target = new FileStream(crtPfxFile, FileMode.Create))
                 {
-                    var isuCrt = cp.ImportCertificate(EncodingFormat.PEM, source);
-                    cp.ExportArchive(rsaKeys, new[] { crt, isuCrt }, ArchiveFormat.PKCS12, target);
+                    try
+                    {
+                        var isuCrt = cp.ImportCertificate(EncodingFormat.PEM, source);
+                        cp.ExportArchive(rsaKeys, new[] { crt, isuCrt }, ArchiveFormat.PKCS12, target, settings.PFXPassword);
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.TraceError("Error exporting archive {@ex}", ex);
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"Error exporting archive: {ex.Message.ToString()}");
+                        Console.ResetColor();
+                    }
                 }
+
 
                 cp.Dispose();
 
@@ -318,10 +366,14 @@ namespace LetsEncrypt.SiteExtension.Core
             }
             if ((int)certRequ.StatusCode == 429)
             {
-                throw new Exception("Unable to request certificate, too many certificate requests to Let's Encrypt certificate servers for the domain within the last 7 days. Please try again later. (If you are testing, please use the staging enviroment where you can request unlimited number of certificates. During the beta period only 5 certificate requests per domain per week are allowed to the production environment.)"); 
+                Trace.TraceError("Unable to request certificate, too many certificate requests to Let's Encrypt certificate servers for the domain within the last 7 days. Please try again later. (If you are testing, please use the staging enviroment where you can request unlimited number of certificates. During the beta period only 5 certificate requests per domain per week are allowed to the production environment.)");
+                throw new Exception("Unable to request certificate, too many certificate requests to Let's Encrypt certificate servers for the domain within the last 7 days. Please try again later. (If you are testing, please use the staging enviroment where you can request unlimited number of certificates. During the beta period only 5 certificate requests per domain per week are allowed to the production environment.)");
             }
 
+            Trace.TraceError("Request status = {StatusCode}", certRequ.StatusCode);
             throw new Exception($"Request status = {certRequ.StatusCode}");
+
+
         }
 
         public static string GetIssuerCertificate(CertificateRequest certificate, CertificateProvider cp)
@@ -338,8 +390,6 @@ namespace LetsEncrypt.SiteExtension.Core
                     {
                         using (var web = new WebClient())
                         {
-                            //if (v.Proxy != null)
-                            //    web.Proxy = v.Proxy.GetWebProxy();
 
                             var uri = new Uri(new Uri(BaseURI), upLink.Uri);
                             web.DownloadFile(uri, tmp);
@@ -357,7 +407,8 @@ namespace LetsEncrypt.SiteExtension.Core
                         if (!File.Exists(cacertDerFile))
                             File.Copy(tmp, cacertDerFile, true);
 
-                        Trace.TraceInformation($" Saving Issuer Certificate to {cacertPemFile}");
+                        Console.WriteLine($" Saving Issuer Certificate to {cacertPemFile}");
+                        Trace.TraceInformation("Saving Issuer Certificate to {cacertPemFile}", cacertPemFile);
                         if (!File.Exists(cacertPemFile))
                             using (FileStream source = new FileStream(cacertDerFile, FileMode.Open),
                                     target = new FileStream(cacertPemFile, FileMode.Create))
@@ -408,88 +459,114 @@ namespace LetsEncrypt.SiteExtension.Core
             webSiteClient.Certificates.CreateOrUpdateCertificate(target.ServicePlanResourceGroupName, certificate.Subject.Replace("CN=", ""), new Certificate()
             {
                 PfxBlob = pfx,
-                Password = "",
+                Password = settings.PFXPassword,
                 Location = s.Location,
             });
-            var sslState = s.HostNameSslStates.FirstOrDefault(g => g.Name == target.Host);
+            foreach (var dnsName in target.AllDnsIdentifiers)
+            {
+                var sslState = s.HostNameSslStates.FirstOrDefault(g => g.Name == dnsName);
 
-            if (sslState == null)
-            {
-                sslState = new HostNameSslState()
+                if (sslState == null)
                 {
-                    Name = target.Host,
-                    SslState = SslState.SniEnabled,
-                };
-                s.HostNameSslStates.Add(sslState);
+                    sslState = new HostNameSslState()
+                    {
+                        Name = target.Host,
+                        SslState = SslState.SniEnabled,
+                    };
+                    s.HostNameSslStates.Add(sslState);
+                }
+                else
+                {
+                    //First time setting the HostNameSslState it is set to disabled.
+                    sslState.SslState = SslState.SniEnabled;
+                }
+                sslState.ToUpdate = true;
+                sslState.Thumbprint = certificate.Thumbprint;
             }
-            else
-            {
-                //First time setting the HostNameSslState it is set to disabled.
-                sslState.SslState = SslState.SniEnabled;
-            }
-            sslState.ToUpdate = true;
-            sslState.Thumbprint = certificate.Thumbprint;
             webSiteClient.Sites.BeginCreateOrUpdateSite(target.ResourceGroupName, target.WebAppName, s);
 
         }
 
         public static AuthorizationState Authorize(Target target)
-        {
-            var dnsIdentifier = target.Host;
-            var webRootPath = WebRootPath();
+        {            
+            List<AuthorizationState> authStatus = new List<AuthorizationState>();
 
-            Trace.TraceInformation($"\nAuthorizing Identifier {dnsIdentifier} Using Challenge Type {AcmeProtocol.CHALLENGE_TYPE_HTTP}");
-            var authzState = client.AuthorizeIdentifier(dnsIdentifier);
-            
-            var challenge = client.GenerateAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
-            var answerPath = Environment.ExpandEnvironmentVariables(Path.Combine(webRootPath, challenge.OldChallengeAnswer.Key));
-
-            Trace.TraceInformation($" Writing challenge answer to {answerPath}");
-            var directory = Path.GetDirectoryName(answerPath);
-
-            Directory.CreateDirectory(directory);
-            File.WriteAllText(answerPath, challenge.OldChallengeAnswer.Value);
-            File.WriteAllText(Path.Combine(directory, "web.config"), webConfig);
-
-
-            var answerUri = new Uri(new Uri("http://" + dnsIdentifier), challenge.OldChallengeAnswer.Key);
-            Trace.TraceInformation($" Answer should now be browsable at {answerUri}");
-
-            try
+            foreach (var dnsIdentifier in target.AllDnsIdentifiers)
             {
-                Trace.TraceInformation(" Submitting answer");
-                authzState.Challenges = new AuthorizeChallenge[] { challenge };
-                client.SubmitAuthorizeChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP, true);
+                //var dnsIdentifier = target.Host;
+                var webRootPath = WebRootPath();
 
-                // have to loop to wait for server to stop being pending.
-                // TODO: put timeout/retry limit in this loop
-                while (authzState.Status == "pending")
+                Console.WriteLine($"\nAuthorizing Identifier {dnsIdentifier} Using Challenge Type {AcmeProtocol.CHALLENGE_TYPE_HTTP}");
+                Trace.TraceInformation("Authorizing Identifier {dnsIdentifier} Using Challenge Type {CHALLENGE_TYPE_HTTP}", dnsIdentifier, AcmeProtocol.CHALLENGE_TYPE_HTTP);
+                var authzState = client.AuthorizeIdentifier(dnsIdentifier);
+                var challenge = client.DecodeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
+                var httpChallenge = challenge.Challenge as HttpChallenge;
+
+                // We need to strip off any leading '/' in the path
+                var filePath = httpChallenge.FilePath;
+                if (filePath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+                    filePath = filePath.Substring(1);
+                var answerPath = Environment.ExpandEnvironmentVariables(Path.Combine(webRootPath, filePath));
+
+                Console.WriteLine($" Writing challenge answer to {answerPath}");
+                Trace.TraceInformation("Writing challenge answer to {answerPath}", answerPath);
+                var directory = Path.GetDirectoryName(answerPath);
+                Directory.CreateDirectory(directory);
+                File.WriteAllText(answerPath, httpChallenge.FileContent);
+
+                var answerUri = new Uri(httpChallenge.FileUrl);
+                Console.WriteLine($" Answer should now be browsable at {answerUri}");
+                Trace.TraceInformation("Answer should now be browsable at {answerUri}", answerUri);
+
+                try
                 {
-                    Trace.TraceInformation(" Refreshing authorization");
-                    Thread.Sleep(1000); // this has to be here to give ACME server a chance to think
-                    var newAuthzState = client.RefreshIdentifierAuthorization(authzState);
-                    if (newAuthzState.Status != "pending")
-                        authzState = newAuthzState;
-                }
+                    Console.WriteLine(" Submitting answer");
+                    Trace.TraceInformation("Submitting answer");
+                    authzState.Challenges = new AuthorizeChallenge[] { challenge };
+                    client.SubmitChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP, true);
 
-                Trace.TraceInformation($" Authorization Result: {authzState.Status}");
-                if (authzState.Status == "invalid")
+                    // have to loop to wait for server to stop being pending.
+                    // TODO: put timeout/retry limit in this loop
+                    while (authzState.Status == "pending")
+                    {
+                        Console.WriteLine(" Refreshing authorization");
+                        Trace.TraceInformation("Refreshing authorization");
+                        Thread.Sleep(4000); // this has to be here to give ACME server a chance to think
+                        var newAuthzState = client.RefreshIdentifierAuthorization(authzState);
+                        if (newAuthzState.Status != "pending")
+                            authzState = newAuthzState;
+                    }
+
+                    Console.WriteLine($" Authorization Result: {authzState.Status}");
+                    Trace.TraceInformation("Auth Result {Status}", authzState.Status);
+                    if (authzState.Status == "invalid")
+                    {
+                        Trace.TraceError("Authorization Failed {Status}", authzState.Status);
+                        Trace.TraceInformation("Full Error Details {@authzState}", authzState);                        
+                        Console.WriteLine($"The ACME server was probably unable to reach {answerUri}");
+                        Trace.TraceError("Unable to reach {answerUri}", answerUri);
+                        Console.WriteLine("\nCheck in a browser to see if the answer file is being served correctly.");                        
+                    }
+                    authStatus.Add(authzState);
+                }
+                finally
                 {
-                    Trace.TraceError($"The ACME server was probably unable to reach {answerUri}");
-
-                    Trace.TraceError("\nCheck in a browser to see if the answer file is being served correctly.");
+                    if (authzState.Status == "valid")
+                    {
+                        Console.WriteLine(" Deleting answer");
+                        Trace.TraceInformation("Deleting answer");
+                        File.Delete(answerPath);
+                    }
                 }
-
-                return authzState;
             }
-            finally
+            foreach (var authState in authStatus)
             {
-                if (authzState.Status == "valid")
+                if (authState.Status != "valid")
                 {
-                    Trace.TraceInformation(" Deleting answer");
-                    File.Delete(answerPath);
+                    return authState;
                 }
             }
+            return new AuthorizationState { Status = "valid" };
         }
     }
 }

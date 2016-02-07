@@ -18,7 +18,9 @@ namespace LetsEncrypt.SiteExtension.Models
         public const string acmeBaseUriKey = "letsencrypt:AcmeBaseUri";
         public const string webAppNameKey = "WEBSITE_SITE_NAME";
         public const string servicePlanResourceGroupNameKey = "letsencrypt:ServicePlanResourceGroupName";
+        public const string rsaKeyLengthKey = "letsencrypt:RSAKeyLength";
         private readonly WebAppEnviromentVariables environemntVariables;
+        public const string pfxPasswordKey = "letsencrypt:PfxPassword";
 
         public AppSettingsAuthConfig()
         {
@@ -119,6 +121,28 @@ namespace LetsEncrypt.SiteExtension.Models
                     return ResourceGroupName;
                 }
                 return servicePlanResourceGroupName;
+            }
+        }
+
+        public int RSAKeyLength
+        {
+            get
+            {
+                var rsaKeyLength = ConfigurationManager.AppSettings[rsaKeyLengthKey];
+                var rsa = 0;
+                if (!string.IsNullOrEmpty(rsaKeyLength) && int.TryParse(rsaKeyLength, out rsa))
+                {
+                    return rsa;
+                }
+                return 2048;
+            }
+        }
+
+        public string PFXPassword
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings[pfxPasswordKey];
             }
         }
     }

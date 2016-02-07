@@ -1,5 +1,6 @@
 ﻿using LetsEncrypt.SiteExtension.Models;
 using System;
+using System.Collections.Generic;
 
 namespace LetsEncrypt.SiteExtension
 {
@@ -23,6 +24,22 @@ namespace LetsEncrypt.SiteExtension
         public string ServicePlanResourceGroupName { get; set; }
 
         public Guid SubscriptionId { get; set; }
-        public string Tenant { get; set; }      
+        public string Tenant { get; set; }
+        public List<string> AlternativeNames { get; set; }
+        
+        public List<string> AllDnsIdentifiers
+        {
+            get
+            {
+                List<string> allDnsIdentifiers = new List<string>();
+                allDnsIdentifiers.Add(this.Host);
+
+                if (this.AlternativeNames != null)
+                {
+                    allDnsIdentifiers.AddRange(this.AlternativeNames);
+                }
+                return allDnsIdentifiers;
+            }
+        }      
     }
 }
