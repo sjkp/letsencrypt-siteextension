@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0"?>
 <package >
   <metadata>
-    <id>letsencrypt.siteextension.job</id>
-    <title>Azure SiteExtension Let's Encrypt WebJob</title>
+    <id>letsencrypt.siteextension.job64</id>
+    <title>Azure SiteExtension Let's Encrypt WebJob (64bit)</title>
     <version>0.4.2-beta</version>
     <authors>SJKP</authors>
     <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
@@ -13,6 +13,6 @@
     <tags>letsencrypt siteextension ssl https</tags>
   </metadata>
   <files>
-    <file src="artifacts.job\**\*.*" target="content" />
+    <file src="artifacts.job64\**\*.*" target="content" />
   </files>
 </package>

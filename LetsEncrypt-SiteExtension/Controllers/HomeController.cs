@@ -178,13 +178,14 @@ namespace LetsEncrypt.SiteExtension.Controllers
                     ClientId = settings.ClientId,
                     ClientSecret = settings.ClientSecret,
                     Email = model.Email,
-                    Host = model.Hostname,
+                    Host = model.Hostnames.First(),
                     WebAppName = settings.WebAppName,
                     ResourceGroupName = settings.ResourceGroupName,
                     SubscriptionId = settings.SubscriptionId,
                     Tenant = settings.Tenant,
                     BaseUri = baseUri,
                     ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
+                    AlternativeNames = model.Hostnames.Skip(1).ToList()
                 };
                 var thumbprint = CertificateManager.RequestAndInstallInternal(target);
                 if (thumbprint != null)

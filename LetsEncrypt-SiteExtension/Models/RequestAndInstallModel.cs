@@ -8,8 +8,9 @@ namespace LetsEncrypt.SiteExtension.Models
 {
     public class RequestAndInstallModel
     {
+        [MinLength(1)]
         [Required]
-        public string Hostname { get; set; }
+        public string[] Hostnames { get; set; }
 
         [Required]
         [EmailAddress]

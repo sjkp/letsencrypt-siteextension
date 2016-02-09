@@ -19,10 +19,10 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
-            @Html.LabelFor(model => model.Hostname, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Hostnames, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Hostname, ViewBag.HostNames as IEnumerable<SelectListItem>, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Hostname, "", new { @class = "text-danger" })
+                @Html.ListBoxFor(model => model.Hostnames, ViewBag.HostNames as IEnumerable<SelectListItem>, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Hostnames, "", new { @class = "text-danger" })
             </div>
         </div>
 

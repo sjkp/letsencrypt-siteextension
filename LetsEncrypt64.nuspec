@@ -1,18 +1,18 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <package >
   <metadata>
-    <id>letsencrypt.siteextension.job</id>
-    <title>Azure SiteExtension Let's Encrypt WebJob</title>
-    <version>0.4.2-beta</version>
+    <id>letsencrypt64</id>
+    <title>Azure Let's Encrypt (x64)</title>
+    <version>0.4.2</version>
     <authors>SJKP</authors>
     <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
     <projectUrl>https://github.com/sjkp/letsencrypt-siteextension</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/sjkp/letsencrypt-siteextension/master/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Site extension for easy install and renewals of Let's Encrypt SSL certificates. The extension uses web jobs, so ensure that you have web job connection strings configured AzureWebJobsDashboard and AzureWebJobsStorage.</description>
-    <tags>letsencrypt siteextension ssl https</tags>
+    <tags>letsencrypt siteextension ssl https x64</tags>
   </metadata>
   <files>
-    <file src="artifacts.job\**\*.*" target="content" />
+    <file src="artifacts64\**\*.*" target="content" />
   </files>
 </package>

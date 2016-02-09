@@ -58,22 +58,22 @@ namespace LetsEncrypt.SiteExtension.Core
                         HostNameType = HostNameType.Verified,
                         SiteName = settings.WebAppName,
                         Location = s.Location
-                    });
-
-                    RequestAndInstallInternal(new Target()
-                    {
-                        BaseUri = settings.BaseUri,
-                        ClientId = settings.ClientId,
-                        ClientSecret = settings.ClientSecret,
-                        Email = settings.Email,
-                        Host = hostname,
-                        ResourceGroupName = settings.ResourceGroupName,
-                        SubscriptionId = settings.SubscriptionId,
-                        Tenant = settings.Tenant,
-                        WebAppName = settings.WebAppName,
-                        ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
-                    });
+                    });                    
                 }
+                RequestAndInstallInternal(new Target()
+                {
+                    BaseUri = settings.BaseUri,
+                    ClientId = settings.ClientId,
+                    ClientSecret = settings.ClientSecret,
+                    Email = settings.Email,
+                    Host = settings.Hostnames.First(),
+                    ResourceGroupName = settings.ResourceGroupName,
+                    SubscriptionId = settings.SubscriptionId,
+                    Tenant = settings.Tenant,
+                    WebAppName = settings.WebAppName,
+                    ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
+                    AlternativeNames = settings.Hostnames.Skip(1).ToList()
+                });
             }
         }
 
@@ -190,10 +190,7 @@ namespace LetsEncrypt.SiteExtension.Core
                             }
 
                             Trace.TraceInformation("Calling Register");
-                            var registration = client.Register(contacts);
-
-
-                            Trace.TraceInformation($"Do you agree to {registration.TosLinkUri}? (Y/N) ");
+                            var registration = client.Register(contacts);                           
 
 
                             Trace.TraceInformation("Updating Registration");
@@ -250,7 +247,7 @@ namespace LetsEncrypt.SiteExtension.Core
                 if (settings.RSAKeyLength >= 1024)
                 {
                     rsaPkp.NumBits = settings.RSAKeyLength;
-                    Trace.TraceInformation("RSAKeyBits: {RSAKeyBits}", settings.RSAKeyLength);
+                    Trace.TraceInformation("RSAKeyBits: {0}", settings.RSAKeyLength);
                 }
                 else
                 {
@@ -259,7 +256,7 @@ namespace LetsEncrypt.SiteExtension.Core
             }
             catch (Exception ex)
             {
-                Trace.TraceWarning("Unable to set RSA Key Bits, Letting ACMESharp default key bits, Error: {@ex}", ex);                
+                Trace.TraceWarning("Unable to set RSA Key Bits, Letting ACMESharp default key bits, Error: {0}", ex);                
                 Console.WriteLine($"Unable to set RSA Key Bits, Letting ACMESharp default key bits, Error: {ex.Message.ToString()}");
             }
 
@@ -293,10 +290,10 @@ namespace LetsEncrypt.SiteExtension.Core
             Trace.TraceInformation("Requesting Certificate");
             var certRequ = client.RequestCertificate(derB64u);
 
-            Trace.TraceInformation("certRequ {@certRequ}", certRequ);
+            Trace.TraceInformation("certRequ {0}", certRequ);
 
             Console.WriteLine($" Request Status: {certRequ.StatusCode}");
-            Trace.TraceInformation("Request Status: {StatusCode}", certRequ.StatusCode);
+            Trace.TraceInformation("Request Status: {0}", certRequ.StatusCode);
 
             if (certRequ.StatusCode == System.Net.HttpStatusCode.Created)
             {
@@ -322,7 +319,7 @@ namespace LetsEncrypt.SiteExtension.Core
                     cp.ExportCsr(csr, EncodingFormat.PEM, fs);
 
                 Console.WriteLine($" Saving Certificate to {crtDerFile}");
-                Trace.TraceInformation("Saving Certificate to {crtDerFile}", crtDerFile);
+                Trace.TraceInformation("Saving Certificate to {0}", crtDerFile);
                 using (var file = File.Create(crtDerFile))
                     certRequ.SaveCertificate(file);
 
@@ -341,7 +338,7 @@ namespace LetsEncrypt.SiteExtension.Core
 
 
                 Console.WriteLine($" Saving Certificate to {crtPfxFile}");
-                Trace.TraceInformation("Saving Certificate to {crtPfxFile}", crtPfxFile);
+                Trace.TraceInformation("Saving Certificate to {0}", crtPfxFile);
                 using (FileStream source = new FileStream(isuPemFile, FileMode.Open),
                         target = new FileStream(crtPfxFile, FileMode.Create))
                 {
@@ -352,7 +349,7 @@ namespace LetsEncrypt.SiteExtension.Core
                     }
                     catch (Exception ex)
                     {
-                        Trace.TraceError("Error exporting archive {@ex}", ex);
+                        Trace.TraceError("Error exporting archive {0}", ex);
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine($"Error exporting archive: {ex.Message.ToString()}");
                         Console.ResetColor();
@@ -370,7 +367,7 @@ namespace LetsEncrypt.SiteExtension.Core
                 throw new Exception("Unable to request certificate, too many certificate requests to Let's Encrypt certificate servers for the domain within the last 7 days. Please try again later. (If you are testing, please use the staging enviroment where you can request unlimited number of certificates. During the beta period only 5 certificate requests per domain per week are allowed to the production environment.)");
             }
 
-            Trace.TraceError("Request status = {StatusCode}", certRequ.StatusCode);
+            Trace.TraceError("Request status = {0}", certRequ.StatusCode);
             throw new Exception($"Request status = {certRequ.StatusCode}");
 
 
@@ -408,7 +405,7 @@ namespace LetsEncrypt.SiteExtension.Core
                             File.Copy(tmp, cacertDerFile, true);
 
                         Console.WriteLine($" Saving Issuer Certificate to {cacertPemFile}");
-                        Trace.TraceInformation("Saving Issuer Certificate to {cacertPemFile}", cacertPemFile);
+                        Trace.TraceInformation("Saving Issuer Certificate to {0}", cacertPemFile);
                         if (!File.Exists(cacertPemFile))
                             using (FileStream source = new FileStream(cacertDerFile, FileMode.Open),
                                     target = new FileStream(cacertPemFile, FileMode.Create))
@@ -497,7 +494,7 @@ namespace LetsEncrypt.SiteExtension.Core
                 var webRootPath = WebRootPath();
 
                 Console.WriteLine($"\nAuthorizing Identifier {dnsIdentifier} Using Challenge Type {AcmeProtocol.CHALLENGE_TYPE_HTTP}");
-                Trace.TraceInformation("Authorizing Identifier {dnsIdentifier} Using Challenge Type {CHALLENGE_TYPE_HTTP}", dnsIdentifier, AcmeProtocol.CHALLENGE_TYPE_HTTP);
+                Trace.TraceInformation("Authorizing Identifier {0} Using Challenge Type {1}", dnsIdentifier, AcmeProtocol.CHALLENGE_TYPE_HTTP);
                 var authzState = client.AuthorizeIdentifier(dnsIdentifier);
                 var challenge = client.DecodeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
                 var httpChallenge = challenge.Challenge as HttpChallenge;
@@ -509,14 +506,14 @@ namespace LetsEncrypt.SiteExtension.Core
                 var answerPath = Environment.ExpandEnvironmentVariables(Path.Combine(webRootPath, filePath));
 
                 Console.WriteLine($" Writing challenge answer to {answerPath}");
-                Trace.TraceInformation("Writing challenge answer to {answerPath}", answerPath);
+                Trace.TraceInformation("Writing challenge answer to {0}", answerPath);
                 var directory = Path.GetDirectoryName(answerPath);
                 Directory.CreateDirectory(directory);
                 File.WriteAllText(answerPath, httpChallenge.FileContent);
 
                 var answerUri = new Uri(httpChallenge.FileUrl);
                 Console.WriteLine($" Answer should now be browsable at {answerUri}");
-                Trace.TraceInformation("Answer should now be browsable at {answerUri}", answerUri);
+                Trace.TraceInformation("Answer should now be browsable at {0}", answerUri);
 
                 try
                 {
@@ -538,13 +535,13 @@ namespace LetsEncrypt.SiteExtension.Core
                     }
 
                     Console.WriteLine($" Authorization Result: {authzState.Status}");
-                    Trace.TraceInformation("Auth Result {Status}", authzState.Status);
+                    Trace.TraceInformation("Auth Result {0}", authzState.Status);
                     if (authzState.Status == "invalid")
                     {
-                        Trace.TraceError("Authorization Failed {Status}", authzState.Status);
-                        Trace.TraceInformation("Full Error Details {@authzState}", authzState);                        
+                        Trace.TraceError("Authorization Failed {0}", authzState.Status);
+                        Trace.TraceInformation("Full Error Details {0}", authzState);                        
                         Console.WriteLine($"The ACME server was probably unable to reach {answerUri}");
-                        Trace.TraceError("Unable to reach {answerUri}", answerUri);
+                        Trace.TraceError("Unable to reach {0}", answerUri);
                         Console.WriteLine("\nCheck in a browser to see if the answer file is being served correctly.");                        
                     }
                     authStatus.Add(authzState);
