@@ -510,6 +510,7 @@ namespace LetsEncrypt.SiteExtension.Core
                 var directory = Path.GetDirectoryName(answerPath);
                 Directory.CreateDirectory(directory);
                 File.WriteAllText(answerPath, httpChallenge.FileContent);
+                File.WriteAllText(Path.Combine(directory, "web.config"), webConfig);
 
                 var answerUri = new Uri(httpChallenge.FileUrl);
                 Console.WriteLine($" Answer should now be browsable at {answerUri}");
