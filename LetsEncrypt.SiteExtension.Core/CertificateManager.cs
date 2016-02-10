@@ -60,20 +60,23 @@ namespace LetsEncrypt.SiteExtension.Core
                         Location = s.Location
                     });                    
                 }
-                RequestAndInstallInternal(new Target()
+                if (settings.Hostnames.Any())
                 {
-                    BaseUri = settings.BaseUri,
-                    ClientId = settings.ClientId,
-                    ClientSecret = settings.ClientSecret,
-                    Email = settings.Email,
-                    Host = settings.Hostnames.First(),
-                    ResourceGroupName = settings.ResourceGroupName,
-                    SubscriptionId = settings.SubscriptionId,
-                    Tenant = settings.Tenant,
-                    WebAppName = settings.WebAppName,
-                    ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
-                    AlternativeNames = settings.Hostnames.Skip(1).ToList()
-                });
+                    RequestAndInstallInternal(new Target()
+                    {
+                        BaseUri = settings.BaseUri,
+                        ClientId = settings.ClientId,
+                        ClientSecret = settings.ClientSecret,
+                        Email = settings.Email,
+                        Host = settings.Hostnames.First(),
+                        ResourceGroupName = settings.ResourceGroupName,
+                        SubscriptionId = settings.SubscriptionId,
+                        Tenant = settings.Tenant,
+                        WebAppName = settings.WebAppName,
+                        ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
+                        AlternativeNames = settings.Hostnames.Skip(1).ToList()
+                    });
+                }
             }
         }
 
