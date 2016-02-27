@@ -84,6 +84,7 @@ namespace LetsEncrypt.SiteExtension.Core
         {
             Trace.TraceInformation("Checking certificate");
             var settings = new AppSettingsAuthConfig();
+            var ss = SettingsStore.Instance.Load();
             using (var client = ArmHelper.GetWebSiteManagementClient(settings))
             {
                 var certs = client.Certificates.GetCertificates(settings.ResourceGroupName).Value;
@@ -104,7 +105,7 @@ namespace LetsEncrypt.SiteExtension.Core
                         Trace.TraceInformation(String.Format("Certificate {0} was not assigned any hostname, skipping update", toExpireCert.Thumbprint));
                         continue;
                     }
-                    var ss = SettingsStore.Instance.Load();
+
                     RequestAndInstallInternal(new Target()
                     {
                         WebAppName = settings.WebAppName,

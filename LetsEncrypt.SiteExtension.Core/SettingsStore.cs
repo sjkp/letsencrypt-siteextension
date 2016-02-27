@@ -23,7 +23,7 @@ namespace LetsEncrypt.SiteExtension
             if (Util.IsAzure)
             {
                 // e.g. D:\home\SiteExtensions\SettingsAPISample -> 'SettingsAPISample'
-                string extensionName = Path.GetFileName(HostingEnvironment.MapPath("~"));
+                string extensionName = "letsencrypt";
 
                 // e.g. d:\home\data\SettingsAPISample
                 folder = Path.Combine(Environment.ExpandEnvironmentVariables(@"%HOME%\data"), extensionName);
