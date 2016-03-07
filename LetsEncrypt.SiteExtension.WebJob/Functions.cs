@@ -33,13 +33,19 @@ namespace LetsEncrypt.SiteExtension
     }
 
     public class Functions
-    {
-        
-
-        public static void SetupHostNameAndCertificate([TimerTrigger(typeof(MonthlySchedule), RunOnStartup = true)] TimerInfo timerInfo)
+    {       
+        public static void SetupHostNameAndCertificate([TimerTrigger(typeof(MonthlySchedule), RunOnStartup = true)] TimerInfo timerInfo, [Blob("letsencrypt/firstrun.job")] string input, [Blob("letsencrypt/firstrun.job")] out string output)
         {
             Console.WriteLine("Starting setup hostname and certificate");
-            new CertificateManager().SetupHostnameAndCertificate();
+            if (string.IsNullOrEmpty(input))
+            {
+                new CertificateManager().SetupHostnameAndCertificate();
+                output = DateTime.UtcNow.ToString();
+            }
+            else
+            {
+                output = input;
+            }            
             Console.WriteLine("Completed setup hostname and certificate");
         }
 
