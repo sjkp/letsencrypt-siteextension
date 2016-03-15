@@ -13,8 +13,10 @@ https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install
 ## How to troubleshoot
 https://github.com/sjkp/letsencrypt-siteextension/wiki/Troubleshoot
 
-## Step by Step Guide by Nik Molnar
-https://gooroo.io/GoorooTHINK/Article/16420/Lets-Encrypt-Azure-Web-Apps-the-Free-and-Easy-Way/ 
+## Beta Software
+Please take note that this Site-Extension is beta-software and so is the Let's Encrypt Service, so use at your own risk.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYLEFT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## Semi-Automated Installation
 With the semi-automated installation you manually add the site extension to your web app. Open the extension and manually click through the 3 step dialog. 
@@ -46,3 +48,5 @@ As it can be seen from the list of App Settings a service principal is needed. T
 Besides the App Settings, the two Azure Web Job required connection strings ```AzureWebJobsStorage``` and ```AzureWebJobsDashboard``` must also exists, as the extension relies on an internal Web Job to renew the certificates once they expire. 
 
 To see an example of an ARM template installation look at [azuredeploy.json](LetsEncrypt.ResourceGroup/Templates/azuredeploy.json)
+
+
