@@ -6,6 +6,7 @@ using ACMESharp.PKI;
 using LetsEncrypt.SiteExtension.Models;
 using Microsoft.Azure.Management.WebSites;
 using Microsoft.Azure.Management.WebSites.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -447,7 +448,7 @@ namespace LetsEncrypt.SiteExtension.Core
                 return certificate.Thumbprint;
             }
 
-            return null;
+            throw new Exception("Unable to complete challenge with Lets Encrypt servers error was: " + auth.Status);
         }
 
         public static void Install(Target target, string pfxFilename, X509Certificate2 certificate)
@@ -527,13 +528,14 @@ namespace LetsEncrypt.SiteExtension.Core
                     authzState.Challenges = new AuthorizeChallenge[] { challenge };
                     client.SubmitChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP, true);
 
-                    // have to loop to wait for server to stop being pending.
-                    // TODO: put timeout/retry limit in this loop
-                    while (authzState.Status == "pending")
+                    // have to loop to wait for server to stop being pending. 
+                    int retry = 0;
+                    while (authzState.Status == "pending" && retry < 6)
                     {
-                        Console.WriteLine(" Refreshing authorization");
-                        Trace.TraceInformation("Refreshing authorization");
-                        Thread.Sleep(4000); // this has to be here to give ACME server a chance to think
+                        retry++;
+                        Console.WriteLine(" Refreshing authorization attempt" + retry);
+                        Trace.TraceInformation("Refreshing authorization attempt" + retry);
+                        Thread.Sleep(10000); // this has to be here to give ACME server a chance to think
                         var newAuthzState = client.RefreshIdentifierAuthorization(authzState);
                         if (newAuthzState.Status != "pending")
                             authzState = newAuthzState;
@@ -544,10 +546,11 @@ namespace LetsEncrypt.SiteExtension.Core
                     if (authzState.Status == "invalid")
                     {
                         Trace.TraceError("Authorization Failed {0}", authzState.Status);
-                        Trace.TraceInformation("Full Error Details {0}", authzState);                        
+                        Trace.TraceInformation("Full Error Details {0}", JsonConvert.SerializeObject(authzState));                        
                         Console.WriteLine($"The ACME server was probably unable to reach {answerUri}");
                         Trace.TraceError("Unable to reach {0}", answerUri);
-                        Console.WriteLine("\nCheck in a browser to see if the answer file is being served correctly.");                        
+                        Console.WriteLine("\nCheck in a browser to see if the answer file is being served correctly.");
+                        throw new Exception($"The Lets Encrypt ACME server was probably unable to reach {answerUri} view error report from Lets Encrypt at {authzState.Uri} for more information");
                     }
                     authStatus.Add(authzState);
                 }
