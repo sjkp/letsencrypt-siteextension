@@ -15,6 +15,7 @@ https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install
 * No support for multi-region web apps, so if you use traffic mananger or some other load balancer to route traffic between web apps in different regions please dont use this extension. 
 * If you publish your project from Visual Studio with the "Delete Existing files" option, you will remove the web jobs the site extension uses to renew the certificate once they expire every 3 months (you can renew them manually or install the site extension again after publish). 
 * The site-extension have not been tested with deployment slots 
+* The site-extension will not work with [Azure App Service Local Cache](https://azure.microsoft.com/en-us/documentation/articles/app-service-local-cache/)
 
 ## How to troubleshoot
 https://github.com/sjkp/letsencrypt-siteextension/wiki/Troubleshoot
