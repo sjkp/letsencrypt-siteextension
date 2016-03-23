@@ -534,16 +534,22 @@ namespace LetsEncrypt.SiteExtension.Core
                     var retry = 10;
                     while (true)
                     {
-                        using (var client = new HttpClient())
+                        using (var handler = new WebRequestHandler())
                         {
-                            Thread.Sleep(1000);
-                            var x = client.GetAsync(answerUri).Result;
-                            Trace.TraceInformation("Checking status {0}", x.StatusCode);
-                            if (x.StatusCode == HttpStatusCode.OK)
-                                break;
-                            if (retry-- == 0)
-                                break;
-                            Trace.TraceInformation("Retrying {0}", retry);
+                            //Allow self-signed certs otherwise staging wont work
+                            handler.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+
+                            using (var client = new HttpClient(handler))
+                            {
+                                Thread.Sleep(1000);
+                                var x = client.GetAsync(answerUri).Result;
+                                Trace.TraceInformation("Checking status {0}", x.StatusCode);
+                                if (x.StatusCode == HttpStatusCode.OK)
+                                    break;
+                                if (retry-- == 0)
+                                    break;
+                                Trace.TraceInformation("Retrying {0}", retry);
+                            }
                         }
                     }
                     Console.WriteLine(" Submitting answer");
