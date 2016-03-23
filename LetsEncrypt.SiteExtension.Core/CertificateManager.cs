@@ -28,14 +28,18 @@ namespace LetsEncrypt.SiteExtension.Core
         static string configPath = "";
         private static string BaseURI;
         static AppSettingsAuthConfig settings = new AppSettingsAuthConfig();
-        const string webConfig = @"<?xml version = ""1.0"" encoding=""UTF-8""?>
- <configuration>
-     <system.webServer>
-         <staticContent>
-             <mimeMap fileExtension = ""."" mimeType=""text/json"" />
-         </staticContent>
-     </system.webServer>
- </configuration>";
+        const string webConfig = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<configuration>
+  <system.webServer>
+    <handlers>
+      <clear />
+      <add name=""ACMEStaticFile"" path=""*"" verb=""*"" modules=""StaticFileModule"" resourceType=""Either"" requireAccess=""Read"" />
+    </handlers>
+    <staticContent>
+      <mimeMap fileExtension=""."" mimeType=""text/json"" />
+    </staticContent>
+  </system.webServer>
+</configuration>";
         private static WebSiteManagementClient webSiteClient;
         private static WebSiteManagementClient serverFarmClient;
 
