@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
@@ -492,12 +493,21 @@ namespace LetsEncrypt.SiteExtension.Core
         public static AuthorizationState Authorize(Target target)
         {            
             List<AuthorizationState> authStatus = new List<AuthorizationState>();
+            var webRootPath = WebRootPath();
+            var directory = Path.Combine(webRootPath, ".well-known", "acme-challenge");
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            var webConfigPath = Path.Combine(directory, "web.config");
+            if (!File.Exists(webConfigPath))
+            {
+                File.WriteAllText(webConfigPath, webConfig);
+            }
 
             foreach (var dnsIdentifier in target.AllDnsIdentifiers)
             {
-                //var dnsIdentifier = target.Host;
-                var webRootPath = WebRootPath();
-
+                //var dnsIdentifier = target.Host;                
                 Console.WriteLine($"\nAuthorizing Identifier {dnsIdentifier} Using Challenge Type {AcmeProtocol.CHALLENGE_TYPE_HTTP}");
                 Trace.TraceInformation("Authorizing Identifier {0} Using Challenge Type {1}", dnsIdentifier, AcmeProtocol.CHALLENGE_TYPE_HTTP);
                 var authzState = client.AuthorizeIdentifier(dnsIdentifier);
@@ -512,10 +522,8 @@ namespace LetsEncrypt.SiteExtension.Core
 
                 Console.WriteLine($" Writing challenge answer to {answerPath}");
                 Trace.TraceInformation("Writing challenge answer to {0}", answerPath);
-                var directory = Path.GetDirectoryName(answerPath);
-                Directory.CreateDirectory(directory);
-                File.WriteAllText(answerPath, httpChallenge.FileContent);
-                File.WriteAllText(Path.Combine(directory, "web.config"), webConfig);
+                
+                File.WriteAllText(answerPath, httpChallenge.FileContent);                
 
                 var answerUri = new Uri(httpChallenge.FileUrl);
                 Console.WriteLine($" Answer should now be browsable at {answerUri}");
@@ -523,19 +531,34 @@ namespace LetsEncrypt.SiteExtension.Core
 
                 try
                 {
+                    var retry = 10;
+                    while (true)
+                    {
+                        using (var client = new HttpClient())
+                        {
+                            Thread.Sleep(1000);
+                            var x = client.GetAsync(answerUri).Result;
+                            Trace.TraceInformation("Checking status {0}", x.StatusCode);
+                            if (x.StatusCode == HttpStatusCode.OK)
+                                break;
+                            if (retry-- == 0)
+                                break;
+                            Trace.TraceInformation("Retrying {0}", retry);
+                        }
+                    }
                     Console.WriteLine(" Submitting answer");
                     Trace.TraceInformation("Submitting answer");
                     authzState.Challenges = new AuthorizeChallenge[] { challenge };
                     client.SubmitChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP, true);
 
                     // have to loop to wait for server to stop being pending. 
-                    int retry = 0;
+                    retry = 0;
                     while (authzState.Status == "pending" && retry < 6)
                     {
                         retry++;
                         Console.WriteLine(" Refreshing authorization attempt" + retry);
                         Trace.TraceInformation("Refreshing authorization attempt" + retry);
-                        Thread.Sleep(10000); // this has to be here to give ACME server a chance to think
+                        Thread.Sleep(4000); // this has to be here to give ACME server a chance to think
                         var newAuthzState = client.RefreshIdentifierAuthorization(authzState);
                         if (newAuthzState.Status != "pending")
                             authzState = newAuthzState;
