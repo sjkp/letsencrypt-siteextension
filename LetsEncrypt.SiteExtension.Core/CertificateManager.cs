@@ -36,7 +36,8 @@ namespace LetsEncrypt.SiteExtension.Core
       <add name=""ACMEStaticFile"" path=""*"" verb=""*"" modules=""StaticFileModule"" resourceType=""Either"" requireAccess=""Read"" />
     </handlers>
     <staticContent>
-      <mimeMap fileExtension=""."" mimeType=""text/json"" />
+      <remove fileExtension=""."" />
+      <mimeMap fileExtension=""."" mimeType=""text/plain"" />
     </staticContent>
   </system.webServer>
 </configuration>";
