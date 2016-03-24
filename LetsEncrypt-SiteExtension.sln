@@ -16,10 +16,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{ED36B174-3C73-447F-A76F-5E8D23B8ADB3}"
 	ProjectSection(SolutionItems) = preProject
 		build.cmd = build.cmd
-		build.job.cmd = build.job.cmd
 		LetsEncrypt.nuspec = LetsEncrypt.nuspec
-		letsencrypt.siteextension.job.nuspec = letsencrypt.siteextension.job.nuspec
-		letsencrypt.siteextension.job64.nuspec = letsencrypt.siteextension.job64.nuspec
 		LetsEncrypt64.nuspec = LetsEncrypt64.nuspec
 	EndProjectSection
 EndProject

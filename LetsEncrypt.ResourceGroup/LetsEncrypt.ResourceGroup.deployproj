@@ -51,6 +51,7 @@
     <Content Include="Templates\azuredeploy.site.json" />
     <Content Include="Templates\azuredeploy.json" />
     <Content Include="Templates\azuredeploy.parameters.json" />
+    <None Include="Templates\azuredeploy.parameters.local.json" />
     <None Include="Templates\azuredeploy.serviceplan.json" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />

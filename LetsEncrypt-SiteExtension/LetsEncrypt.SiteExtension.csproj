@@ -181,12 +181,11 @@
     <Content Include="applicationHost.xdt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="install.cmd" />
-    <Content Include="install64.cmd" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="uninstall.cmd" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -224,7 +223,7 @@
     <Content Include="Views\Home\Install.cshtml" />
     <Content Include="Views\Home\AddHostname.cshtml" />
     <Content Include="Views\Home\CreateServicePrincipal.cshtml" />
-    <Content Include="uninstall.cmd" />
+    <Content Include="install.cmd" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -275,6 +274,9 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\LetsEncrypt.SiteExtension.Core\LetsEncrypt.SiteExtension.Core.csproj">

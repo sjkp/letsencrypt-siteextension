@@ -11,7 +11,6 @@ namespace LetsEncrypt.SiteExtension.Models
     {
         private Guid subscriptionId;
         private string resourceGroupName;
-        private string webSpace;
 
         public WebAppEnviromentVariables()
         {
@@ -21,6 +20,11 @@ namespace LetsEncrypt.SiteExtension.Models
         private void ParserWebSiteOwner()
         {
             var websiteowner = ConfigurationManager.AppSettings["WEBSITE_OWNER_NAME"];
+            if (string.IsNullOrEmpty(websiteowner))
+            {
+                Trace.TraceInformation("App Setting WEBSITE_OWNER_NAME is null or empty");
+                return;
+            }
             try {
                 
                 //format: 688bf064-900b-4e8f-9598-2d9be0718133+Tiimo.Web.Dev1-WestEuropewebspace
@@ -30,7 +34,7 @@ namespace LetsEncrypt.SiteExtension.Models
                 resourceGroupName = string.Join("-", arr.Take(arr.Length - 1));
             } catch(Exception ex)
             {
-                Trace.TraceWarning(string.Format("unable to parse WEBSITE_OWNER_NAME '{0}'", websiteowner));
+                Trace.TraceError(string.Format("unable to parse WEBSITE_OWNER_NAME '{0}' exception '{1}'", websiteowner, ex.ToString()));
             }
         }
 

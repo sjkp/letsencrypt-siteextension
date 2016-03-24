@@ -42,7 +42,6 @@ namespace LetsEncrypt.SiteExtension.Core
   </system.webServer>
 </configuration>";
         private static WebSiteManagementClient webSiteClient;
-        private static WebSiteManagementClient serverFarmClient;
 
         public void SetupHostnameAndCertificate()
         {
@@ -243,8 +242,7 @@ namespace LetsEncrypt.SiteExtension.Core
                     Trace.TraceError(e.ToString());
                 }
                 throw;
-            }
-            return null;
+            }            
         }
 
         public static string GetCertificate(Target binding)
@@ -460,6 +458,7 @@ namespace LetsEncrypt.SiteExtension.Core
         public static void Install(Target target, string pfxFilename, X509Certificate2 certificate)
         {
             Console.WriteLine(String.Format("Installing certificate {0} on azure", pfxFilename));
+            Trace.TraceInformation(String.Format("Installing certificate {0} on azure", pfxFilename));
             var bytes = File.ReadAllBytes(pfxFilename);
             var pfx = Convert.ToBase64String(bytes);
 
@@ -505,8 +504,9 @@ namespace LetsEncrypt.SiteExtension.Core
                 Directory.CreateDirectory(directory);
             }
             var webConfigPath = Path.Combine(directory, "web.config");
-            if (!File.Exists(webConfigPath))
+            if (!File.Exists(webConfigPath) || File.ReadAllText(webConfigPath) != webConfig)
             {
+                Trace.TraceInformation($"Writing web.config to {webConfigPath}");
                 File.WriteAllText(webConfigPath, webConfig);
             }
 
@@ -567,8 +567,8 @@ namespace LetsEncrypt.SiteExtension.Core
                     while (authzState.Status == "pending" && retry < 6)
                     {
                         retry++;
-                        Console.WriteLine(" Refreshing authorization attempt" + retry);
-                        Trace.TraceInformation("Refreshing authorization attempt" + retry);
+                        Console.WriteLine(" Refreshing authorization attempt " + retry);
+                        Trace.TraceInformation("Refreshing authorization attempt " + retry);
                         Thread.Sleep(4000); // this has to be here to give ACME server a chance to think
                         var newAuthzState = client.RefreshIdentifierAuthorization(authzState);
                         if (newAuthzState.Status != "pending")
