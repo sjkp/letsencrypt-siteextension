@@ -9,7 +9,7 @@
     <projectUrl>https://github.com/sjkp/letsencrypt-siteextension</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/sjkp/letsencrypt-siteextension/master/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Site extension for easy install and renewals of Let's Encrypt SSL certificates. The extension uses web jobs, so ensure that you have web job connection strings configured AzureWebJobsDashboard and AzureWebJobsStorage.</description>
+    <description>Site extension for easy install and renewals of Let's Encrypt SSL certificates. The extension uses web jobs, so ensure that you have web job connection strings configured AzureWebJobsDashboard and AzureWebJobsStorage. PLEASE READ and understand the known limitations listed here: https://github.com/sjkp/letsencrypt-siteextension/blob/master/README.md#known-issues</description>
     <tags>letsencrypt siteextension ssl https x64</tags>
   </metadata>
   <files>
