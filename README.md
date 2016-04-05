@@ -11,6 +11,7 @@ The site extension requires that you have configured a DNS entry for you custom 
 https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install
 
 ##Known Issues
+* Currently new certificates issued will not work in Firefox and Mobile browsers due to how Azure App Service handles the new intermediate certificate used by Let's Encrypt (I cannot fix this, but have a open case with Microsoft) https://github.com/sjkp/letsencrypt-siteextension/issues/42 
 * This site-extension is **NOT** supported by Microsoft it is my own work based on https://github.com/ebekker/ACMESharp and https://github.com/Lone-Coder/letsencrypt-win-simple - this means don't expect 24x7 support, I use it for several of my own smaller sites, but if you are running sites that are important you should consider spending the few $ on a certificate and go with a Microsoft supported way of enabling SSL, so you have someone to blame :) 
 * Note that Let's Encrypt works by providing automated certificates of a short (currently three month) duration. Both Let's Encrypt and this extension are BETA SOFTWARE. You will need to keep this extension updated or risk losing SSL access when your certificate expires.
 * There are presently no email notifications for certificate renewal problems. You will need to check logs.
