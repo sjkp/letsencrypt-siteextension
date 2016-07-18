@@ -31,7 +31,7 @@ namespace LetsEncrypt.SiteExtension
             else
             {
                 // Use regular App_Data outside of Azure
-                folder = HostingEnvironment.MapPath("~/App_Data");
+                folder = HostingEnvironment.MapPath("~/App_Data") ?? Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
             }
 
             if (!Directory.Exists(folder))

@@ -54,6 +54,20 @@ namespace LetsEncrypt.SiteExtension.Models
             }
         }
 
+        public int RenewXNumberOfDaysBeforeExpiration
+        {
+            get
+            {
+                var s = ConfigurationManager.AppSettings["RenewXNumberOfDaysBeforeExpiration"];
+                int days = 14;
+                if (string.IsNullOrEmpty(s) || !int.TryParse(s, out days))
+                {
+                    return 14;
+                }
+                return days;
+            }
+        }
+
         public Guid SubscriptionId
         {
             get

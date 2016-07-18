@@ -86,22 +86,22 @@ namespace LetsEncrypt.SiteExtension.Core
             }
         }
 
-        public void RenewCertificate()
+        public IEnumerable<Target> RenewCertificate(bool debug = false)
         {
             Trace.TraceInformation("Checking certificate");
             var settings = new AppSettingsAuthConfig();
             var ss = SettingsStore.Instance.Load();
             using (var client = ArmHelper.GetWebSiteManagementClient(settings))
             {
-                var certs = client.Certificates.GetCertificates(settings.ResourceGroupName).Value;
-                var expireringIn14Days = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(14) && s.Issuer.Contains("Let's Encrypt"));
+                var certs = client.Certificates.GetCertificates(settings.ServicePlanResourceGroupName).Value;
+                var expiringCerts = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(settings.RenewXNumberOfDaysBeforeExpiration) && (s.Issuer.Contains("Let's Encrypt") || s.Issuer.Contains("Fake LE")));
 
-                if (expireringIn14Days.Count() == 0)
+                if (expiringCerts.Count() == 0)
                 {
-                    Trace.TraceInformation("No certificates installed issued by Let's Encrypt that are about to expire within the next 14 days. Skipping.");
+                    Trace.TraceInformation(string.Format("No certificates installed issued by Let's Encrypt that are about to expire within the next {0} days. Skipping.", settings.RenewXNumberOfDaysBeforeExpiration));
                 }
 
-                foreach (var toExpireCert in expireringIn14Days)
+                foreach (var toExpireCert in expiringCerts)
                 {
                     Trace.TraceInformation("Starting renew of certificate " + toExpireCert.Name + " expiration date " + toExpireCert.ExpirationDate);
                     var site = client.Sites.GetSite(settings.ResourceGroupName, settings.WebAppName);
@@ -111,8 +111,7 @@ namespace LetsEncrypt.SiteExtension.Core
                         Trace.TraceInformation(String.Format("Certificate {0} was not assigned any hostname, skipping update", toExpireCert.Thumbprint));
                         continue;
                     }
-
-                    RequestAndInstallInternal(new Target()
+                    var target = new Target()
                     {
                         WebAppName = settings.WebAppName,
                         Tenant = settings.Tenant,
@@ -125,7 +124,12 @@ namespace LetsEncrypt.SiteExtension.Core
                         BaseUri = settings.BaseUri ?? ss.FirstOrDefault(s => s.Name == "baseUri").Value,
                         ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
                         AlternativeNames = sslStates.Skip(1).Select(s => s.Name).ToList()
-                    });
+                    };
+                    if (!debug)
+                    {
+                        RequestAndInstallInternal(target);
+                    }
+                    yield return target;
                 }
             }
         }

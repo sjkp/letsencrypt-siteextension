@@ -1,5 +1,5 @@
 nuget restore
-md artifacts\bin
+md artifacts
 "C:\Program Files (x86)\MSBuild\14.0\bin\MSBuild.exe" LetsEncrypt-SiteExtension\LetsEncrypt.SiteExtension.csproj /t:pipelinePreDeployCopyAllFilesToOneFolder /p:Platform=x86 /p:_PackageTempDir="..\artifacts";AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release;SolutionDir="."
 "C:\Program Files (x86)\MSBuild\14.0\bin\MSBuild.exe" LetsEncrypt.SiteExtension.Core\LetsEncrypt.SiteExtension.Core.csproj /p:Platform=x86;Configuration=Release;SolutionDir="."
 "C:\Program Files (x86)\MSBuild\14.0\bin\MSBuild.exe" LetsEncrypt.SiteExtension.WebJob\LetsEncrypt.SiteExtension.WebJob.csproj /p:Platform=x86;Configuration=Release;SolutionDir="."
@@ -11,7 +11,7 @@ xcopy LetsEncrypt.SiteExtension.WebJob\bin\x64\Release\*.* artifacts\app_data\jo
 
 nuget pack letsencrypt.nuspec
 
-md artifacts64\bin
+md artifacts64
 "C:\Program Files (x86)\MSBuild\14.0\bin\MSBuild.exe" LetsEncrypt-SiteExtension\LetsEncrypt.SiteExtension.csproj /t:pipelinePreDeployCopyAllFilesToOneFolder /p:Platform=x64 /p:_PackageTempDir="..\artifacts64";AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release;SolutionDir="."
 "C:\Program Files (x86)\MSBuild\14.0\bin\MSBuild.exe" LetsEncrypt.SiteExtension.Core\LetsEncrypt.SiteExtension.Core.csproj /p:Platform=x64;Configuration=Release;SolutionDir="."
 "C:\Program Files (x86)\MSBuild\14.0\bin\MSBuild.exe" LetsEncrypt.SiteExtension.WebJob\LetsEncrypt.SiteExtension.WebJob.csproj /p:Platform=x64;Configuration=Release;SolutionDir="."

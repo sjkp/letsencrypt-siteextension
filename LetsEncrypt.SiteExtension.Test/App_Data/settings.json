@@ -1,0 +1,22 @@
+﻿[
+  {
+    "Name": "email",
+    "Value": "mail@sjkp.dk",
+    "Count": 0
+  },
+  {
+    "Name": "baseUri",
+    "Value": "https://acme-staging.api.letsencrypt.org/",
+    "Count": 0
+  },
+  {
+    "Name": "email",
+    "Value": "mail@sjkp.dk",
+    "Count": 0
+  },
+  {
+    "Name": "baseUri",
+    "Value": "https://acme-v01.api.letsencrypt.org/",
+    "Count": 0
+  }
+]
