@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.SiteExtension", "LetsEncrypt-SiteExtension\LetsEncrypt.SiteExtension.csproj", "{87F0FF62-16C3-43CE-B154-1B9BC28DED67}"
 EndProject
@@ -18,6 +18,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{ED36B174
 		build.cmd = build.cmd
 		LetsEncrypt.nuspec = LetsEncrypt.nuspec
 		LetsEncrypt64.nuspec = LetsEncrypt64.nuspec
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8F9BEBC9-2310-4E20-92A2-C267A6820BCF}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
 	EndProjectSection
 EndProject
 Global
