@@ -123,7 +123,8 @@ namespace LetsEncrypt.SiteExtension.Core
                         Host = sslStates.First().Name,
                         BaseUri = settings.BaseUri ?? ss.FirstOrDefault(s => s.Name == "baseUri").Value,
                         ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
-                        AlternativeNames = sslStates.Skip(1).Select(s => s.Name).ToList()
+                        AlternativeNames = sslStates.Skip(1).Select(s => s.Name).ToList(),
+                        UseIPBasedSSL = settings.UseIPBasedSSL
                     };
                     if (!debug)
                     {
@@ -482,14 +483,14 @@ namespace LetsEncrypt.SiteExtension.Core
                     sslState = new HostNameSslState()
                     {
                         Name = target.Host,
-                        SslState = SslState.SniEnabled,
+                        SslState = target.UseIPBasedSSL ? SslState.IpBasedEnabled : SslState.SniEnabled,
                     };
                     s.HostNameSslStates.Add(sslState);
                 }
                 else
                 {
                     //First time setting the HostNameSslState it is set to disabled.
-                    sslState.SslState = SslState.SniEnabled;
+                    sslState.SslState = target.UseIPBasedSSL ? SslState.IpBasedEnabled : SslState.SniEnabled;
                 }
                 sslState.ToUpdate = true;
                 sslState.Thumbprint = certificate.Thumbprint;

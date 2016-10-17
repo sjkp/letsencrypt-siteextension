@@ -40,6 +40,8 @@ namespace LetsEncrypt.SiteExtension
                 }
                 return allDnsIdentifiers;
             }
-        }      
+        }
+
+        public bool UseIPBasedSSL { get; set; }
     }
 }

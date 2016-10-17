@@ -42,6 +42,10 @@
             <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.servicePlanResourceGroupNameKey</td>
             <td>(Optional) The name of the resource group that the app service plan hosting the web app (only required if the app service plan is in a different resource group than the web app)</td>
         </tr>         
+        <tr>
+            <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.useIPBasedSSL</td>
+            <td>Check this if you want the certificate to be bound to the WebApps' IP address instead of using SNI. With IP based SSL additional costs might be charged.</td>
+        </tr>
     </tbody>
 </table>
 <h3><a id="automatedInstallHeader" href="#">Automated Installation (click to expand)</a></h3>
@@ -136,6 +140,13 @@
             <div class="col-md-10">
                 @Html.EditorFor(model => model.ServicePlanResourceGroupName, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.ServicePlanResourceGroupName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.UseIPBasedSSL, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.UseIPBasedSSL, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.UseIPBasedSSL, "", new { @class = "text-danger" })
             </div>
         </div>
 
