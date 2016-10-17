@@ -52,7 +52,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
                                 { AppSettingsAuthConfig.tenantKey, model.Tenant },
                                 { AppSettingsAuthConfig.resourceGroupNameKey, model.ResourceGroupName },
                                 { AppSettingsAuthConfig.servicePlanResourceGroupNameKey, model.ServicePlanResourceGroupName },
-                                { AppSettingsAuthConfig.useIPBasedSSL, model.UseIPBasedSSL.ToString() }
+                                { AppSettingsAuthConfig.useIPBasedSSL, model.UseIPBasedSSL.ToString().ToLowerInvariant() }
                             };
                             foreach (var appsetting in newAppSettingsValues)
                             {
@@ -76,7 +76,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
                             !ValidateModelVsAppSettings("SubScriptionId", appSetting.SubscriptionId.ToString(), model.SubscriptionId.ToString()) ||
                             !ValidateModelVsAppSettings("Tenant", appSetting.Tenant, model.Tenant) ||
                             !ValidateModelVsAppSettings("ServicePlanResourceGroupName", appSetting.ServicePlanResourceGroupName, model.ServicePlanResourceGroupName) ||
-                            !ValidateModelVsAppSettings("UseIPBasedSSL", appSetting.UseIPBasedSSL.ToString(), model.UseIPBasedSSL.ToString()))
+                            !ValidateModelVsAppSettings("UseIPBasedSSL", appSetting.UseIPBasedSSL.ToString().ToLowerInvariant(), model.UseIPBasedSSL.ToString().ToLowerInvariant()))
                             {
                                 model.ErrorMessage = "One or more app settings are different from the values entered, do you want to update the app settings?";
                                 return View(model);
