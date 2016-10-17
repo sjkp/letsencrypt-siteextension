@@ -43,6 +43,10 @@ namespace LetsEncrypt.SiteExtension.Core
 </configuration>";
         private static WebSiteManagementClient webSiteClient;
 
+        /// <summary>
+        /// Used for automatic installation of hostnames bindings and certificate 
+        /// upon first installation on the site extension and if hostnames are specified in app settings
+        /// </summary>
         public void SetupHostnameAndCertificate()
         {
             Trace.TraceInformation("Setup hostname and certificates");
@@ -58,7 +62,7 @@ namespace LetsEncrypt.SiteExtension.Core
                         continue;
                     }
                     Trace.TraceInformation("Setting up hostname and lets encrypt certificate for " + hostname);
-                    client.Sites.CreateOrUpdateSiteHostNameBinding(settings.ResourceGroupName, settings.WebAppName, hostname, new Microsoft.Azure.Management.WebSites.Models.HostNameBinding()
+                    client.Sites.CreateOrUpdateSiteOrSlotHostNameBinding(settings.ResourceGroupName, settings.WebAppName, settings.SiteSlotName, hostname, new HostNameBinding()
                     {
                         CustomHostNameDnsRecordType = CustomHostNameDnsRecordType.CName,
                         HostNameType = HostNameType.Verified,
@@ -80,7 +84,9 @@ namespace LetsEncrypt.SiteExtension.Core
                         Tenant = settings.Tenant,
                         WebAppName = settings.WebAppName,
                         ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
-                        AlternativeNames = settings.Hostnames.Skip(1).ToList()
+                        AlternativeNames = settings.Hostnames.Skip(1).ToList(),
+                        SiteSlotName = settings.SiteSlotName,
+                        UseIPBasedSSL = settings.UseIPBasedSSL
                     });
                 }
             }
@@ -124,7 +130,8 @@ namespace LetsEncrypt.SiteExtension.Core
                         BaseUri = settings.BaseUri ?? ss.FirstOrDefault(s => s.Name == "baseUri").Value,
                         ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
                         AlternativeNames = sslStates.Skip(1).Select(s => s.Name).ToList(),
-                        UseIPBasedSSL = settings.UseIPBasedSSL
+                        UseIPBasedSSL = settings.UseIPBasedSSL,
+                        SiteSlotName = settings.SiteSlotName
                     };
                     if (!debug)
                     {
@@ -449,7 +456,7 @@ namespace LetsEncrypt.SiteExtension.Core
                 var pfxFilename = GetCertificate(binding);
 
                 X509Certificate2 certificate;
-                certificate = new X509Certificate2(pfxFilename, "", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+                certificate = new X509Certificate2(pfxFilename, settings.PFXPassword, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
                 certificate.FriendlyName = $"{binding.Host} {DateTime.Now}";
 
                 Install(binding, pfxFilename, certificate);

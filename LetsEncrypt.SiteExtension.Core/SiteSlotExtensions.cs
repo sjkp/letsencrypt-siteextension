@@ -39,7 +39,24 @@ namespace LetsEncrypt.SiteExtension
             }
             else
             {
-                return sites.UpdateSiteAppSettingsSlot(resourceGroupName, webAppName, settings, siteSlotName);
+                //We want the slot settings to be fixed to the slot, so we don't swap the wrong LetsEncrypt webjob settings into production.
+                var existingSlotConfigs = sites.GetSlotConfigNames(resourceGroupName, webAppName);
+                var updateRequired = false;
+                foreach(var appSettingName in settings.Properties.Keys)
+                {
+                    if (!existingSlotConfigs.AppSettingNames.Contains(appSettingName))
+                    {
+                        existingSlotConfigs.AppSettingNames.Add(appSettingName);
+                        updateRequired = true;
+                    }
+                }
+                var res = sites.UpdateSiteAppSettingsSlot(resourceGroupName, webAppName, settings, siteSlotName);
+                if (updateRequired)
+                {
+                    sites.UpdateSlotConfigNames(resourceGroupName, webAppName, existingSlotConfigs);
+                }
+
+                return res;
             }
         }
         public static HostNameBinding CreateOrUpdateSiteOrSlotHostNameBinding(this ISitesOperations sites, string resourceGroupName, string webAppName, string siteSlotName, string hostName, HostNameBinding hostNameBinding)
