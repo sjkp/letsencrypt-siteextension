@@ -14,6 +14,7 @@ namespace LetsEncrypt.SiteExtension.Models
         public const string subscriptionIdKey = "letsencrypt:SubscriptionId";
         public const string resourceGroupNameKey = "letsencrypt:ResourceGroupName";
         public const string hostNamesKey = "letsencrypt:Hostnames";
+        public const string useIPBasedSSL = "letsencrypt:UseIPBasedSSL";
         public const string emailKey = "letsencrypt:Email";
         public const string acmeBaseUriKey = "letsencrypt:AcmeBaseUri";
         public const string webAppNameKey = "WEBSITE_SITE_NAME";
@@ -106,6 +107,20 @@ namespace LetsEncrypt.SiteExtension.Models
             get
             {
                 return (ConfigurationManager.AppSettings[hostNamesKey] ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            }
+        }
+
+        public bool UseIPBasedSSL
+        {
+            get
+            {
+                bool b;
+                if (bool.TryParse(ConfigurationManager.AppSettings[useIPBasedSSL], out b))
+                {
+                    return b;
+                }
+
+                return false;
             }
         }
 
