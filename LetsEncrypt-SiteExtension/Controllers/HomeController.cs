@@ -42,6 +42,13 @@ namespace LetsEncrypt.SiteExtension.Controllers
                     {
                         //Update web config.
                         var site = client.Sites.GetSite(model.ResourceGroupName, model.WebAppName);
+                        //Validate that the service plan resource group name is correct, to avoid more issues on this specific problem.
+                        var azureServerFarmResourceGroup = site.ServerFarmResourceGroup();
+                        if (!string.Equals(azureServerFarmResourceGroup, model.ServicePlanResourceGroupName, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            ModelState.AddModelError("ServicePlanResourceGroupName", string.Format("The Service Plan Resource Group registered on the Web App in Azure in the ServerFarmId property '{0}' does not match the value you entered here {1}", azureServerFarmResourceGroup, model.ServicePlanResourceGroupName));
+                            return View(model);
+                        }
                         var webappsettings = client.Sites.ListSiteAppSettings(model.ResourceGroupName, model.WebAppName);
                         if (model.UpdateAppSettings)
                         {

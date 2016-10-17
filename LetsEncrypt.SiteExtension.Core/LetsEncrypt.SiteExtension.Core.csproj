@@ -168,6 +168,7 @@
     <Compile Include="Target.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="WebAppEnviromentVariables.cs" />
+    <Compile Include="WebSiteManagementExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
