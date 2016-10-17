@@ -34,6 +34,10 @@ namespace LetsEncrypt.SiteExtension.Models
         {
             get; set;
         }
+        public string SiteSlotName
+        {
+            get; set;
+        }
 
         [Required]
         public bool UseIPBasedSSL

@@ -17,6 +17,7 @@ namespace LetsEncrypt.SiteExtension.Models
         public const string useIPBasedSSL = "letsencrypt:UseIPBasedSSL";
         public const string emailKey = "letsencrypt:Email";
         public const string acmeBaseUriKey = "letsencrypt:AcmeBaseUri";
+        public const string siteSlotNameKey = "letsencrypt:SiteSlot";
         public const string webAppNameKey = "WEBSITE_SITE_NAME";
         public const string servicePlanResourceGroupNameKey = "letsencrypt:ServicePlanResourceGroupName";
         public const string rsaKeyLengthKey = "letsencrypt:RSAKeyLength";
@@ -88,6 +89,14 @@ namespace LetsEncrypt.SiteExtension.Models
             get
             {
                 return ConfigurationManager.AppSettings[webAppNameKey]; 
+            }
+        }
+
+        public string SiteSlotName
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings[siteSlotNameKey];
             }
         }
 

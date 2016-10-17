@@ -467,7 +467,7 @@ namespace LetsEncrypt.SiteExtension.Core
             var bytes = File.ReadAllBytes(pfxFilename);
             var pfx = Convert.ToBase64String(bytes);
 
-            var s = webSiteClient.Sites.GetSite(target.ResourceGroupName, target.WebAppName);
+            var s = webSiteClient.Sites.GetSiteOrSlot(target.ResourceGroupName, target.WebAppName, target.SiteSlotName);
             webSiteClient.Certificates.CreateOrUpdateCertificate(target.ServicePlanResourceGroupName, certificate.Subject.Replace("CN=", ""), new Certificate()
             {
                 PfxBlob = pfx,
@@ -495,7 +495,7 @@ namespace LetsEncrypt.SiteExtension.Core
                 sslState.ToUpdate = true;
                 sslState.Thumbprint = certificate.Thumbprint;
             }
-            webSiteClient.Sites.BeginCreateOrUpdateSite(target.ResourceGroupName, target.WebAppName, s);
+            webSiteClient.Sites.BeginCreateOrUpdateSiteOrSlot(target.ResourceGroupName, target.WebAppName, target.SiteSlotName, s);
 
         }
 
