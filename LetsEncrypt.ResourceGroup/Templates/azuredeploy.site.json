@@ -128,7 +128,8 @@
             "letsencrypt:Tenant": "[parameters('tenant')]",
             "letsencrypt:ClientId": "[parameters('clientId')]",
             "letsencrypt:ClientSecret": "[parameters('clientSecret')]",
-            "letsencrypt:ResourceGroupName": "[resourceGroup().name]"
+            "letsencrypt:ResourceGroupName": "[resourceGroup().name]",
+            "letsencrypt:UseIPBasedSSL": "false"
           }
         },
         {

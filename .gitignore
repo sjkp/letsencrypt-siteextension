@@ -28,5 +28,8 @@ Kudu.Services.Web/commit.txt
 azuredeploy.parameters.local.json
 azuredeploy.parameters.serviceplan.local.json
 /artifacts64
-/artifacts.job64
-/artifacts.job
+/push-siteextension-siteextensionsnet.cmd
+/push-siteextension-myget.cmd
+/codes.txt
+/.vs/config/applicationhost.config
+/LetsEncrypt.ResourceGroup/Templates/deploy-separate-two-rg.ps1

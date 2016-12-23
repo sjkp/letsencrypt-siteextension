@@ -14,8 +14,10 @@ namespace LetsEncrypt.SiteExtension.Models
         public const string subscriptionIdKey = "letsencrypt:SubscriptionId";
         public const string resourceGroupNameKey = "letsencrypt:ResourceGroupName";
         public const string hostNamesKey = "letsencrypt:Hostnames";
+        public const string useIPBasedSSL = "letsencrypt:UseIPBasedSSL";
         public const string emailKey = "letsencrypt:Email";
         public const string acmeBaseUriKey = "letsencrypt:AcmeBaseUri";
+        public const string siteSlotNameKey = "letsencrypt:SiteSlot";
         public const string webAppNameKey = "WEBSITE_SITE_NAME";
         public const string servicePlanResourceGroupNameKey = "letsencrypt:ServicePlanResourceGroupName";
         public const string rsaKeyLengthKey = "letsencrypt:RSAKeyLength";
@@ -54,6 +56,20 @@ namespace LetsEncrypt.SiteExtension.Models
             }
         }
 
+        public int RenewXNumberOfDaysBeforeExpiration
+        {
+            get
+            {
+                var s = ConfigurationManager.AppSettings["RenewXNumberOfDaysBeforeExpiration"];
+                int days = 14;
+                if (string.IsNullOrEmpty(s) || !int.TryParse(s, out days))
+                {
+                    return 14;
+                }
+                return days;
+            }
+        }
+
         public Guid SubscriptionId
         {
             get
@@ -76,6 +92,14 @@ namespace LetsEncrypt.SiteExtension.Models
             }
         }
 
+        public string SiteSlotName
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings[siteSlotNameKey];
+            }
+        }
+
         public string ResourceGroupName
         {
             get
@@ -92,6 +116,20 @@ namespace LetsEncrypt.SiteExtension.Models
             get
             {
                 return (ConfigurationManager.AppSettings[hostNamesKey] ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            }
+        }
+
+        public bool UseIPBasedSSL
+        {
+            get
+            {
+                bool b;
+                if (bool.TryParse(ConfigurationManager.AppSettings[useIPBasedSSL], out b))
+                {
+                    return b;
+                }
+
+                return false;
             }
         }
 

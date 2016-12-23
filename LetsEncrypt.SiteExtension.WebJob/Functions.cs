@@ -52,8 +52,8 @@ namespace LetsEncrypt.SiteExtension
         public static void RenewCertificate([TimerTrigger(typeof(MyDailySchedule), RunOnStartup = true)] TimerInfo timerInfo)
         {
             Console.WriteLine("Renew certificate");
-            new CertificateManager().RenewCertificate();
-            Console.WriteLine("Completed renew certificate");
+            var count = new CertificateManager().RenewCertificate().Count();
+            Console.WriteLine($"Completed renewal of '{count}' certificates");
         }        
 
     }

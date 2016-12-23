@@ -43,6 +43,10 @@ namespace LetsEncrypt.SiteExtension.Core
 </configuration>";
         private static WebSiteManagementClient webSiteClient;
 
+        /// <summary>
+        /// Used for automatic installation of hostnames bindings and certificate 
+        /// upon first installation on the site extension and if hostnames are specified in app settings
+        /// </summary>
         public void SetupHostnameAndCertificate()
         {
             Trace.TraceInformation("Setup hostname and certificates");
@@ -58,7 +62,7 @@ namespace LetsEncrypt.SiteExtension.Core
                         continue;
                     }
                     Trace.TraceInformation("Setting up hostname and lets encrypt certificate for " + hostname);
-                    client.Sites.CreateOrUpdateSiteHostNameBinding(settings.ResourceGroupName, settings.WebAppName, hostname, new Microsoft.Azure.Management.WebSites.Models.HostNameBinding()
+                    client.Sites.CreateOrUpdateSiteOrSlotHostNameBinding(settings.ResourceGroupName, settings.WebAppName, settings.SiteSlotName, hostname, new HostNameBinding()
                     {
                         CustomHostNameDnsRecordType = CustomHostNameDnsRecordType.CName,
                         HostNameType = HostNameType.Verified,
@@ -80,28 +84,30 @@ namespace LetsEncrypt.SiteExtension.Core
                         Tenant = settings.Tenant,
                         WebAppName = settings.WebAppName,
                         ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
-                        AlternativeNames = settings.Hostnames.Skip(1).ToList()
+                        AlternativeNames = settings.Hostnames.Skip(1).ToList(),
+                        SiteSlotName = settings.SiteSlotName,
+                        UseIPBasedSSL = settings.UseIPBasedSSL
                     });
                 }
             }
         }
 
-        public void RenewCertificate()
+        public IEnumerable<Target> RenewCertificate(bool debug = false)
         {
             Trace.TraceInformation("Checking certificate");
             var settings = new AppSettingsAuthConfig();
             var ss = SettingsStore.Instance.Load();
             using (var client = ArmHelper.GetWebSiteManagementClient(settings))
             {
-                var certs = client.Certificates.GetCertificates(settings.ResourceGroupName).Value;
-                var expireringIn14Days = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(14) && s.Issuer.Contains("Let's Encrypt"));
+                var certs = client.Certificates.GetCertificates(settings.ServicePlanResourceGroupName).Value;
+                var expiringCerts = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(settings.RenewXNumberOfDaysBeforeExpiration) && (s.Issuer.Contains("Let's Encrypt") || s.Issuer.Contains("Fake LE")));
 
-                if (expireringIn14Days.Count() == 0)
+                if (expiringCerts.Count() == 0)
                 {
-                    Trace.TraceInformation("No certificates installed issued by Let's Encrypt that are about to expire within the next 14 days. Skipping.");
+                    Trace.TraceInformation(string.Format("No certificates installed issued by Let's Encrypt that are about to expire within the next {0} days. Skipping.", settings.RenewXNumberOfDaysBeforeExpiration));
                 }
 
-                foreach (var toExpireCert in expireringIn14Days)
+                foreach (var toExpireCert in expiringCerts)
                 {
                     Trace.TraceInformation("Starting renew of certificate " + toExpireCert.Name + " expiration date " + toExpireCert.ExpirationDate);
                     var site = client.Sites.GetSite(settings.ResourceGroupName, settings.WebAppName);
@@ -111,8 +117,7 @@ namespace LetsEncrypt.SiteExtension.Core
                         Trace.TraceInformation(String.Format("Certificate {0} was not assigned any hostname, skipping update", toExpireCert.Thumbprint));
                         continue;
                     }
-
-                    RequestAndInstallInternal(new Target()
+                    var target = new Target()
                     {
                         WebAppName = settings.WebAppName,
                         Tenant = settings.Tenant,
@@ -124,8 +129,15 @@ namespace LetsEncrypt.SiteExtension.Core
                         Host = sslStates.First().Name,
                         BaseUri = settings.BaseUri ?? ss.FirstOrDefault(s => s.Name == "baseUri").Value,
                         ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
-                        AlternativeNames = sslStates.Skip(1).Select(s => s.Name).ToList()
-                    });
+                        AlternativeNames = sslStates.Skip(1).Select(s => s.Name).ToList(),
+                        UseIPBasedSSL = settings.UseIPBasedSSL,
+                        SiteSlotName = settings.SiteSlotName
+                    };
+                    if (!debug)
+                    {
+                        RequestAndInstallInternal(target);
+                    }
+                    yield return target;
                 }
             }
         }
@@ -444,7 +456,7 @@ namespace LetsEncrypt.SiteExtension.Core
                 var pfxFilename = GetCertificate(binding);
 
                 X509Certificate2 certificate;
-                certificate = new X509Certificate2(pfxFilename, "", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+                certificate = new X509Certificate2(pfxFilename, settings.PFXPassword, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
                 certificate.FriendlyName = $"{binding.Host} {DateTime.Now}";
 
                 Install(binding, pfxFilename, certificate);
@@ -462,7 +474,7 @@ namespace LetsEncrypt.SiteExtension.Core
             var bytes = File.ReadAllBytes(pfxFilename);
             var pfx = Convert.ToBase64String(bytes);
 
-            var s = webSiteClient.Sites.GetSite(target.ResourceGroupName, target.WebAppName);
+            var s = webSiteClient.Sites.GetSiteOrSlot(target.ResourceGroupName, target.WebAppName, target.SiteSlotName);
             webSiteClient.Certificates.CreateOrUpdateCertificate(target.ServicePlanResourceGroupName, certificate.Subject.Replace("CN=", ""), new Certificate()
             {
                 PfxBlob = pfx,
@@ -478,19 +490,19 @@ namespace LetsEncrypt.SiteExtension.Core
                     sslState = new HostNameSslState()
                     {
                         Name = target.Host,
-                        SslState = SslState.SniEnabled,
+                        SslState = target.UseIPBasedSSL ? SslState.IpBasedEnabled : SslState.SniEnabled,
                     };
                     s.HostNameSslStates.Add(sslState);
                 }
                 else
                 {
                     //First time setting the HostNameSslState it is set to disabled.
-                    sslState.SslState = SslState.SniEnabled;
+                    sslState.SslState = target.UseIPBasedSSL ? SslState.IpBasedEnabled : SslState.SniEnabled;
                 }
                 sslState.ToUpdate = true;
                 sslState.Thumbprint = certificate.Thumbprint;
             }
-            webSiteClient.Sites.BeginCreateOrUpdateSite(target.ResourceGroupName, target.WebAppName, s);
+            webSiteClient.Sites.BeginCreateOrUpdateSiteOrSlot(target.ResourceGroupName, target.WebAppName, target.SiteSlotName, s);
 
         }
 

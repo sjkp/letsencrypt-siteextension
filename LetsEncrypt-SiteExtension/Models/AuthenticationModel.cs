@@ -34,6 +34,16 @@ namespace LetsEncrypt.SiteExtension.Models
         {
             get; set;
         }
+        public string SiteSlotName
+        {
+            get; set;
+        }
+
+        [Required]
+        public bool UseIPBasedSSL
+        {
+            get; set;
+        }
 
         [Display(Name = "Update Application Settings")]
         public bool UpdateAppSettings
@@ -66,6 +76,7 @@ namespace LetsEncrypt.SiteExtension.Models
                 SubscriptionId = config.SubscriptionId,
                 Tenant = config.Tenant,
                 WebAppName = config.WebAppName,
+                UseIPBasedSSL = config.UseIPBasedSSL,
                 ServicePlanResourceGroupName = config.ServicePlanResourceGroupName,                
             };
         }
