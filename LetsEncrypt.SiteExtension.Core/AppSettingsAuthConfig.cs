@@ -23,6 +23,7 @@ namespace LetsEncrypt.SiteExtension.Models
         public const string rsaKeyLengthKey = "letsencrypt:RSAKeyLength";
         private readonly WebAppEnviromentVariables environemntVariables;
         public const string pfxPasswordKey = "letsencrypt:PfxPassword";
+        public const string renewBeforeExpirationKey = "letsencrypt:RenewXNumberOfDaysBeforeExpiration";
         public const string authenticationEndpointKey = "letsencrypt:AzureAuthenticationEndpoint";
         public const string tokenAudienceKey = "letsencrypt:AzureTokenAudience";
         public const string managementEndpointKey = "letsencrypt:AzureManagementEndpoint";
@@ -64,11 +65,11 @@ namespace LetsEncrypt.SiteExtension.Models
         {
             get
             {
-                var s = ConfigurationManager.AppSettings["RenewXNumberOfDaysBeforeExpiration"];
-                int days = 14;
+                var s = ConfigurationManager.AppSettings[renewBeforeExpirationKey];
+                int days = 22;
                 if (string.IsNullOrEmpty(s) || !int.TryParse(s, out days))
                 {
-                    return 14;
+                    return 22;
                 }
                 return days;
             }
