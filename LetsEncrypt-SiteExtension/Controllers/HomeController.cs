@@ -162,7 +162,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
 
             var site = client.Sites.GetSiteOrSlot(settings.ResourceGroupName, settings.WebAppName, settings.SiteSlotName);
             var model = new HostnameModel();
-            ViewBag.HostNames = site.HostNames.Where(s => !s.EndsWith("azurewebsites.net")).Select(s => new SelectListItem()
+            ViewBag.HostNames = site.HostNames.Where(s => !s.EndsWith(settings.AzureWebSitesDefaultDomainName)).Select(s => new SelectListItem()
             {
                 Text = s,
                 Value = s

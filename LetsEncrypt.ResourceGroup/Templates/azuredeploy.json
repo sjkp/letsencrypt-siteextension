@@ -57,18 +57,46 @@
       "metadata": {
         "description": "The nuget feed to download site extensions from"
       }
-    },    
-      "acmeUrl": {
-        "type": "string",
-        "defaultValue": "https://acme-v01.api.letsencrypt.org/",
-        "metadata": {
-          "description": "The url of the lets encrypt servers. Staging: (https://acme-staging.api.letsencrypt.org/)"
-        }
-      },
+    },
+    "acmeUrl": {
+      "type": "string",
+      "defaultValue": "https://acme-v01.api.letsencrypt.org/",
+      "metadata": {
+        "description": "The url of the lets encrypt servers. Staging: (https://acme-staging.api.letsencrypt.org/)"
+      }
+    },
     "principalId": {
       "type": "string",
       "metadata": {
         "description": "The principalid/objectid for service principal registered in Azure AD, can e.g. be found with Get-MsolServicePrincipal |? {$_.AppPrincipalId -eq \"<cliendId>\"}"
+      }
+    },
+    "authenticationEndpoint": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The authenticaion endpoint/azure active directory authority used in the selected azure region, when unset it defaults to https://login.windows.net/"
+      }
+    },
+    "tokenAudience": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The token audience/resourceId used in the selected azure region, when unset it defaults to https://management.core.windows.net/"
+      }
+    },
+    "managementEndpoint": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The Azure ARM management endpoint used in the selected azure region, when unset it defaults to https://management.azure.com"
+      }
+    },
+    "webSitesDefaultDomainName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The default azure web app domain name used in the selected azure region, when unset it defaults to azurewebsites.net"
       }
     }
   },
@@ -132,7 +160,11 @@
             "letsencrypt:ClientId": "[parameters('clientId')]",
             "letsencrypt:ClientSecret": "[parameters('clientSecret')]",
             "letsencrypt:ResourceGroupName": "[resourceGroup().name]",
-            "letsencrypt:UseIPBasedSSL": "false"
+            "letsencrypt:UseIPBasedSSL": "false",
+            "letsencrypt:AzureAuthenticationEndpoint": "[parameters('authenticationEndpoint')]",
+            "letsencrypt:AzureTokenAudience": "[parameters('tokenAudience')]",
+            "letsencrypt:AzureManagementEndpoint": "[parameters('managementEndpoint')]",
+            "letsencrypt:AzureDefaultWebSiteDomainName": "[parameters('webSitesDefaultDomainName')]"
           }
         },
         {

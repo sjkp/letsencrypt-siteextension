@@ -33,3 +33,4 @@ azuredeploy.parameters.serviceplan.local.json
 /codes.txt
 /.vs/config/applicationhost.config
 /LetsEncrypt.ResourceGroup/Templates/deploy-separate-two-rg.ps1
+/LetsEncrypt.ResourceGroup/Templates/azuredeploy.parameters.local.de.json

@@ -15,13 +15,13 @@ namespace LetsEncrypt.SiteExtension
     {
         public static WebSiteManagementClient GetWebSiteManagementClient(IAuthSettings model)
         {
-            var settings = ActiveDirectoryServiceSettings.Azure;
+            var settings = new AppSettingsAuthConfig();
             var authContext = new AuthenticationContext(settings.AuthenticationEndpoint + model.Tenant);
 
             var token = authContext.AcquireToken(settings.TokenAudience.ToString(), new ClientCredential(model.ClientId.ToString(), model.ClientSecret));
             var creds = new TokenCredentials(token.AccessToken);
 
-            var websiteClient = new WebSiteManagementClient(creds);
+            var websiteClient = new WebSiteManagementClient(settings.ManagementEndpoint, creds);
             websiteClient.SubscriptionId = model.SubscriptionId.ToString();
             return websiteClient;
         }

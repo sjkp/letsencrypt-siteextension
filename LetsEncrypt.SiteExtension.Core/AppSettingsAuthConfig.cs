@@ -23,6 +23,10 @@ namespace LetsEncrypt.SiteExtension.Models
         public const string rsaKeyLengthKey = "letsencrypt:RSAKeyLength";
         private readonly WebAppEnviromentVariables environemntVariables;
         public const string pfxPasswordKey = "letsencrypt:PfxPassword";
+        public const string authenticationEndpointKey = "letsencrypt:AzureAuthenticationEndpoint";
+        public const string tokenAudienceKey = "letsencrypt:AzureTokenAudience";
+        public const string managementEndpointKey = "letsencrypt:AzureManagementEndpoint";
+        public const string azureDefaultWebSiteDomainName = "letsencrypt:AzureDefaultWebSiteDomainName";
 
         public AppSettingsAuthConfig()
         {
@@ -183,5 +187,61 @@ namespace LetsEncrypt.SiteExtension.Models
                 return ConfigurationManager.AppSettings[pfxPasswordKey];
             }
         }
+
+        #region overrideable settings to enable support for azure azure regions
+
+        public Uri AuthenticationEndpoint
+        {
+            get
+            {
+                var authEndpoint = ConfigurationManager.AppSettings[authenticationEndpointKey];                
+                if (string.IsNullOrEmpty(authEndpoint))
+                {
+                    return new Uri("https://login.windows.net/"); 
+                }
+                return new Uri(authEndpoint);
+            }
+        }
+
+        public Uri TokenAudience
+        {
+            get
+            {
+                var tokenAudience = ConfigurationManager.AppSettings[tokenAudienceKey];
+                if (string.IsNullOrEmpty(tokenAudience))
+                {
+                    return new Uri("https://management.core.windows.net/");
+                }
+                return new Uri(tokenAudience);
+            }
+        }
+
+        public Uri ManagementEndpoint
+        {
+            get
+            {
+                var managementEndpoint = ConfigurationManager.AppSettings[managementEndpointKey];
+                if (string.IsNullOrEmpty(managementEndpoint))
+                {
+                    return new Uri("https://management.azure.com");
+                }
+                return new Uri(managementEndpoint);
+            }
+        }
+
+        public string AzureWebSitesDefaultDomainName
+        {
+            get
+            {
+                var domain = ConfigurationManager.AppSettings[azureDefaultWebSiteDomainName]; 
+                if (string.IsNullOrEmpty(domain))
+                {
+                    return "azurewebsites.net";
+                }
+                return domain;
+            }
+        }
+
+        #endregion
     }
 }
