@@ -112,6 +112,10 @@ namespace LetsEncrypt.SiteExtension.Controllers
 
         private bool ValidateModelVsAppSettings(string name, string appSettingValue, string modelValue)
         {
+            if (string.IsNullOrEmpty(appSettingValue) && string.IsNullOrEmpty(modelValue))
+            {
+                return true;
+            }
             if (appSettingValue != modelValue)
             {
                 ModelState.AddModelError(name, string.Format("The {0} registered under application settings {1} does not match the {0} you entered here {2}", name, appSettingValue, modelValue));
