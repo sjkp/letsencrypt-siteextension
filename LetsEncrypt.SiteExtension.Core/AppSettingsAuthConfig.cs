@@ -1,5 +1,7 @@
-﻿using System;
+﻿using LetsEncrypt.SiteExtension.Core.Validation;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Linq;
 using System.Web;
@@ -34,6 +36,7 @@ namespace LetsEncrypt.SiteExtension.Models
             this.environemntVariables = new WebAppEnviromentVariables();
         }
 
+        [RequiredGuid(ErrorMessage = clientIdKey + " appSettings is required")]
         public Guid ClientId
         {
             get
@@ -45,6 +48,7 @@ namespace LetsEncrypt.SiteExtension.Models
             }
         }
 
+        [Required(ErrorMessage = clientIdKey + " appSetting is required")]
         public string ClientSecret
         {
             get
@@ -53,6 +57,7 @@ namespace LetsEncrypt.SiteExtension.Models
             }
         }
 
+        [Required (ErrorMessage = tenantKey + " appSetting is required")]
         public string Tenant
         {
             get
@@ -75,6 +80,7 @@ namespace LetsEncrypt.SiteExtension.Models
             }
         }
 
+        [RequiredGuid (ErrorMessage = subscriptionIdKey + " appSetting is required")]
         public Guid SubscriptionId
         {
             get
@@ -89,6 +95,7 @@ namespace LetsEncrypt.SiteExtension.Models
             }
         }
 
+        [Required(ErrorMessage = webAppNameKey + " appSetting is required")]
         public string WebAppName
         {
             get
@@ -105,6 +112,7 @@ namespace LetsEncrypt.SiteExtension.Models
             }
         }
 
+        [Required(ErrorMessage = resourceGroupNameKey + " appSetting is required")]
         public string ResourceGroupName
         {
             get
@@ -145,6 +153,7 @@ namespace LetsEncrypt.SiteExtension.Models
                 return ConfigurationManager.AppSettings[emailKey];
             }
         }
+
 
         public string BaseUri
         {
@@ -191,6 +200,7 @@ namespace LetsEncrypt.SiteExtension.Models
 
         #region overrideable settings to enable support for azure azure regions
 
+        [DataType(DataType.Url)]
         public Uri AuthenticationEndpoint
         {
             get
@@ -204,6 +214,7 @@ namespace LetsEncrypt.SiteExtension.Models
             }
         }
 
+        [DataType(DataType.Url)]
         public Uri TokenAudience
         {
             get
@@ -217,6 +228,7 @@ namespace LetsEncrypt.SiteExtension.Models
             }
         }
 
+        [DataType(DataType.Url)]
         public Uri ManagementEndpoint
         {
             get
@@ -244,5 +256,14 @@ namespace LetsEncrypt.SiteExtension.Models
         }
 
         #endregion
+
+        public bool IsValid(out List<ValidationResult> result)
+        {
+
+            var context = new ValidationContext(this, serviceProvider: null, items: null);
+            result = new List<ValidationResult>();
+
+            return Validator.TryValidateObject(this, context, result, true);
+        }
     }
 }

@@ -116,6 +116,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -135,6 +136,7 @@
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CertificateManagerTest.cs" />
+    <Compile Include="AppSettingsAuthConfigTest.cs" />
     <Compile Include="WebAppEnviromentVariablesTest.cs" />
     <Compile Include="WebSiteManagementClientExtensionsTest.cs" />
   </ItemGroup>

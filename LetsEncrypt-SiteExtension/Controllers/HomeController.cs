@@ -14,6 +14,7 @@ using Microsoft.Rest.Azure;
 using Microsoft.Rest.Azure.Authentication;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
@@ -76,12 +77,12 @@ namespace LetsEncrypt.SiteExtension.Controllers
                             }
 
                             client.Sites.UpdateSiteOrSlotAppSettings(model.ResourceGroupName, model.WebAppName, model.SiteSlotName, webappsettings);
-
+                            ConfigurationManager.RefreshSection("appSettings");                            
                         }
                         else
                         {
                             var appSetting = new AppSettingsAuthConfig();
-                            if (!ValidateModelVsAppSettings("ClientId", model.ClientId.ToString(), appSetting.ClientId.ToString()) ||
+                            if (!ValidateModelVsAppSettings("ClientId", appSetting.ClientId.ToString(), model.ClientId.ToString()) ||
                             !ValidateModelVsAppSettings("ClientSecret", appSetting.ClientSecret, model.ClientSecret) ||
                             !ValidateModelVsAppSettings("ResourceGroupName", appSetting.ResourceGroupName, model.ResourceGroupName) ||
                             !ValidateModelVsAppSettings("SubScriptionId", appSetting.SubscriptionId.ToString(), model.SubscriptionId.ToString()) ||
@@ -97,7 +98,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
 
 
                     }
-                    return RedirectToAction("Hostname");
+                    return RedirectToAction("PleaseWait");
                 }
                 catch (Exception ex)
                 {
@@ -124,20 +125,42 @@ namespace LetsEncrypt.SiteExtension.Controllers
             return true;
         }
 
+        public ActionResult PleaseWait()
+        {
+            var settings = new AppSettingsAuthConfig();
+            List<ValidationResult> validationResult = null;
+            if (settings.IsValid(out validationResult))
+            {
+                return RedirectToAction("Hostname");
+            }
+
+            return View();
+        }
+
         public ActionResult Hostname(string id)
         {
             var settings = new AppSettingsAuthConfig();
-            var client = ArmHelper.GetWebSiteManagementClient(settings);
-
-            var site = client.Sites.GetSiteOrSlot(settings.ResourceGroupName, settings.WebAppName, settings.SiteSlotName);
             var model = new HostnameModel();
-            model.HostNames = site.HostNames;
-            model.HostNameSslStates = site.HostNameSslStates;
-            model.Certificates = client.Certificates.GetCertificates(settings.ServicePlanResourceGroupName).Value;
-            model.InstalledCertificateThumbprint = id;
-            if (model.HostNames.Count == 1)
+            List<ValidationResult> validationResult = null;
+            if (settings.IsValid(out validationResult))
             {
-                model.ErrorMessage = "No custom host names registered. At least one custom domain name must be registed for the web site to request a letsencrypt certificate.";
+                var client = ArmHelper.GetWebSiteManagementClient(settings);
+
+                var site = client.Sites.GetSiteOrSlot(settings.ResourceGroupName, settings.WebAppName, settings.SiteSlotName);               
+                model.HostNames = site.HostNames;
+                model.HostNameSslStates = site.HostNameSslStates;
+                model.Certificates = client.Certificates.GetCertificates(settings.ServicePlanResourceGroupName).Value;
+                model.InstalledCertificateThumbprint = id;
+                if (model.HostNames.Count == 1)
+                {
+                    model.ErrorMessage = "No custom host names registered. At least one custom domain name must be registed for the web site to request a letsencrypt certificate.";
+                }
+
+            }
+            else
+            {
+                var errorMessage = string.Join(" ,", validationResult.Select(s => s.ErrorMessage));
+                model.ErrorMessage = $"Application settings was invalid, please wait a little and try to reload page if you just updated appsettings. Validation errors: {errorMessage}";
             }
 
             return View(model);

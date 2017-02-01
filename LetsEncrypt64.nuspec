@@ -3,7 +3,7 @@
   <metadata>
     <id>letsencrypt64</id>
     <title>Azure Let's Encrypt (x64)</title>
-    <version>0.5.2</version>
+    <version>0.5.5</version>
     <authors>SJKP</authors>
     <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
     <projectUrl>https://github.com/sjkp/letsencrypt-siteextension</projectUrl>

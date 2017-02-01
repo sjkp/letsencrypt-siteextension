@@ -7,7 +7,9 @@ namespace LetsEncrypt.SiteExtension.Models
     {
         public HostnameModel()
         {
-
+            Certificates = new List<Certificate>();
+            HostNames = new List<string>();
+            HostNameSslStates = new List<HostNameSslState>();
         }
 
         public IList<Certificate> Certificates { get; internal set; }

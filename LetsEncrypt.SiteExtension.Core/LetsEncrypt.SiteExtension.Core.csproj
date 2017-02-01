@@ -143,6 +143,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
@@ -168,6 +169,7 @@
     <Compile Include="SiteSlotExtensions.cs" />
     <Compile Include="Target.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="Validation\RequiredGuid.cs" />
     <Compile Include="WebAppEnviromentVariables.cs" />
     <Compile Include="WebSiteManagementExtensions.cs" />
   </ItemGroup>

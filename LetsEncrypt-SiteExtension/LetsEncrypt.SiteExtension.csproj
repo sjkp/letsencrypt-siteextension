@@ -224,6 +224,7 @@
     <Content Include="Views\Home\AddHostname.cshtml" />
     <Content Include="Views\Home\CreateServicePrincipal.cshtml" />
     <Content Include="install.cmd" />
+    <Content Include="Views\Home\PleaseWait.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

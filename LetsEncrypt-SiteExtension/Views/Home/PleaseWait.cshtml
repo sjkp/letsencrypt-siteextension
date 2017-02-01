@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "Please wait";
+}
+
+<h2>@ViewBag.Title <span class="glyphicon glyphicon-repeat fast-right-spinner"></span> </h2>
+<p>
+    App settings are being applied, please wait for the page to refresh. Nothing happens? @Html.ActionLink("click here", "Hostname")
+</p>
+
+@section scripts {
+    $(function () {
+
+        setTimeout(function() {
+            window.location.href = window.location.href;
+        }, 5000);
+    });
+    
+}

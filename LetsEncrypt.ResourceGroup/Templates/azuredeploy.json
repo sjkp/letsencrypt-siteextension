@@ -112,7 +112,7 @@
       "type": "Microsoft.Web/serverfarms",
       "location": "[resourceGroup().location]",
       "apiVersion": "2014-06-01",
-      "dependsOn": [ ],
+      "dependsOn": [],
       "tags": {
         "displayName": "appServicePlan"
       },
@@ -204,12 +204,32 @@
       "type": "Microsoft.Storage/storageAccounts",
       "location": "[resourceGroup().location]",
       "apiVersion": "2015-06-15",
-      "dependsOn": [ ],
+      "dependsOn": [],
       "tags": {
         "displayName": "storage"
       },
       "properties": {
         "accountType": "[parameters('storageType')]"
+      }
+    },
+    {
+      "apiVersion": "2015-08-01",
+      "type": "Microsoft.Web/sites/hostNameBindings",
+      "name": "[concat(variables('webAppName'),'/', split(parameters('hostnames'), ',')[copyIndex()])]",
+      "dependsOn": [
+        "[concat('Microsoft.Web/sites/', variables('webAppName'))]"
+      ],
+      "tags": {
+        "displayName": "hostNameBinding"
+      },
+      "properties": {
+        "domainId": null,
+        "hostNameType": "Verified",
+        "siteName": "variables('webAppName')"
+      },
+      "copy": {
+        "name": "hostnameloop",
+        "count": "[length(split(parameters('hostnames'),','))]"
       }
     }
   ],
