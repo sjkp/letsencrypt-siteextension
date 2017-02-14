@@ -40,6 +40,11 @@ namespace LetsEncrypt.SiteExtension.Core
       <mimeMap fileExtension=""."" mimeType=""text/plain"" />
     </staticContent>
   </system.webServer>
+  <system.web>
+    <authorization>
+      <allow users=""?""/>
+    </authorization>
+  </system.web>
 </configuration>";
         private static WebSiteManagementClient webSiteClient;
 
