@@ -30,6 +30,7 @@ namespace LetsEncrypt.SiteExtension.Models
         public const string tokenAudienceKey = "letsencrypt:AzureTokenAudience";
         public const string managementEndpointKey = "letsencrypt:AzureManagementEndpoint";
         public const string azureDefaultWebSiteDomainName = "letsencrypt:AzureDefaultWebSiteDomainName";
+        public const string disableWebConfigUpdateKey = "letsencrypt:DisableWebConfigUpdate";
 
         public AppSettingsAuthConfig()
         {
@@ -142,6 +143,19 @@ namespace LetsEncrypt.SiteExtension.Models
                     return b;
                 }
 
+                return false;
+            }
+        }
+
+        public bool DisableWebConfigUpdate
+        {
+            get
+            {
+                bool b; 
+                if (bool.TryParse(ConfigurationManager.AppSettings[disableWebConfigUpdateKey], out b))
+                {
+                    return b;
+                }
                 return false;
             }
         }

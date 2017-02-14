@@ -10,7 +10,7 @@ namespace LetsEncrypt.SiteExtension.Test
         [TestMethod]
         public void RenewCertificateTest()
         {
-            var result = new Core.CertificateManager().RenewCertificate(true);
+            var result = new Core.CertificateManager().RenewCertificate();
 
             Assert.AreNotEqual(0, result.Count());
         }
