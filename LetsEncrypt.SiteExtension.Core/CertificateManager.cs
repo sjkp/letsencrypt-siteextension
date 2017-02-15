@@ -40,6 +40,11 @@ namespace LetsEncrypt.SiteExtension.Core
       <mimeMap fileExtension=""."" mimeType=""text/plain"" />
     </staticContent>
   </system.webServer>
+  <system.web>
+    <authorization>
+      <allow users=""?""/>
+    </authorization>
+  </system.web>
 </configuration>";
         private static WebSiteManagementClient webSiteClient;
 
@@ -131,7 +136,8 @@ namespace LetsEncrypt.SiteExtension.Core
                         ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
                         AlternativeNames = sslStates.Skip(1).Select(s => s.Name).ToList(),
                         UseIPBasedSSL = settings.UseIPBasedSSL,
-                        SiteSlotName = settings.SiteSlotName
+                        SiteSlotName = settings.SiteSlotName,
+                        DisableWebConfigUpdate = settings.DisableWebConfigUpdate
                     };
                     if (!debug)
                     {
@@ -160,7 +166,7 @@ namespace LetsEncrypt.SiteExtension.Core
             configPath = ConfigPath(BaseURI);
             try
             {
-                webSiteClient = ArmHelper.GetWebSiteManagementClient(target);
+                webSiteClient = ArmHelper.GetWebSiteManagementClient(target);                
             }
             catch (Exception ex)
             {
@@ -516,7 +522,7 @@ namespace LetsEncrypt.SiteExtension.Core
                 Directory.CreateDirectory(directory);
             }
             var webConfigPath = Path.Combine(directory, "web.config");
-            if (!File.Exists(webConfigPath) || File.ReadAllText(webConfigPath) != webConfig)
+            if (target.DisableWebConfigUpdate == false && (!File.Exists(webConfigPath) || File.ReadAllText(webConfigPath) != webConfig))
             {
                 Trace.TraceInformation($"Writing web.config to {webConfigPath}");
                 File.WriteAllText(webConfigPath, webConfig);

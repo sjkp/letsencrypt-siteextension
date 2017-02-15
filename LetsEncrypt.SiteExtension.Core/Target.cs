@@ -44,5 +44,7 @@ namespace LetsEncrypt.SiteExtension
         }
 
         public bool UseIPBasedSSL { get; set; }
+
+        public bool DisableWebConfigUpdate { get; set; }
     }
 }
