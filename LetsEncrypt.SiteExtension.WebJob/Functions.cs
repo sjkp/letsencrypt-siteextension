@@ -37,10 +37,11 @@ namespace LetsEncrypt.SiteExtension
         public static void SetupHostNameAndCertificate([TimerTrigger(typeof(MonthlySchedule), RunOnStartup = true)] TimerInfo timerInfo, [Blob("letsencrypt/firstrun.job")] string input, [Blob("letsencrypt/firstrun.job")] out string output)
         {
             Console.WriteLine("Starting setup hostname and certificate");
-            if (string.IsNullOrEmpty(input))
+            string websiteName = Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
+            if (string.IsNullOrEmpty(input) || !input.Contains(websiteName))
             {
                 new CertificateManager().SetupHostnameAndCertificate();
-                output = DateTime.UtcNow.ToString();
+                output = string.IsNullOrEmpty(input) ? websiteName : input + '|' + websiteName;
             }
             else
             {

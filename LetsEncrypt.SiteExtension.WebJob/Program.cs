@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
+using System.Configuration;
 
 namespace LetsEncrypt.SiteExtension.WebJob
 {
@@ -16,6 +17,8 @@ namespace LetsEncrypt.SiteExtension.WebJob
         {
             var config = new JobHostConfiguration();
             config.UseTimers();
+            config.HostId = "letsencrypt_" + Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
+
             var host = new JobHost(config);
             host.RunAndBlock();
         }
