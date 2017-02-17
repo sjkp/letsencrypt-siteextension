@@ -17,7 +17,10 @@ namespace LetsEncrypt.SiteExtension.WebJob
         {
             var config = new JobHostConfiguration();
             config.UseTimers();
-            config.HostId = "letsencrypt_" + Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
+            //A host ID must be between 1 and 32 characters, contain only lowercase letters, numbers, and 
+            //dashes, not start or end with a dash, and not contain consecutive dashes.
+            var hostId = "letsencrypt-" + Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");            
+            config.HostId = hostId.Substring(0,hostId.Length > 32 ? 32 : hostId.Length).TrimEnd(new[] { '-' }).ToLower();
 
             var host = new JobHost(config);
             host.RunAndBlock();

@@ -91,7 +91,8 @@ namespace LetsEncrypt.SiteExtension.Core
                         ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
                         AlternativeNames = settings.Hostnames.Skip(1).ToList(),
                         SiteSlotName = settings.SiteSlotName,
-                        UseIPBasedSSL = settings.UseIPBasedSSL
+                        UseIPBasedSSL = settings.UseIPBasedSSL,
+                        DisableWebConfigUpdate = settings.DisableWebConfigUpdate
                     });
                 }
             }
@@ -522,10 +523,17 @@ namespace LetsEncrypt.SiteExtension.Core
                 Directory.CreateDirectory(directory);
             }
             var webConfigPath = Path.Combine(directory, "web.config");
-            if (target.DisableWebConfigUpdate == false && (!File.Exists(webConfigPath) || File.ReadAllText(webConfigPath) != webConfig))
+            if (target.DisableWebConfigUpdate)
             {
-                Trace.TraceInformation($"Writing web.config to {webConfigPath}");
-                File.WriteAllText(webConfigPath, webConfig);
+                Trace.TraceInformation($"Disabled updating web.config at {webConfigPath}");
+            }
+            else
+            {
+                if ((!File.Exists(webConfigPath) || File.ReadAllText(webConfigPath) != webConfig))
+                {
+                    Trace.TraceInformation($"Writing web.config to {webConfigPath}");
+                    File.WriteAllText(webConfigPath, webConfig);
+                }
             }
 
             foreach (var dnsIdentifier in target.AllDnsIdentifiers)

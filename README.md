@@ -51,6 +51,7 @@ To use the Fully Automated Installtion the following Web App settings must be ad
 | letsencrypt:Email	| The Email used for registering with Let's Encrypt
 | letsencrypt:Hostnames |	Comma separated list of custom hostnames (externally hosted setup with CNames), that should automatically be configured for the site.
 | letsencrypt:WebRootPath | Use this setting, if you are not serving the website from site\wwwroot, then you can sepecify the other folder that serves your website here - should be in the format d:\home\site\wwwroot\public or where ever your files are located on the web server. 
+| letsencrypt:DisableWebConfigUpdate | true / false, defaults to false, set this to true if you don't want the site extension to write the default webconfig to wwwroot\.well-known\acme-challenge
 | letsencrypt:SiteSlot | Use this setting if you want to use the extension to setup SSL certificate for deployment slots, the value should be the name of the slot (and the extension should be installed in that slots kudu portal)
 | letsencrypt:UseIPBasedSSL | Set to true if you want to use IP Based SSL (required by some older clients). Defaults to false, which results in SNI. 
 | letsencrypt:RenewXNumberOfDaysBeforeExpiration | Set to an integer defining the number of days before expiration the certificates should be renewed. Defaults to 22 days before expiration, as letencrypt sends reminder emails 20 days before

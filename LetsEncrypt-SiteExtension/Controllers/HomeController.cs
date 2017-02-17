@@ -229,7 +229,8 @@ namespace LetsEncrypt.SiteExtension.Controllers
                     BaseUri = baseUri,
                     ServicePlanResourceGroupName = settings.ServicePlanResourceGroupName,
                     AlternativeNames = model.Hostnames.Skip(1).ToList(),
-                    UseIPBasedSSL = settings.UseIPBasedSSL
+                    UseIPBasedSSL = settings.UseIPBasedSSL,
+                    DisableWebConfigUpdate = settings.DisableWebConfigUpdate
                 };
                 var thumbprint = CertificateManager.RequestAndInstallInternal(target);
                 if (thumbprint != null)
