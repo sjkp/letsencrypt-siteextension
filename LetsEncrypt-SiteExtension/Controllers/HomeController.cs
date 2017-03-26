@@ -19,6 +19,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -197,7 +198,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
         }
 
         [HttpPost]
-        public ActionResult Install(RequestAndInstallModel model)
+        public async Task<ActionResult> Install(RequestAndInstallModel model)
         {
             if (ModelState.IsValid)
             {
@@ -232,7 +233,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
                     UseIPBasedSSL = settings.UseIPBasedSSL,
                     DisableWebConfigUpdate = settings.DisableWebConfigUpdate
                 };
-                var thumbprint = CertificateManager.RequestAndInstallInternal(target);
+                var thumbprint = await CertificateManager.RequestAndInstallInternalAsync(target);
                 if (thumbprint != null)
                     return RedirectToAction("Hostname", new { id = thumbprint });
             }

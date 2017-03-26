@@ -14,5 +14,7 @@ namespace LetsEncrypt.SiteExtension.Models
         string ResourceGroupName { get; }
 
         string ServicePlanResourceGroupName { get; }
+
+        string SiteSlotName { get; }
     }
 }

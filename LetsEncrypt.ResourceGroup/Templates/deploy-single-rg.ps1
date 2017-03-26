@@ -1,4 +1,4 @@
-Select-AzureRmSubscription -SubscriptionId 3f09c367-93e0-4b61-bbe5-dcb5c686bf8a
+Select-AzureRmSubscription -SubscriptionId 3f09c367-93e0-4b61-bbe5-dcb5c686bf8a ###Pay-As-You-Go
 
 $appPlanRgName = "LetsEncrypt-SiteExtension"
 $webAppRgName = "sjkp.letsencrypt"

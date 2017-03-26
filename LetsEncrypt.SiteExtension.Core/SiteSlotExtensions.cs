@@ -81,5 +81,18 @@ namespace LetsEncrypt.SiteExtension
                 return sites.BeginCreateOrUpdateSiteSlot(resourceGroupName, webAppName, s, siteSlotName);
             }
         }
+
+        public static User GetPublsihingCredentialSiteOrSlot(this ISitesOperations sites, string resourceGroupName, string webAppName, string siteSlotName)
+        {
+
+            if (string.IsNullOrEmpty(siteSlotName))
+            {
+                return sites.BeginListSitePublishingCredentials(resourceGroupName, webAppName);
+            }
+            else
+            {
+                return sites.BeginListSitePublishingCredentialsSlot(resourceGroupName, webAppName, siteSlotName);
+            }
+        }
     }
 }
