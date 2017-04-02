@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.SiteExtension.Core.Services
 {
-    public abstract class BaseAuthorizationChannelgeProvider : IAuthorizeChallengeProvider
+    public abstract class BaseAuthorizationChannelgeProvider : IAuthorizationChallengeProvider
     {
         protected const string webConfig = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <configuration>

@@ -108,15 +108,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Azure.Graph.RBAC, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Azure.Graph.RBAC.2.1.1-preview\lib\net45\Microsoft.Azure.Graph.RBAC.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Azure.Graph.RBAC.2.2.0-preview\lib\net45\Microsoft.Azure.Graph.RBAC.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Azure.Management.Websites, Version=1.0.0.2, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Azure.Management.Websites.1.0.2-preview\lib\net45\Microsoft.Azure.Management.Websites.dll</HintPath>
+    <Reference Include="Microsoft.Azure.Management.Websites, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.Management.Websites.1.6.0-preview\lib\net45\Microsoft.Azure.Management.Websites.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Azure.ResourceManager, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Azure.Management.Resources.3.3.1-preview\lib\net45\Microsoft.Azure.ResourceManager.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Azure.Management.Resources.3.4.0-preview\lib\net45\Microsoft.Azure.ResourceManager.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=2.28.1.741, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -127,16 +127,16 @@
       <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.28.1\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Rest.ClientRuntime, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.1.8.2\lib\net45\Microsoft.Rest.ClientRuntime.dll</HintPath>
+    <Reference Include="Microsoft.Rest.ClientRuntime, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.2.3.5\lib\net45\Microsoft.Rest.ClientRuntime.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Rest.ClientRuntime.Azure, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.Azure.2.5.4\lib\net45\Microsoft.Rest.ClientRuntime.Azure.dll</HintPath>
+    <Reference Include="Microsoft.Rest.ClientRuntime.Azure, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.Azure.3.3.5\lib\net45\Microsoft.Rest.ClientRuntime.Azure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Rest.ClientRuntime.Azure.Authentication, Version=0.11.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.Azure.Authentication.0.11.3\lib\net45\Microsoft.Rest.ClientRuntime.Azure.Authentication.dll</HintPath>
+    <Reference Include="Microsoft.Rest.ClientRuntime.Azure.Authentication, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.Azure.Authentication.2.2.0-preview\lib\net45\Microsoft.Rest.ClientRuntime.Azure.Authentication.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -162,30 +162,38 @@
     <Compile Include="AppSettingsAuthConfig.cs" />
     <Compile Include="ArmHelper.cs" />
     <Compile Include="CertificateManager.cs" />
-    <Compile Include="IAuthSettings.cs" />
+    <Compile Include="IAzureEnvironment.cs" />
+    <Compile Include="JsonHelper.cs" />
     <Compile Include="KuduHelper.cs" />
     <Compile Include="KuduRestClient.cs" />
     <Compile Include="Models\AcmeConfig.cs" />
+    <Compile Include="Models\AuthorizationChallengeProviderConfig.cs" />
     <Compile Include="Models\CertificateInfo.cs" />
+    <Compile Include="Models\CertificateInstallModel.cs" />
+    <Compile Include="Models\IAcmeConfig.cs" />
+    <Compile Include="Models\IAuthorizationChallengeProviderConfig.cs" />
     <Compile Include="Models\INamedObject.cs" />
     <Compile Include="Models\KuduModels.cs" />
     <Compile Include="Models\SettingEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AcmeService.cs" />
     <Compile Include="Services\BaseAuthorizationChannelgeProvider.cs" />
+    <Compile Include="Services\CertificateService.cs" />
+    <Compile Include="Services\ICertificateService.cs" />
     <Compile Include="Services\KuduFileSystemAuthorizationChallengeProvider.cs" />
     <Compile Include="Services\LocalFileSystemAuthorizationChallengeProvider.cs" />
-    <Compile Include="Services\IAuthorizeChallengeProvider.cs" />
+    <Compile Include="Services\IAuthorizationChallengeProvider.cs" />
     <Compile Include="SettingsStore.cs" />
     <Compile Include="SiteSlotExtensions.cs" />
-    <Compile Include="Target.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Validation\RequiredGuid.cs" />
     <Compile Include="WebAppEnviromentVariables.cs" />
     <Compile Include="WebSiteManagementExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="packages.config.old" />
   </ItemGroup>

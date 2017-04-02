@@ -21,12 +21,12 @@ namespace LetsEncrypt.SiteExtension.Core.Services
     {
         private readonly string configPath;
         private string baseURI;
-        private readonly AcmeConfig config;
-        private readonly IAuthorizeChallengeProvider authorizeChallengeProvider;
+        private readonly IAcmeConfig config;
+        private readonly IAuthorizationChallengeProvider authorizeChallengeProvider;
 
-        public AcmeService(AcmeConfig config, IAuthorizeChallengeProvider authorizeChallengeProvider)
+        public AcmeService(IAcmeConfig config, IAuthorizationChallengeProvider authorizeChallengeProvider)
         {
-            this.baseURI = config.Endpoint ?? "https://acme-staging.api.letsencrypt.org/";
+            this.baseURI = config.BaseUri ?? "https://acme-staging.api.letsencrypt.org/";
             this.configPath = ConfigPath(this.baseURI);
             this.config = config;
             this.authorizeChallengeProvider = authorizeChallengeProvider;
@@ -36,7 +36,7 @@ namespace LetsEncrypt.SiteExtension.Core.Services
         {   using (var signer = new RS256Signer())
             using (var client = Register(signer))
             {
-                var auth = await this.authorizeChallengeProvider.Authorize(client, config.AllDnsIdentifiers);
+                var auth = await this.authorizeChallengeProvider.Authorize(client, config.Hostnames.ToList());
 
                 //GetCertificate
                 if (auth.Status == "valid")
@@ -47,14 +47,14 @@ namespace LetsEncrypt.SiteExtension.Core.Services
                     certificate = new X509Certificate2(pfxFilename, config.PFXPassword, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
                     certificate.FriendlyName = $"{config.Host} {DateTime.Now}";
 
-                    var bytes = File.ReadAllBytes(pfxFilename);
-                    var pfx = Convert.ToBase64String(bytes);
+                    var bytes = File.ReadAllBytes(pfxFilename);                   
 
                     return new CertificateInfo()
                     {
                         Certificate = certificate,
-                        PfxCertificateBase64 = pfx,
-                        Name = pfxFilename
+                        PfxCertificate = bytes,
+                        Name = pfxFilename,
+                        Password = config.PFXPassword
                     };
                 }
 
@@ -172,11 +172,11 @@ namespace LetsEncrypt.SiteExtension.Core.Services
             {
                 CommonName = dnsIdentifier,
             };
-            if (config.AlternativeNames != null)
+            if (config.AlternateNames != null)
             {
-                if (config.AlternativeNames.Count > 0)
+                if (config.AlternateNames.Count > 0)
                 {
-                    csrDetails.AlternativeNames = config.AlternativeNames;
+                    csrDetails.AlternativeNames = config.AlternateNames;
                 }
             }
             var csrParams = new CsrParams

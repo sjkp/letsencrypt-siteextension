@@ -83,6 +83,11 @@
 {
     @*@Html.AntiForgeryToken()*@
 
+    @Html.HiddenFor(model => model.AuthenticationEndpoint)
+    @Html.HiddenFor(model => model.AzureWebSitesDefaultDomainName)
+    @Html.HiddenFor(model => model.ManagementEndpoint)
+    @Html.HiddenFor(model => model.TokenAudience)
+
     <div class="form-horizontal">
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })

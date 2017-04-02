@@ -8,17 +8,21 @@ using ACMESharp.ACME;
 using LetsEncrypt.SiteExtension.Models;
 using System.Configuration;
 using System.IO;
+using LetsEncrypt.SiteExtension.Core.Models;
+using System.Diagnostics;
 
 namespace LetsEncrypt.SiteExtension.Core.Services
 {
     public class KuduFileSystemAuthorizationChallengeProvider : BaseAuthorizationChannelgeProvider
     {
         private readonly KuduRestClient kuduClient;
+        private readonly IAuthorizationChallengeProviderConfig config;
 
-        public KuduFileSystemAuthorizationChallengeProvider(AppSettingsAuthConfig config)
+        public KuduFileSystemAuthorizationChallengeProvider(IAzureEnvironment azureEnvironment, IAuthorizationChallengeProviderConfig config)
         {
-            var website = ArmHelper.GetWebSiteManagementClient(config);
-            this.kuduClient = KuduHelper.GetKuduClient(website, config);
+            this.config = config;
+            var website = ArmHelper.GetWebSiteManagementClient(azureEnvironment);
+            this.kuduClient = KuduHelper.GetKuduClient(website, azureEnvironment);
         }
         public override Task CleanupChallengeFile(HttpChallenge challenge)
         {
@@ -27,7 +31,12 @@ namespace LetsEncrypt.SiteExtension.Core.Services
 
         public override async Task EnsureWebConfig()
         {
-            await WriteFile(WebRootPath() + "/.well-known/acme-challenge", webConfig);
+            if (config.DisableWebConfigUpdate)
+            {
+                Trace.TraceInformation($"Disabled updating web.config at {WebRootPath() }");
+                return;
+            }
+            await WriteFile(WebRootPath() + "/.well-known/acme-challenge/web.config", webConfig);
         }
 
         public override async Task PersistsChallengeFile(HttpChallenge challenge)
@@ -59,7 +68,12 @@ namespace LetsEncrypt.SiteExtension.Core.Services
 
         private static string WebRootPath()
         {
-            return ConfigurationManager.AppSettings["letsencrypt:WebRootPath"] ?? "site/wwwroot";
+            
+            var webrootPath = ConfigurationManager.AppSettings["letsencrypt:WebRootPath"];
+            if (string.IsNullOrEmpty(webrootPath))
+                return "site/wwwroot";
+            //Ensure this is a backwards compatible with the LocalFileSystemProvider that was the only option before
+            return webrootPath.Replace(Environment.ExpandEnvironmentVariables("%HOME%"), "").Replace('\\', '/');
         }
     }
 }

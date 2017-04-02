@@ -2,7 +2,7 @@
 
 namespace LetsEncrypt.SiteExtension.Models
 {
-    public interface IAuthSettings
+    public interface IAzureEnvironment
     {
         string Tenant { get; }
 
@@ -16,5 +16,13 @@ namespace LetsEncrypt.SiteExtension.Models
         string ServicePlanResourceGroupName { get; }
 
         string SiteSlotName { get; }
+
+        string AzureWebSitesDefaultDomainName { get; }
+
+        Uri ManagementEndpoint { get; }
+
+        Uri TokenAudience { get; }
+
+        Uri AuthenticationEndpoint { get; }
     }
 }

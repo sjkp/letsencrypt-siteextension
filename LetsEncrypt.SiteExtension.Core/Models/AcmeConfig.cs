@@ -6,33 +6,33 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.SiteExtension.Core.Models
 {
-    public class AcmeConfig
+    public class AcmeConfig : IAcmeConfig
     {
-        public string RegistrationEmail {get;set;}
+        public string RegistrationEmail { get; set; }
 
-        public string Endpoint { get; set; }
+        public string BaseUri { get; set; }
 
         /// <summary>
         /// The host name the certificate should be issued for.
         /// </summary>
         public string Host { get; set; }
 
-        public List<string> AllDnsIdentifiers
+        public IEnumerable<string> Hostnames
         {
             get
             {
                 List<string> allDnsIdentifiers = new List<string>();
                 allDnsIdentifiers.Add(this.Host);
 
-                if (this.AlternativeNames != null)
+                if (this.AlternateNames != null)
                 {
-                    allDnsIdentifiers.AddRange(this.AlternativeNames);
+                    allDnsIdentifiers.AddRange(this.AlternateNames);
                 }
                 return allDnsIdentifiers;
             }
         }
 
-        public List<string> AlternativeNames { get; set; }
+        public List<string> AlternateNames { get; set; }
 
         public int RSAKeyLength { get; set; }
 

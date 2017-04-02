@@ -6,7 +6,7 @@ using System.Web;
 
 namespace LetsEncrypt.SiteExtension.Models
 {
-    public class AuthenticationModel : IAuthSettings
+    public class AuthenticationModel : IAzureEnvironment
     {
         [Required]
         public string Tenant { get; set; }
@@ -66,6 +66,26 @@ namespace LetsEncrypt.SiteExtension.Models
         
         public string ServicePlanResourceGroupName { get; set; }
 
+        public string AzureWebSitesDefaultDomainName
+        {
+            get; set;
+        }
+
+        public Uri ManagementEndpoint
+        {
+            get; set;
+        }
+
+        public Uri TokenAudience
+        {
+            get; set;
+        }
+
+        public Uri AuthenticationEndpoint
+        {
+            get;set;
+        }
+
         public static explicit operator AuthenticationModel(AppSettingsAuthConfig config)
         {
             return new AuthenticationModel()
@@ -78,6 +98,10 @@ namespace LetsEncrypt.SiteExtension.Models
                 WebAppName = config.WebAppName,
                 UseIPBasedSSL = config.UseIPBasedSSL,
                 ServicePlanResourceGroupName = config.ServicePlanResourceGroupName,                
+                AuthenticationEndpoint = config.AuthenticationEndpoint,
+                AzureWebSitesDefaultDomainName = config.AzureWebSitesDefaultDomainName,
+                ManagementEndpoint = config.ManagementEndpoint,
+                TokenAudience = config.TokenAudience
             };
         }
     }

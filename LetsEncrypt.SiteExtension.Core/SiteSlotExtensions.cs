@@ -9,38 +9,38 @@ namespace LetsEncrypt.SiteExtension
 {
     public static class SiteSlotExtensions
     {
-        public static Site GetSiteOrSlot(this ISitesOperations sites, string resourceGroupName, string webAppName, string siteSlotName)
+        public static Site GetSiteOrSlot(this IWebAppsOperations sites, string resourceGroupName, string webAppName, string siteSlotName)
         {
             if (string.IsNullOrEmpty(siteSlotName))
             {
-                return sites.GetSite(resourceGroupName, webAppName);
+                return sites.Get(resourceGroupName, webAppName);
             }
             else
             {
-                return sites.GetSiteSlot(resourceGroupName, webAppName, siteSlotName);
+                return sites.GetSlot(resourceGroupName, webAppName, siteSlotName);
             }
         }
-        public static StringDictionary ListSiteOrSlotAppSettings(this ISitesOperations sites, string resourceGroupName, string webAppName, string siteSlotName)
+        public static StringDictionary ListSiteOrSlotAppSettings(this IWebAppsOperations sites, string resourceGroupName, string webAppName, string siteSlotName)
         {
             if (string.IsNullOrEmpty(siteSlotName))
             {
-                return sites.ListSiteAppSettings(resourceGroupName, webAppName);
+                return sites.ListApplicationSettings(resourceGroupName, webAppName);
             }
             else
             {
-                return sites.ListSiteAppSettingsSlot(resourceGroupName, webAppName, siteSlotName);
+                return sites.ListApplicationSettingsSlot(resourceGroupName, webAppName, siteSlotName);
             }
         }
-        public static StringDictionary UpdateSiteOrSlotAppSettings(this ISitesOperations sites, string resourceGroupName, string webAppName, string siteSlotName, StringDictionary settings)
+        public static StringDictionary UpdateSiteOrSlotAppSettings(this IWebAppsOperations sites, string resourceGroupName, string webAppName, string siteSlotName, StringDictionary settings)
         {
             if (string.IsNullOrEmpty(siteSlotName))
             {
-                return sites.UpdateSiteAppSettings(resourceGroupName, webAppName, settings);
+                return sites.UpdateApplicationSettings(resourceGroupName, webAppName, settings);
             }
             else
             {
                 //We want the slot settings to be fixed to the slot, so we don't swap the wrong LetsEncrypt webjob settings into production.
-                var existingSlotConfigs = sites.GetSlotConfigNames(resourceGroupName, webAppName);
+                var existingSlotConfigs = sites.ListSlotConfigurationNames(resourceGroupName, webAppName);
                 var updateRequired = false;
                 foreach(var appSettingName in settings.Properties.Keys)
                 {
@@ -50,48 +50,48 @@ namespace LetsEncrypt.SiteExtension
                         updateRequired = true;
                     }
                 }
-                var res = sites.UpdateSiteAppSettingsSlot(resourceGroupName, webAppName, settings, siteSlotName);
+                var res = sites.UpdateApplicationSettingsSlot(resourceGroupName, webAppName, settings, siteSlotName);
                 if (updateRequired)
                 {
-                    sites.UpdateSlotConfigNames(resourceGroupName, webAppName, existingSlotConfigs);
+                    sites.UpdateSlotConfigurationNames(resourceGroupName, webAppName, existingSlotConfigs);
                 }
 
                 return res;
             }
         }
-        public static HostNameBinding CreateOrUpdateSiteOrSlotHostNameBinding(this ISitesOperations sites, string resourceGroupName, string webAppName, string siteSlotName, string hostName, HostNameBinding hostNameBinding)
+        public static HostNameBinding CreateOrUpdateSiteOrSlotHostNameBinding(this IWebAppsOperations sites, string resourceGroupName, string webAppName, string siteSlotName, string hostName, HostNameBinding hostNameBinding)
         {
             if (string.IsNullOrEmpty(siteSlotName))
             {
-                return sites.CreateOrUpdateSiteHostNameBinding(resourceGroupName, webAppName, hostName, hostNameBinding);
+                return sites.CreateOrUpdateHostNameBinding(resourceGroupName, webAppName, hostName, hostNameBinding);
             }
             else
             {
-                return sites.CreateOrUpdateSiteHostNameBindingSlot(resourceGroupName, webAppName, hostName, hostNameBinding, siteSlotName);
+                return sites.CreateOrUpdateHostNameBindingSlot(resourceGroupName, webAppName, hostName, hostNameBinding, siteSlotName);
             }
         }
-        public static Site BeginCreateOrUpdateSiteOrSlot(this ISitesOperations sites, string resourceGroupName, string webAppName, string siteSlotName, Site s)
+        public static Site BeginCreateOrUpdateSiteOrSlot(this IWebAppsOperations sites, string resourceGroupName, string webAppName, string siteSlotName, Site s)
         {
             if (string.IsNullOrEmpty(siteSlotName))
             {
-                return sites.BeginCreateOrUpdateSite(resourceGroupName, webAppName, s);
+                return sites.BeginCreateOrUpdate(resourceGroupName, webAppName, s);
             }
             else
             {
-                return sites.BeginCreateOrUpdateSiteSlot(resourceGroupName, webAppName, s, siteSlotName);
+                return sites.BeginCreateOrUpdateSlot(resourceGroupName, webAppName, s, siteSlotName);
             }
         }
 
-        public static User GetPublsihingCredentialSiteOrSlot(this ISitesOperations sites, string resourceGroupName, string webAppName, string siteSlotName)
+        public static User GetPublsihingCredentialSiteOrSlot(this IWebAppsOperations sites, string resourceGroupName, string webAppName, string siteSlotName)
         {
 
             if (string.IsNullOrEmpty(siteSlotName))
             {
-                return sites.BeginListSitePublishingCredentials(resourceGroupName, webAppName);
+                return sites.BeginListPublishingCredentials(resourceGroupName, webAppName);
             }
             else
             {
-                return sites.BeginListSitePublishingCredentialsSlot(resourceGroupName, webAppName, siteSlotName);
+                return sites.BeginListPublishingCredentialsSlot(resourceGroupName, webAppName, siteSlotName);
             }
         }
     }

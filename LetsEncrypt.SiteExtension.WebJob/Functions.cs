@@ -7,8 +7,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace LetsEncrypt.SiteExtension
@@ -33,29 +35,36 @@ namespace LetsEncrypt.SiteExtension
     }
 
     public class Functions
-    {       
-        public static void SetupHostNameAndCertificate([TimerTrigger(typeof(MonthlySchedule), RunOnStartup = true)] TimerInfo timerInfo, [Blob("letsencrypt/firstrun.job")] string input, [Blob("letsencrypt/firstrun.job")] out string output)
+    {
+        public static void AddCertificate([TimerTrigger(typeof(MonthlySchedule), RunOnStartup = true)] TimerInfo timerInfo, [Blob("letsencrypt/firstrun.job")] string input, [Blob("letsencrypt/firstrun.job")] out string output)
         {
-            Console.WriteLine("Starting setup hostname and certificate");
+            Console.WriteLine("Starting add certificate");
             string websiteName = Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
             if (string.IsNullOrEmpty(input) || !input.Contains(websiteName))
             {
-                new CertificateManager().SetupHostnameAndCertificate();
+                new CertificateManager(new Models.AppSettingsAuthConfig()).AddCertificate();
                 output = string.IsNullOrEmpty(input) ? websiteName : input + '|' + websiteName;
             }
             else
             {
                 output = input;
-            }            
-            Console.WriteLine("Completed setup hostname and certificate");
+            }
+            Console.WriteLine("Completed add certificate");
         }
 
-        public static void RenewCertificate([TimerTrigger(typeof(MyDailySchedule), RunOnStartup = true)] TimerInfo timerInfo)
+        public static async Task RenewCertificate([TimerTrigger(typeof(MyDailySchedule), RunOnStartup = true)] TimerInfo timerInfo)
         {
             Console.WriteLine("Renew certificate");
-            var count = new CertificateManager().RenewCertificate().Count();
+            var count = (await new CertificateManager(new Models.AppSettingsAuthConfig()).RenewCertificate()).Count();
             Console.WriteLine($"Completed renewal of '{count}' certificates");
-        }        
+        }   
+        
+        public static void Cleanup([TimerTrigger(typeof(MyDailySchedule), RunOnStartup = true)] TimerInfo timerInfo)
+        {
+            Console.WriteLine("Clean up");
+            var res = new CertificateManager(new Models.AppSettingsAuthConfig()).Cleanup();
+            res.ForEach(s => Console.WriteLine($"Removed certificate with thumbprint {s}"));
+        }    
 
     }
 

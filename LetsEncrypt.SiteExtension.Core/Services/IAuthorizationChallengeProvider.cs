@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.SiteExtension.Core.Services
 {
-    public interface IAuthorizeChallengeProvider
+    public interface IAuthorizationChallengeProvider
     {
         Task<AuthorizationState> Authorize(AcmeClient client, List<string> dnsIdentifiers);
     }

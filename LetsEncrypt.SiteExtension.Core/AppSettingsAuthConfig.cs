@@ -1,4 +1,5 @@
-﻿using LetsEncrypt.SiteExtension.Core.Validation;
+﻿using LetsEncrypt.SiteExtension.Core.Models;
+using LetsEncrypt.SiteExtension.Core.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ using System.Web;
 
 namespace LetsEncrypt.SiteExtension.Models
 {
-    public class AppSettingsAuthConfig : IAuthSettings
+    public class AppSettingsAuthConfig : IAzureEnvironment, IAcmeConfig
     {
         public const string clientIdKey = "letsencrypt:ClientId";
         public const string clientSecretKey = "letsencrypt:ClientSecret";
@@ -133,6 +134,22 @@ namespace LetsEncrypt.SiteExtension.Models
             }
         }
 
+        public string Host
+        {
+            get
+            {
+                return Hostnames.First();
+            }
+        }
+
+        public List<string> AlternateNames
+        {
+            get
+            {
+                return Hostnames.Skip(1).ToList();
+            }
+        }
+
         public bool UseIPBasedSSL
         {
             get
@@ -160,7 +177,7 @@ namespace LetsEncrypt.SiteExtension.Models
             }
         }
 
-        public string Email
+        public string RegistrationEmail
         {
             get
             {

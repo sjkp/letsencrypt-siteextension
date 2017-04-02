@@ -10,9 +10,9 @@ namespace LetsEncrypt.SiteExtension.Core
 {
     public static class KuduHelper
     {
-        public static KuduRestClient GetKuduClient(this WebSiteManagementClient client, IAuthSettings settings)
+        public static KuduRestClient GetKuduClient(this WebSiteManagementClient client, IAzureEnvironment settings)
         {
-            var user = client.Sites.GetPublsihingCredentialSiteOrSlot(settings.ResourceGroupName, settings.WebAppName, settings.SiteSlotName);
+            var user = client.WebApps.GetPublsihingCredentialSiteOrSlot(settings.ResourceGroupName, settings.WebAppName, settings.SiteSlotName);
 
             return new KuduRestClient(settings.WebAppName, user.PublishingUserName, user.PublishingPassword);
         }

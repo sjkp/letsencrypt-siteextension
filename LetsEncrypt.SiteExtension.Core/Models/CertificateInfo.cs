@@ -11,6 +11,7 @@ namespace LetsEncrypt.SiteExtension.Core.Models
     {
         public X509Certificate2 Certificate { get; set; }
         public string Name { get; set; }
-        public string PfxCertificateBase64 { get; set; }
+        public string Password { get; set; }
+        public byte[] PfxCertificate { get; set; }
     }
 }

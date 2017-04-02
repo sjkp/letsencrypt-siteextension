@@ -1,5 +1,6 @@
 ﻿using ACMESharp;
 using ACMESharp.ACME;
+using LetsEncrypt.SiteExtension.Core.Models;
 using LetsEncrypt.SiteExtension.Models;
 using Newtonsoft.Json;
 using System;
@@ -18,10 +19,12 @@ namespace LetsEncrypt.SiteExtension.Core.Services
 {
     public class LocalFileSystemAuthorizationChallengeProvider : BaseAuthorizationChannelgeProvider
     {       
-        private readonly AppSettingsAuthConfig config;
+        private readonly IAzureEnvironment azureEnvironment;
+        private readonly IAuthorizationChallengeProviderConfig config;
 
-        public LocalFileSystemAuthorizationChallengeProvider(AppSettingsAuthConfig config)
+        public LocalFileSystemAuthorizationChallengeProvider(IAzureEnvironment azureEnvironment, IAuthorizationChallengeProviderConfig config)
         {
+            this.azureEnvironment = azureEnvironment;
             this.config = config;
         }
 
