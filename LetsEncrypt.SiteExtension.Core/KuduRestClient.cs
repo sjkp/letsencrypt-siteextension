@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LetsEncrypt.SiteExtension.Models;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -15,12 +16,12 @@ namespace LetsEncrypt.SiteExtension.Core
         private string publishingUserName;
         private string webAppName;
 
-        public KuduRestClient(string webAppName, string publishingUserName, string publishingPassword)
+        public KuduRestClient(IAzureEnvironment azureEnvironment, string webAppName, string publishingUserName, string publishingPassword)
         {
             this.webAppName = webAppName;
             this.publishingUserName = publishingUserName;
             this.publishingPassword = publishingPassword;
-            this.baseUri = $"https://{this.webAppName}.scm.azurewebsites.net";
+            this.baseUri = $"https://{this.webAppName}.scm.{azureEnvironment.AzureWebSitesDefaultDomainName}";
             this.client = new HttpClient();
             client.BaseAddress = new System.Uri(baseUri);
             client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", CreateToken());
