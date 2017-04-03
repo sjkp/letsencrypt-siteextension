@@ -55,7 +55,8 @@ namespace LetsEncrypt.SiteExtension
         public static async Task RenewCertificate([TimerTrigger(typeof(MyDailySchedule), RunOnStartup = true)] TimerInfo timerInfo)
         {
             Console.WriteLine("Renew certificate");
-            var count = (await new CertificateManager(new Models.AppSettingsAuthConfig()).RenewCertificate()).Count();
+            var config = new Models.AppSettingsAuthConfig();
+            var count = (await new CertificateManager(new Models.AppSettingsAuthConfig()).RenewCertificate(renewXNumberOfDaysBeforeExpiration: config.RenewXNumberOfDaysBeforeExpiration)).Count();
             Console.WriteLine($"Completed renewal of '{count}' certificates");
         }   
         

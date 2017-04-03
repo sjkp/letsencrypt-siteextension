@@ -5,7 +5,6 @@
 This Azure Web App Site Extension enables easy installation and configuration of [Let's Encrypt](https://letsencrypt.org/) issued SSL certifcates for you custom domain names. 
 
 The site extension requires that you have configured a DNS entry for you custom domain to point to Azure Web App. 
-*Note with the fully automated mode, you don't even have to configure the custom domain in Azure the extension will do that for you.*
 
 ## How to install
 https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install
@@ -13,7 +12,7 @@ https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install
 ##Known Issues
 * This site-extension is **NOT** supported by Microsoft it is my own work based on https://github.com/ebekker/ACMESharp and https://github.com/Lone-Coder/letsencrypt-win-simple - this means don't expect 24x7 support, I use it for several of my own smaller sites, but if you are running sites that are important you should consider spending the few $ on a certificate and go with a Microsoft supported way of enabling SSL, so you have someone to blame :) 
 * Note that Let's Encrypt works by providing automated certificates of a short (currently three month) duration. This extension is BETA SOFTWARE. You will need to keep this extension updated or risk losing SSL access when your certificate expires.
-* There are presently no email notifications for certificate renewal problems, but Lets Encrypt will email you weeks in advance of certificate expiration. You will need to check logs.
+* There are presently no email notifications for certificate renewal problems, but Lets Encrypt will email you weeks in advance of certificate expiration, when the extension is running properly the certificate should have been renewed before Let's Encrypt send the reminder email.
 * Due to rate limiting of Let's Encrypt servers, you can only request five certificates per domain name per week. Configuration errors or errors in this site extension may render you unable to retrieve a new certificate for seven days. If up-time is critical, have a plan for deploying a SSL certificate from another source in place.
 * No support for multi-region web apps, so if you use traffic mananger or some other load balancer to route traffic between web apps in different regions please dont use this extension. 
 * If you publish your project from Visual Studio with the "Delete Existing files" option, you will remove the web jobs the site extension uses to renew the certificate once they expire every 3 months (you can renew them manually or install the site extension again after publish). 
@@ -22,7 +21,7 @@ https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install
 ## How to troubleshoot
 https://github.com/sjkp/letsencrypt-siteextension/wiki/Troubleshoot
 
-##This is Beta Software
+## This is Beta Software
 Please take note that this Site-Extension is beta-software, so use at your own risk.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYLEFT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
@@ -33,10 +32,6 @@ With the semi-automated installation you manually add the site extension to your
 Once this process is complete your custom domain for the site is setup with a Let's Encrypt issued SSL certificate. 
 
 ## Fully-Automated Installation
-If you setup your site with an Azure Resource Manager template, and want to configure SSL as part of this process you are currently out of luck as ARM templates doesn't support custom hostnames. 
-
-The extension removes this limitations by automatially setting up the custom hostname and requesting and configuring a Let's Encrypt certificate.
-
 To use the Fully Automated Installtion the following Web App settings must be added. 
 
 | Key |	Value
