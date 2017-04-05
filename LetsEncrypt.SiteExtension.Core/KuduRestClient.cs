@@ -16,9 +16,9 @@ namespace LetsEncrypt.SiteExtension.Core
         private string publishingUserName;
         private string webAppName;
 
-        public KuduRestClient(IAzureEnvironment azureEnvironment, string webAppName, string publishingUserName, string publishingPassword)
+        public KuduRestClient(IAzureEnvironment azureEnvironment, string publishingUserName, string publishingPassword)
         {
-            this.webAppName = webAppName;
+            this.webAppName = string.IsNullOrEmpty(azureEnvironment.SiteSlotName) ? azureEnvironment.WebAppName : azureEnvironment.WebAppName + "-" + azureEnvironment.SiteSlotName;
             this.publishingUserName = publishingUserName;
             this.publishingPassword = publishingPassword;
             this.baseUri = $"https://{this.webAppName}.scm.{azureEnvironment.AzureWebSitesDefaultDomainName}";

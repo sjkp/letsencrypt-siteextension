@@ -14,7 +14,7 @@ namespace LetsEncrypt.SiteExtension.Core
         {
             var user = client.WebApps.GetPublsihingCredentialSiteOrSlot(settings.ResourceGroupName, settings.WebAppName, settings.SiteSlotName);
 
-            return new KuduRestClient(settings, settings.WebAppName, user.PublishingUserName, user.PublishingPassword);
+            return new KuduRestClient(settings, user.PublishingUserName, user.PublishingPassword);
         }
     }
 }

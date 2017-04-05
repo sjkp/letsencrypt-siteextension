@@ -19,7 +19,8 @@ namespace LetsEncrypt.SiteExtension.WebJob
             config.UseTimers();
             //A host ID must be between 1 and 32 characters, contain only lowercase letters, numbers, and 
             //dashes, not start or end with a dash, and not contain consecutive dashes.
-            var hostId = "letsencrypt-" + Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");            
+            var environment = new Models.AppSettingsAuthConfig();
+            var hostId = "le-" + environment.WebAppName + environment.SiteSlotName;
             config.HostId = hostId.Substring(0,hostId.Length > 32 ? 32 : hostId.Length).TrimEnd(new[] { '-' }).ToLower();
 
             var host = new JobHost(config);

@@ -1,5 +1,4 @@
 ﻿using LetsEncrypt.SiteExtension.Models;
-using Microsoft.Azure.Management.Resources;
 using Microsoft.Azure.Management.WebSites;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;

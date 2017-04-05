@@ -101,7 +101,8 @@ namespace LetsEncrypt.SiteExtension.Models
                 AuthenticationEndpoint = config.AuthenticationEndpoint,
                 AzureWebSitesDefaultDomainName = config.AzureWebSitesDefaultDomainName,
                 ManagementEndpoint = config.ManagementEndpoint,
-                TokenAudience = config.TokenAudience
+                TokenAudience = config.TokenAudience,
+                SiteSlotName = config.SiteSlotName
             };
         }
     }
