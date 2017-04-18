@@ -103,7 +103,7 @@ namespace LetsEncrypt.SiteExtension.Core.Services
                         retry++;
                         Console.WriteLine(" Refreshing authorization attempt " + retry);
                         Trace.TraceInformation("Refreshing authorization attempt " + retry);
-                        await Task.Delay(4000);  // this has to be here to give ACME server a chance to think
+                        await Task.Delay(2000*retry);  // this has to be here to give ACME server a chance to think
                         var newAuthzState = client.RefreshIdentifierAuthorization(authzState);
                         if (newAuthzState.Status != "pending")
                             authzState = newAuthzState;
@@ -111,7 +111,7 @@ namespace LetsEncrypt.SiteExtension.Core.Services
 
                     Console.WriteLine($" Authorization Result: {authzState.Status}");
                     Trace.TraceInformation("Auth Result {0}", authzState.Status);
-                    if (authzState.Status == "invalid")
+                    if (authzState.Status == "invalid" || authzState.Status == "pending")
                     {
                         Trace.TraceError("Authorization Failed {0}", authzState.Status);
                         Trace.TraceInformation("Full Error Details {0}", JsonConvert.SerializeObject(authzState));

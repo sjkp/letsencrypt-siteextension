@@ -125,7 +125,7 @@ namespace LetsEncrypt.SiteExtension.Core
 
         internal string RequestAndInstallInternal(IAcmeConfig config)
         {
-            return RequestAndInstallInternalAsync(config).GetAwaiter().GetResult();
+           return RequestAndInstallInternalAsync(config).GetAwaiter().GetResult();
         }
 
         internal async Task<string> RequestAndInstallInternalAsync(IAcmeConfig config)

@@ -37,3 +37,5 @@ azuredeploy.parameters.serviceplan.local.json
 /LetsEncrypt.ResourceGroup/Templates/azuredeploy.parameters.local.de.json
 /LetsEncrypt.ResourceGroup/Templates/azuredeploy.site.parameters.local.json
 /LetsEncrypt.ResourceGroup/Templates/azuredeploy.serviceplan.parameters.local.json
+/push-core-nuget.cmd
+/push-core-myget.cmd

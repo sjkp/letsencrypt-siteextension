@@ -7,4 +7,3 @@ $loc = "WestEurope"
 New-AzureRmResourceGroup -Name $appPlanRgName -Location $loc
 
 New-AzureRmResourceGroupDeployment -Name "Test" -ResourceGroupName $appPlanRgName -TemplateParameterFile .\azuredeploy.parameters.local.json -TemplateFile .\azuredeploy.json
-

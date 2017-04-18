@@ -42,6 +42,7 @@ namespace LetsEncrypt.SiteExtension.Core.Services
                     Password = cert.Password,
                     Location = s.Location,
                     ServerFarmId = s.ServerFarmId,
+                    Name = model.Host + "-" + cert.Certificate.Thumbprint
 
                 };
                 //BUG https://github.com/sjkp/letsencrypt-siteextension/issues/99
@@ -53,7 +54,7 @@ namespace LetsEncrypt.SiteExtension.Core.Services
 
                 var body = JsonConvert.SerializeObject(newCert, JsonHelper.DefaultSerializationSettings);
 
-                var t = client.PutAsync($"/subscriptions/{azureEnvironment.SubscriptionId}/resourceGroups/{azureEnvironment.ServicePlanResourceGroupName}/providers/Microsoft.Web/certificates/{cert.Certificate.Thumbprint}?api-version=2016-03-01", new StringContent(body, Encoding.UTF8, "application/json")).Result;
+                var t = client.PutAsync($"/subscriptions/{azureEnvironment.SubscriptionId}/resourceGroups/{azureEnvironment.ServicePlanResourceGroupName}/providers/Microsoft.Web/certificates/{newCert.Name}?api-version=2016-03-01", new StringContent(body, Encoding.UTF8, "application/json")).Result;
 
                 t.EnsureSuccessStatusCode();
 
