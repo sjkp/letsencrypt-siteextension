@@ -1,7 +1,6 @@
 ﻿using ACMESharp;
 using ACMESharp.ACME;
-using LetsEncrypt.SiteExtension.Core.Models;
-using LetsEncrypt.SiteExtension.Models;
+using LetsEncrypt.Azure.Core.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LetsEncrypt.SiteExtension.Core.Services
+namespace LetsEncrypt.Azure.Core.Services
 {
     public class LocalFileSystemAuthorizationChallengeProvider : BaseAuthorizationChannelgeProvider
     {       

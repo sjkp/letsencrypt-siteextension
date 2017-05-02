@@ -1,12 +1,11 @@
-﻿using LetsEncrypt.SiteExtension.Core.Models;
-using LetsEncrypt.SiteExtension.Models;
+﻿using LetsEncrypt.Azure.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LetsEncrypt.SiteExtension.Core.Services
+namespace LetsEncrypt.Azure.Core.Services
 {
     public interface ICertificateService
     {

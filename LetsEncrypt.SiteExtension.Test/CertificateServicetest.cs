@@ -1,8 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using LetsEncrypt.SiteExtension.Core.Services;
-using LetsEncrypt.SiteExtension.Models;
-using LetsEncrypt.SiteExtension.Core.Models;
+using LetsEncrypt.Azure.Core.Services;
+using LetsEncrypt.Azure.Core.Models;
 using System.Collections.Generic;
 using System.IO;
 

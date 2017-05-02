@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Web.Hosting;
 using System.Web.Http;
 using Newtonsoft.Json;
+using LetsEncrypt.Azure.Core.Models;
+using LetsEncrypt.Azure.Core;
 using LetsEncrypt.SiteExtension.Models;
 
 namespace LetsEncrypt.SiteExtension.Controllers

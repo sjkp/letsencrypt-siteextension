@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LetsEncrypt.SiteExtension.Core.Models
+namespace LetsEncrypt.Azure.Core.Models
 {
     public class AuthorizationChallengeProviderConfig : IAuthorizationChallengeProviderConfig
     {

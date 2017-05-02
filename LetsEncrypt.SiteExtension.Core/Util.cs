@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace LetsEncrypt.SiteExtension
+namespace LetsEncrypt.Azure.Core
 {
     public static class Util
     {

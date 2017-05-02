@@ -301,9 +301,9 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LetsEncrypt.SiteExtension.Core\LetsEncrypt.SiteExtension.Core.csproj">
+    <ProjectReference Include="..\LetsEncrypt.SiteExtension.Core\LetsEncrypt.Azure.Core.csproj">
       <Project>{284f0226-f481-4c10-a408-4146fdbb71cc}</Project>
-      <Name>LetsEncrypt.SiteExtension.Core</Name>
+      <Name>LetsEncrypt.Azure.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

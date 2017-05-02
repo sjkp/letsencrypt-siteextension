@@ -5,9 +5,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using Newtonsoft.Json;
-using LetsEncrypt.SiteExtension.Models;
+using LetsEncrypt.Azure.Core.Models;
 
-namespace LetsEncrypt.SiteExtension
+namespace LetsEncrypt.Azure.Core
 {
     public class SettingsStore
     {

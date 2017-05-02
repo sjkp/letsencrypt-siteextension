@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LetsEncrypt.SiteExtension.Core.Services
+namespace LetsEncrypt.Azure.Core.Services
 {
     public abstract class BaseAuthorizationChannelgeProvider : IAuthorizationChallengeProvider
     {

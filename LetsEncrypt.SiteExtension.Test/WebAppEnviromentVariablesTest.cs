@@ -1,4 +1,4 @@
-﻿using LetsEncrypt.SiteExtension.Models;
+﻿using LetsEncrypt.Azure.Core.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;

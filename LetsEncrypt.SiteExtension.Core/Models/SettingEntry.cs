@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using Newtonsoft.Json;
 
-namespace LetsEncrypt.SiteExtension.Models
+namespace LetsEncrypt.Azure.Core.Models
 {
     public class SettingEntry : INamedObject
     {

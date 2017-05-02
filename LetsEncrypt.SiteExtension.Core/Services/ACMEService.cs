@@ -2,7 +2,7 @@
 using ACMESharp.HTTP;
 using ACMESharp.JOSE;
 using ACMESharp.PKI;
-using LetsEncrypt.SiteExtension.Core.Models;
+using LetsEncrypt.Azure.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Hosting;
 
-namespace LetsEncrypt.SiteExtension.Core.Services
+namespace LetsEncrypt.Azure.Core.Services
 {
 
     public class AcmeService

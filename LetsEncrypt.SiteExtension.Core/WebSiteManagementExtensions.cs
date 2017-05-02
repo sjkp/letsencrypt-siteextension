@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace LetsEncrypt.SiteExtension.Core
+namespace LetsEncrypt.Azure.Core
 {
     public static class WebSiteManagementClientExtensions
     {

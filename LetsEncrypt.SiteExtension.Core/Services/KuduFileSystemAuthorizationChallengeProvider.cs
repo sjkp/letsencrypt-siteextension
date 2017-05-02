@@ -5,13 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using ACMESharp;
 using ACMESharp.ACME;
-using LetsEncrypt.SiteExtension.Models;
 using System.Configuration;
 using System.IO;
-using LetsEncrypt.SiteExtension.Core.Models;
+using LetsEncrypt.Azure.Core.Models;
 using System.Diagnostics;
 
-namespace LetsEncrypt.SiteExtension.Core.Services
+namespace LetsEncrypt.Azure.Core.Services
 {
     public class KuduFileSystemAuthorizationChallengeProvider : BaseAuthorizationChannelgeProvider
     {

@@ -5,7 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LetsEncrypt.SiteExtension.Core.Models
+namespace LetsEncrypt.Azure.Core.Models
 {
     public class CertificateInfo
     {

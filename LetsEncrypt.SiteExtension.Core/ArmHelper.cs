@@ -1,4 +1,4 @@
-﻿using LetsEncrypt.SiteExtension.Models;
+﻿using LetsEncrypt.Azure.Core.Models;
 using Microsoft.Azure.Management.WebSites;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Web;
 
-namespace LetsEncrypt.SiteExtension
+namespace LetsEncrypt.Azure.Core
 {
     public static class ArmHelper
     {

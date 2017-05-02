@@ -1,5 +1,5 @@
-﻿using LetsEncrypt.SiteExtension.Core;
-using LetsEncrypt.SiteExtension.Models;
+﻿using LetsEncrypt.Azure.Core;
+using LetsEncrypt.Azure.Core.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;

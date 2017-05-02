@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web;
 
-namespace LetsEncrypt.SiteExtension.Models
+namespace LetsEncrypt.Azure.Core.Models
 {
     public class WebAppEnviromentVariables
     {

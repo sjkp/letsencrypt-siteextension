@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.SiteExtension.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.SiteExtension.WebJob", "LetsEncrypt.SiteExtension.WebJob\LetsEncrypt.SiteExtension.WebJob.csproj", "{EFB1F15B-3ACF-4A26-8280-88BE13DBB86F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.SiteExtension.Core", "LetsEncrypt.SiteExtension.Core\LetsEncrypt.SiteExtension.Core.csproj", "{284F0226-F481-4C10-A408-4146FDBB71CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.Azure.Core", "LetsEncrypt.SiteExtension.Core\LetsEncrypt.Azure.Core.csproj", "{284F0226-F481-4C10-A408-4146FDBB71CC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{ED36B174-3C73-447F-A76F-5E8D23B8ADB3}"
 	ProjectSection(SolutionItems) = preProject

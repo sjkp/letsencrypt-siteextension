@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LetsEncrypt.Azure.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;

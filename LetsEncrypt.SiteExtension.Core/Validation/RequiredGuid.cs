@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LetsEncrypt.SiteExtension.Core.Validation
+namespace LetsEncrypt.Azure.Core.Validation
 {
     public class RequiredGuidAttribute : RequiredAttribute
     {

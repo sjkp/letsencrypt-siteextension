@@ -7,9 +7,9 @@
     <ProjectGuid>{284F0226-F481-4C10-A408-4146FDBB71CC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LetsEncrypt.SiteExtension.Core</RootNamespace>
-    <AssemblyName>LetsEncrypt.SiteExtension.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <RootNamespace>LetsEncrypt.Azure.Core</RootNamespace>
+    <AssemblyName>LetsEncrypt.Azure.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -163,7 +163,7 @@
     <Compile Include="SiteSlotExtensions.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Validation\RequiredGuid.cs" />
-    <Compile Include="WebAppEnviromentVariables.cs" />
+    <Compile Include="Models\WebAppEnviromentVariables.cs" />
     <Compile Include="WebSiteManagementExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

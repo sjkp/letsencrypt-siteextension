@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace LetsEncrypt.SiteExtension.Core.Models
+namespace LetsEncrypt.Azure.Core.Models
 {
     public interface IAcmeConfig
     {

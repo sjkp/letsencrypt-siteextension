@@ -1,4 +1,4 @@
-﻿using LetsEncrypt.SiteExtension.Models;
+﻿using LetsEncrypt.Azure.Core.Models;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LetsEncrypt.SiteExtension.Core
+namespace LetsEncrypt.Azure.Core
 {
     public class KuduRestClient
     {
@@ -45,10 +45,10 @@ namespace LetsEncrypt.SiteExtension.Core
             return res;
         }
 
-        public async Task<DirectoryInfo> GetDirectory(string path)
+        public async Task<Models.DirectoryInfo> GetDirectory(string path)
         {
             var res = await client.GetStringAsync($"/api/vfs/{path}/");
-            return JsonConvert.DeserializeObject<DirectoryInfo>(res);
+            return JsonConvert.DeserializeObject<Models.DirectoryInfo>(res);
         }
 
         public async Task PutFile(string path, MemoryStream stream)

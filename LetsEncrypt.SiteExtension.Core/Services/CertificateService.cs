@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LetsEncrypt.SiteExtension.Core.Models;
-using LetsEncrypt.SiteExtension.Models;
+using LetsEncrypt.Azure.Core;
+using LetsEncrypt.Azure.Core.Models;
 using Microsoft.Azure.Management.WebSites.Models;
 using Microsoft.Azure.Management.WebSites;
 using System.Diagnostics;
 using System.Net.Http;
 using Newtonsoft.Json;
 
-namespace LetsEncrypt.SiteExtension.Core.Services
+namespace LetsEncrypt.Azure.Core.Services
 {
     /// <summary>
     /// Installs and assigns the certificate directly to the app service plan. 

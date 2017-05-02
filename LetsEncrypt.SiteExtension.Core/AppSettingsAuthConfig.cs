@@ -1,5 +1,4 @@
-﻿using LetsEncrypt.SiteExtension.Core.Models;
-using LetsEncrypt.SiteExtension.Core.Validation;
+﻿using LetsEncrypt.Azure.Core.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +6,7 @@ using System.Configuration;
 using System.Linq;
 using System.Web;
 
-namespace LetsEncrypt.SiteExtension.Models
+namespace LetsEncrypt.Azure.Core.Models
 {
     public class AppSettingsAuthConfig : IAzureEnvironment, IAcmeConfig
     {

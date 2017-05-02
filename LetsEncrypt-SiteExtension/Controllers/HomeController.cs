@@ -1,8 +1,7 @@
 ﻿using ARMExplorer.Controllers;
 using ARMExplorer.Modules;
-using LetsEncrypt.SiteExtension;
-using LetsEncrypt.SiteExtension.Core;
-using LetsEncrypt.SiteExtension.Core.Models;
+using LetsEncrypt.Azure.Core;
+using LetsEncrypt.Azure.Core.Models;
 using LetsEncrypt.SiteExtension.Models;
 using Microsoft.Azure.Graph.RBAC;
 using Microsoft.Azure.Graph.RBAC.Models;
@@ -204,13 +203,13 @@ namespace LetsEncrypt.SiteExtension.Controllers
             if (ModelState.IsValid)
             {
                 var s = SettingsStore.Instance.Load();
-                s.Add(new LetsEncrypt.SiteExtension.Models.SettingEntry()
+                s.Add(new SettingEntry()
                 {
                     Name = "email",
                     Value = model.Email
                 });
                 var baseUri = model.UseStaging == false ? "https://acme-v01.api.letsencrypt.org/" : "https://acme-staging.api.letsencrypt.org/";
-                s.Add(new LetsEncrypt.SiteExtension.Models.SettingEntry()
+                s.Add(new SettingEntry()
                 {
                     Name = "baseUri",
                     Value = baseUri

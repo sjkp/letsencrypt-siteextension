@@ -1,6 +1,5 @@
-﻿using LetsEncrypt.SiteExtension.Core.Models;
-using LetsEncrypt.SiteExtension.Core.Services;
-using LetsEncrypt.SiteExtension.Models;
+﻿using LetsEncrypt.Azure.Core.Models;
+using LetsEncrypt.Azure.Core.Services;
 using Microsoft.Azure.Management.WebSites;
 using Microsoft.Azure.Management.WebSites.Models;
 using Newtonsoft.Json;
@@ -10,7 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LetsEncrypt.SiteExtension.Core
+namespace LetsEncrypt.Azure.Core
 {
     public class CertificateManager
     {
