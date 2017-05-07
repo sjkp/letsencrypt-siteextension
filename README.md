@@ -5,7 +5,7 @@
 # PROBLEMS OPENING THE EXTENSION
 Microsoft have introduced a bug in the kudu portal that the extension relies on, until that is resolved you have to browse to the extension using: `https://[websitename].scm.azurewebsites.net/letsencrypt`
 
-See #134 for more info. 
+See https://github.com/sjkp/letsencrypt-siteextension/issues/134 for more info. 
 
 
 This Azure Web App Site Extension enables easy installation and configuration of [Let's Encrypt](https://letsencrypt.org/) issued SSL certifcates for you custom domain names. 
