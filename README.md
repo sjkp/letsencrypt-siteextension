@@ -2,6 +2,12 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/mdg0e31rp0qdu16m/branch/master?svg=true
 )](https://ci.appveyor.com/project/sjkp/letsencrypt-siteextension)
 
+# PROBLEMS OPENING THE EXTENSION
+Microsoft have introduced a bug in the kudu portal that the extension relies on, until that is resolved you have to browse to the extension using: `https://[websitename].scm.azurewebsites.net/letsencrypt`
+
+See #134 for more info. 
+
+
 This Azure Web App Site Extension enables easy installation and configuration of [Let's Encrypt](https://letsencrypt.org/) issued SSL certifcates for you custom domain names. 
 
 The site extension requires that you have configured a DNS entry for you custom domain to point to Azure Web App. 
