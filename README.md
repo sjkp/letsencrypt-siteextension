@@ -1,8 +1,3 @@
-# PROBLEMS OPENING THE EXTENSION
-Microsoft have introduced a bug in the kudu portal that the extension relies on, until that is resolved you have to browse to the extension using: `https://[websitename].scm.azurewebsites.net/letsencrypt`
-
-See https://github.com/sjkp/letsencrypt-siteextension/issues/134 for more info. 
-
 # Let's Encrypt Site Extension
 [![Build status](https://ci.appveyor.com/api/projects/status/mdg0e31rp0qdu16m/branch/master?svg=true
 )](https://ci.appveyor.com/project/sjkp/letsencrypt-siteextension)
