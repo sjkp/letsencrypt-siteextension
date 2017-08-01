@@ -2,6 +2,8 @@
 using ACMESharp.HTTP;
 using ACMESharp.JOSE;
 using ACMESharp.PKI;
+using ACMESharp.PKI.Providers;
+using ACMESharp.PKI.RSA;
 using LetsEncrypt.Azure.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -147,7 +149,8 @@ namespace LetsEncrypt.Azure.Core.Services
         {
 
             var dnsIdentifier = config.Host;
-            var cp = CertificateProvider.GetProvider();
+            
+            var cp = CertificateProvider.GetProvider(BouncyCastleProvider.PROVIDER_NAME);
             var rsaPkp = new RsaPrivateKeyParams();
             try
             {

@@ -3,7 +3,7 @@
   <metadata>
     <id>letsencrypt.azure.core</id>
     <title>Azure Let's Encrypt</title>
-    <version>0.6.20-prerelease</version>
+    <version>0.7.2-prerelease</version>
     <authors>SJKP</authors>
     <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
     <projectUrl>https://github.com/sjkp/letsencrypt-siteextension</projectUrl>
@@ -13,12 +13,14 @@
     <tags>letsencrypt ssl https</tags>
     <!-- Dependencies are automatically installed when the package is installed -->
     <dependencies>
-      <dependency id="ACMESharp" version="0.8.1.214-EA"></dependency>
       <dependency id="Microsoft.Azure.Management.Websites" version="1.6.0-preview" />
       <dependency id="Microsoft.IdentityModel.Clients.ActiveDirectory" version="2.28.1"></dependency>
-      <dependency id="Newtonsoft.Json" version="7.0.1" />
+      <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <dependency id="BouncyCastle" version="1.8.1" />
     </dependencies>
   </metadata>
-  <files>    
+  <files>
+    <file src="..\ACMESharp\ACMESharp\ACMESharp\bin\Release\ACMESharp.dll" target="lib\net46"></file>
+    <file src="..\ACMESharp\ACMESharp\ACMESharp.PKI.Providers.BouncyCastle\bin\Release\ACMESharp.PKI.Providers.BouncyCastle.dll" target="lib\net46"></file>
   </files>
 </package>

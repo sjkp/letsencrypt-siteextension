@@ -1,5 +1,6 @@
 ﻿using ACMESharp;
 using ACMESharp.ACME;
+using LetsEncrypt.Azure.Core.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,88 +14,60 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.Azure.Core.Services
 {
-    public abstract class BaseAuthorizationChannelgeProvider : IAuthorizationChallengeProvider
+    public class AzureDnsAuthorizationChallengeProvider : IAuthorizationChallengeProvider
     {
-        protected const string webConfig = @"<?xml version=""1.0"" encoding=""utf-8""?>
-<configuration>
-  <system.webServer>
-    <handlers>
-      <clear />
-      <add name=""ACMEStaticFile"" path=""*"" verb=""*"" modules=""StaticFileModule"" resourceType=""Either"" requireAccess=""Read"" />
-    </handlers>
-    <staticContent>
-      <remove fileExtension=""."" />
-      <mimeMap fileExtension=""."" mimeType=""text/plain"" />
-    </staticContent>
-  </system.webServer>
-  <system.web>
-    <authorization>
-      <allow users=""?""/>
-    </authorization>
-  </system.web>
-</configuration>";
+        private readonly HttpClient httpClient;
 
-        public virtual Task EnsureDirectory() {
-            return Task.CompletedTask;
-        }
-
-        public virtual Task EnsureWebConfig()
+        public AzureDnsAuthorizationChallengeProvider(IAzureEnvironment azureEnvironment)
         {
-            return Task.CompletedTask;
+            this.httpClient = ArmHelper.GetHttpClient(azureEnvironment);
         }
-
-        public abstract Task PersistsChallengeFile(HttpChallenge challenge);
-
-        public abstract Task CleanupChallengeFile(HttpChallenge challenge);
 
         public async Task<AuthorizationState> Authorize(AcmeClient client, List<string> allDnsIdentifiers)
         {
             List<AuthorizationState> authStatus = new List<AuthorizationState>();
 
-            await EnsureDirectory();
-            await EnsureWebConfig();
-
             foreach (var dnsIdentifier in allDnsIdentifiers)
             {
                 //var dnsIdentifier = target.Host;                
-                Console.WriteLine($"\nAuthorizing Identifier {dnsIdentifier} Using Challenge Type {AcmeProtocol.CHALLENGE_TYPE_HTTP}");
-                Trace.TraceInformation("Authorizing Identifier {0} Using Challenge Type {1}", dnsIdentifier, AcmeProtocol.CHALLENGE_TYPE_HTTP);
-                var authzState = client.AuthorizeIdentifier(dnsIdentifier);
-                var challenge = client.DecodeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
-                var httpChallenge = challenge.Challenge as HttpChallenge;
+                Console.WriteLine($"\nAuthorizing Identifier {dnsIdentifier} Using Challenge Type {AcmeProtocol.CHALLENGE_TYPE_DNS}");
+                Trace.TraceInformation("Authorizing Identifier {0} Using Challenge Type {1}", dnsIdentifier, AcmeProtocol.CHALLENGE_TYPE_DNS);
+                var authzState = client.AuthorizeIdentifier(dnsIdentifier);                
+                var challenge = client.DecodeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
+                var dnsChallenge = challenge.Challenge as DnsChallenge;
 
-                await PersistsChallengeFile(httpChallenge);
+                await PersistsChallenge(dnsChallenge);
 
-                var answerUri = new Uri(httpChallenge.FileUrl);
-                Console.WriteLine($" Answer should now be browsable at {answerUri}");
-                Trace.TraceInformation("Answer should now be browsable at {0}", answerUri);
+                var answerUri = new Uri(dnsChallenge.RecordValue);
+                Console.WriteLine($" DNS Answer should now be available as {dnsChallenge.RecordName} with value {answerUri}");
+                Trace.TraceInformation($" DNS Answer should now be available as {dnsChallenge.RecordName} with value {answerUri}");
 
                 try
                 {
                     var retry = 10;
-                    var handler = new WebRequestHandler();
-                    handler.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                    //var handler = new WebRequestHandler();
+                    //handler.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
 
-                    var httpclient = new HttpClient(handler);
-                    while (true)
-                    {
+                    //var httpclient = new HttpClient(handler);
+                    //while (true)
+                    //{
 
-                        //Allow self-signed certs otherwise staging wont work
+                    //    //Allow self-signed certs otherwise staging wont work
 
 
-                        await Task.Delay(1000);
-                        var x = await httpclient.GetAsync(answerUri);
-                        Trace.TraceInformation("Checking status {0}", x.StatusCode);
-                        if (x.StatusCode == HttpStatusCode.OK)
-                            break;
-                        if (retry-- == 0)
-                            break;
-                        Trace.TraceInformation("Retrying {0}", retry);
-                    }
+                    //    await Task.Delay(1000);
+                    //    var x = await httpclient.GetAsync(answerUri);
+                    //    Trace.TraceInformation("Checking status {0}", x.StatusCode);
+                    //    if (x.StatusCode == HttpStatusCode.OK)
+                    //        break;
+                    //    if (retry-- == 0)
+                    //        break;
+                    //    Trace.TraceInformation("Retrying {0}", retry);
+                    //}
                     Console.WriteLine(" Submitting answer");
                     Trace.TraceInformation("Submitting answer");
                     authzState.Challenges = new AuthorizeChallenge[] { challenge };
-                    client.SubmitChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP, true);
+                    client.SubmitChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS, true);
 
                     // have to loop to wait for server to stop being pending. 
                     retry = 0;
@@ -128,7 +101,7 @@ namespace LetsEncrypt.Azure.Core.Services
                     {
                         Console.WriteLine(" Deleting answer");
                         Trace.TraceInformation("Deleting answer");
-                        await CleanupChallengeFile(httpChallenge);
+                        await CleanupChallenge(dnsChallenge);
                     }
                 }
             }
@@ -140,6 +113,16 @@ namespace LetsEncrypt.Azure.Core.Services
                 }
             }
             return new AuthorizationState { Status = "valid" };
+        }
+
+        private Task CleanupChallenge(DnsChallenge httpChallenge)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Task PersistsChallenge(DnsChallenge httpChallenge)
+        {
+            throw new NotImplementedException(); 
         }
     }
 }
