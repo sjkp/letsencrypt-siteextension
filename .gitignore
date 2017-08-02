@@ -29,6 +29,7 @@ azuredeploy.parameters.local.json
 azuredeploy.parameters.serviceplan.local.json
 /artifacts64
 /push-siteextension-siteextensionsnet.cmd
+/push-siteextension-myget.ps1
 /push-siteextension-myget.cmd
 /codes.txt
 /.vs/config/applicationhost.config

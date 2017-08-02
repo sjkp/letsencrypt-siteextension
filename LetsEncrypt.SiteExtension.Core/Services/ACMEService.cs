@@ -149,7 +149,7 @@ namespace LetsEncrypt.Azure.Core.Services
         {
 
             var dnsIdentifier = config.Host;
-            
+            CertificateProvider.RegisterProvider<BouncyCastleProvider>(BouncyCastleProvider.PROVIDER_NAME);
             var cp = CertificateProvider.GetProvider(BouncyCastleProvider.PROVIDER_NAME);
             var rsaPkp = new RsaPrivateKeyParams();
             try

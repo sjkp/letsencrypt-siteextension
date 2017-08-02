@@ -32,7 +32,6 @@ namespace LetsEncrypt.Azure.Core.Services
             using (var webSiteClient = ArmHelper.GetWebSiteManagementClient(azureEnvironment))
             {
 
-
                 var s = webSiteClient.WebApps.GetSiteOrSlot(azureEnvironment.ResourceGroupName, azureEnvironment.WebAppName, azureEnvironment.SiteSlotName);
 
                 Trace.TraceInformation(String.Format("Installing certificate {0} on azure with server farm id {1}", cert.Name, s.ServerFarmId));
