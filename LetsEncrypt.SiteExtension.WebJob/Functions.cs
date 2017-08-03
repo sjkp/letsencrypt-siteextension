@@ -39,20 +39,24 @@ namespace LetsEncrypt.SiteExtension
     {
         public static void AddCertificate([TimerTrigger(typeof(MonthlySchedule), RunOnStartup = true)] TimerInfo timerInfo, [Blob("letsencrypt/firstrun.job")] string input, [Blob("letsencrypt/firstrun.job")] out string output)
         {
-            Console.WriteLine("Starting add certificate");
+            Console.WriteLine("Starting add certificate job");
             var environment = new AppSettingsAuthConfig();
             string websiteName = environment.WebAppName + "-" + environment.SiteSlotName + "|";
             if (string.IsNullOrEmpty(input) || !input.Contains(websiteName))
             {
                 Console.WriteLine($"First run of add certificate for {websiteName}");
-                new CertificateManager(environment).AddCertificate();
+                var status = new CertificateManager(environment).AddCertificate();
+                if (status)
+                {
+                    Console.WriteLine("Certificate was added with success");
+                }
                 output = string.IsNullOrEmpty(input) ? websiteName : input + websiteName;
             }
             else
             {
                 output = input;
             }
-            Console.WriteLine("Completed add certificate");
+            Console.WriteLine("Completed add certificate job");
         }
 
         public static async Task RenewCertificate([TimerTrigger(typeof(MyDailySchedule), RunOnStartup = true)] TimerInfo timerInfo)

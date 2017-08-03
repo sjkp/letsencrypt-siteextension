@@ -51,22 +51,29 @@ namespace LetsEncrypt.Azure.Core
             this.acmeConfig = acmeConfig;
             this.challengeProvider = challengeProvider;
         }
-      
+
 
         /// <summary>
         /// Used for automatic installation of letsencrypt certificate 
         /// </summary>
-        public void AddCertificate()
+        public bool AddCertificate()
         {
             Trace.TraceInformation("Staring add certificate");
             using (var client = ArmHelper.GetWebSiteManagementClient(settings))
             {
                 Trace.TraceInformation($"Add certificate for acmeConfig hostname {string.Join(", ", acmeConfig.Hostnames)}");
+
                 if (acmeConfig.Hostnames.Any())
                 {
-                    RequestAndInstallInternal(this.acmeConfig);
-                }                
+                    return RequestAndInstallInternal(this.acmeConfig) != null;
+                }
+                else
+                {
+                    Trace.TraceWarning("No hostnames found in configuration cannot add certificate automatically. Please run the manual configuration, or provide the all required app settings for automated deployment and delete firstrun.job in letsencrypt in the blob storage account to enable the job to be rerun.");
+                }
+
             }
+            return false;
         }
 
         public async Task<List<AcmeConfig>> RenewCertificate(bool skipInstallCertificate = false, int renewXNumberOfDaysBeforeExpiration = 0)
@@ -93,7 +100,7 @@ namespace LetsEncrypt.Azure.Core
                 foreach (var toExpireCert in expiringCerts)
                 {
                     Trace.TraceInformation("Starting renew of certificate " + toExpireCert.Name + " expiration date " + toExpireCert.ExpirationDate);
-                    var site = client.WebApps.Get(settings.ResourceGroupName, settings.WebAppName);
+                    var site = client.WebApps.GetSiteOrSlot(settings.ResourceGroupName, settings.WebAppName, settings.SiteSlotName);
                     var sslStates = site.HostNameSslStates.Where(s => s.Thumbprint == toExpireCert.Thumbprint);
                     if (!sslStates.Any())
                     {
