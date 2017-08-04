@@ -28,7 +28,7 @@ namespace LetsEncrypt.Azure.Core.Services
 
         public AcmeService(IAcmeConfig config, IAuthorizationChallengeProvider authorizeChallengeProvider)
         {
-            this.baseURI = config.BaseUri ?? "https://acme-staging.api.letsencrypt.org/";
+            this.baseURI = config.BaseUri ?? (config.UseProduction ? "https://acme-v01.api.letsencrypt.org/" : "https://acme-staging.api.letsencrypt.org/");
             this.configPath = ConfigPath(this.baseURI);
             this.config = config;
             this.authorizeChallengeProvider = authorizeChallengeProvider;

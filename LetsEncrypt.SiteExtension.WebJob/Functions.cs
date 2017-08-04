@@ -45,8 +45,8 @@ namespace LetsEncrypt.SiteExtension
             if (string.IsNullOrEmpty(input) || !input.Contains(websiteName))
             {
                 Console.WriteLine($"First run of add certificate for {websiteName}");
-                var status = new CertificateManager(environment).AddCertificate();
-                if (status)
+                var status = new CertificateManager(environment).AddCertificate().GetAwaiter().GetResult();
+                if (status != null)
                 {
                     Console.WriteLine("Certificate was added with success");
                 }

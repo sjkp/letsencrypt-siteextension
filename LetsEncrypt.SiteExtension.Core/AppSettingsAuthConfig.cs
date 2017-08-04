@@ -228,6 +228,15 @@ namespace LetsEncrypt.Azure.Core.Models
             }
         }
 
+        public bool UseProduction
+        {
+            get
+            {
+                return false; //Default behavior is not to use production environment.
+            }
+        }
+
+
         #region overrideable settings to enable support for azure azure regions
 
         [DataType(DataType.Url)]

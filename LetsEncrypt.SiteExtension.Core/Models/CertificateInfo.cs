@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -9,6 +10,7 @@ namespace LetsEncrypt.Azure.Core.Models
 {
     public class CertificateInfo
     {
+        [JsonIgnore]
         public X509Certificate2 Certificate { get; set; }
         public string Name { get; set; }
         public string Password { get; set; }

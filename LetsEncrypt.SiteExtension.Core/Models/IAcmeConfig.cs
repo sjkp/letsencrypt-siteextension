@@ -23,5 +23,11 @@ namespace LetsEncrypt.Azure.Core.Models
         int RSAKeyLength { get;  }
 
         string PFXPassword { get; }
+
+        /// <summary>
+        /// Should the Lets Encrypt production environment be used. 
+        /// Only checked if <see cref="BaseUri"/> isn't set. 
+        /// </summary>
+        bool UseProduction { get; }
     }
 }

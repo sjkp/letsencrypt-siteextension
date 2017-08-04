@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace LetsEncrypt.Azure.Core.Models
 {
@@ -57,11 +58,13 @@ namespace LetsEncrypt.Azure.Core.Models
             }
         }
 
+        [Required]
         public Guid ClientId
         {
             get; private set;
         }
 
+        [Required]
         public string ClientSecret
         {
             get; private set;
@@ -75,26 +78,30 @@ namespace LetsEncrypt.Azure.Core.Models
             }
         }
 
+        [Required]
         public string ResourceGroupName
         {
             get; private set;
         }
 
+
         public string ServicePlanResourceGroupName
         {
             get; private set;
         }
-
+        
         public string SiteSlotName
         {
             get; private set;
         }
 
+        [Required]
         public Guid SubscriptionId
         {
             get; private set;
         }
 
+        [Required]
         public string Tenant
         {
             get; private set;
@@ -108,6 +115,7 @@ namespace LetsEncrypt.Azure.Core.Models
             }
         }
 
+        [Required]
         public string WebAppName
         {
             get; private set;

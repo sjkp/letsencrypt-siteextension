@@ -20,30 +20,30 @@
     </thead>
     <tbody>
         <tr>
-            <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.tenantKey</td><td>The tenant name e.g. myazuretenant.onmicrosoft.com</td>                     
+            <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.tenantKey</td><td>The tenant name e.g. myazuretenant.onmicrosoft.com</td>                     
         </tr>
         <tr>
-            <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.subscriptionIdKey</td>
+            <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.subscriptionIdKey</td>
             <td>(Optional) The subscription id, if left empty the enviroment variable WEBSITE_OWNER_NAME will be used</td>            
         </tr>
         <tr>
-            <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.clientIdKey</td>
+            <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.clientIdKey</td>
             <td>The value of the clientid of the service principal</td>
         </tr>
         <tr>
-            <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.clientSecretKey</td>
+            <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.clientSecretKey</td>
             <td>The secret for the service principal</td>            
         </tr>
         <tr>
-            <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.resourceGroupNameKey</td>
+            <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.resourceGroupNameKey</td>
             <td>(Optional) The name of the resource group this web app belongs to, if left empty the enviroment variable WEBSITE_OWNER_NAME will be used</td>
         </tr>
         <tr>
-            <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.servicePlanResourceGroupNameKey</td>
+            <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.servicePlanResourceGroupNameKey</td>
             <td>(Optional) The name of the resource group that the app service plan hosting the web app (only required if the app service plan is in a different resource group than the web app)</td>
         </tr>         
         <tr>
-            <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.useIPBasedSSL</td>
+            <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.useIPBasedSSL</td>
             <td>Check this if you want the certificate to be bound to the WebApps' IP address instead of using SNI. With IP based SSL additional costs might be charged.</td>
         </tr>
     </tbody>
@@ -63,16 +63,16 @@
         </thead>
         <tbody>
             <tr>
-                <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.acmeBaseUriKey</td>
+                <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.acmeBaseUriKey</td>
                 <td>The url to Let's Encrypt servers e.g. https://acme-v01.api.letsencrypt.org/ or https://acme-staging.api.letsencrypt.org/ </td>
             </tr>
             <tr>
-                <td>@LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.emailKey</td>
+                <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.emailKey</td>
                 <td>The Email used for registering with Let's Encrypt</td>
             </tr>
             <tr>
                 <td>
-                    @LetsEncrypt.SiteExtension.Models.AppSettingsAuthConfig.hostNamesKey
+                    @LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.hostNamesKey
                 </td>
                 <td>Comma separated list of custom hostnames (externally hosted setup with CNames), that should automatically be configured for the site.</td>
             </tr>

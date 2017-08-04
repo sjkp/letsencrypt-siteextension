@@ -32,6 +32,11 @@ namespace LetsEncrypt.Azure.Core
             return "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{this.publishingUserName}:{this.publishingPassword}"));
         }
 
+        public HttpClient HttpClient
+        {
+            get { return client; }
+        }
+
         public async Task<object> GetScmInfo()
         {
             var res = await client.GetStringAsync($"/api/scm/info");

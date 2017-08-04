@@ -56,7 +56,7 @@ namespace LetsEncrypt.Azure.Core
         /// <summary>
         /// Used for automatic installation of letsencrypt certificate 
         /// </summary>
-        public bool AddCertificate()
+        public async Task<CertificateInstallModel> AddCertificate()
         {
             Trace.TraceInformation("Staring add certificate");
             using (var client = ArmHelper.GetWebSiteManagementClient(settings))
@@ -65,7 +65,7 @@ namespace LetsEncrypt.Azure.Core
 
                 if (acmeConfig.Hostnames.Any())
                 {
-                    return RequestAndInstallInternal(this.acmeConfig) != null;
+                    return await RequestAndInstallInternalAsync(this.acmeConfig);
                 }
                 else
                 {
@@ -73,10 +73,10 @@ namespace LetsEncrypt.Azure.Core
                 }
 
             }
-            return false;
+            return null;
         }
 
-        public async Task<List<AcmeConfig>> RenewCertificate(bool skipInstallCertificate = false, int renewXNumberOfDaysBeforeExpiration = 0)
+        public async Task<List<CertificateInstallModel>> RenewCertificate(bool skipInstallCertificate = false, int renewXNumberOfDaysBeforeExpiration = 0)
         {
             Trace.TraceInformation("Checking certificate");
             var ss = SettingsStore.Instance.Load();
@@ -96,7 +96,7 @@ namespace LetsEncrypt.Azure.Core
                 {
                     Trace.TraceInformation(string.Format("No certificates installed issued by Let's Encrypt that are about to expire within the next {0} days. Skipping.", renewXNumberOfDaysBeforeExpiration));
                 }
-                var res = new List<AcmeConfig>();
+                var res = new List<CertificateInstallModel>();
                 foreach (var toExpireCert in expiringCerts)
                 {
                     Trace.TraceInformation("Starting renew of certificate " + toExpireCert.Name + " expiration date " + toExpireCert.ExpirationDate);
@@ -120,21 +120,20 @@ namespace LetsEncrypt.Azure.Core
                     };
                     if (!skipInstallCertificate)
                     {
-                        await RequestAndInstallInternalAsync(target);
-                    }
-                    res.Add(target);
+                        res.Add(await RequestAndInstallInternalAsync(target));
+                    }                    
                 }
                 return res;
             }
         }             
 
 
-        internal string RequestAndInstallInternal(IAcmeConfig config)
+        internal CertificateInstallModel RequestAndInstallInternal(IAcmeConfig config)
         {
            return RequestAndInstallInternalAsync(config).GetAwaiter().GetResult();
         }
 
-        internal async Task<string> RequestAndInstallInternalAsync(IAcmeConfig config)
+        internal async Task<CertificateInstallModel> RequestAndInstallInternalAsync(IAcmeConfig config)
         {
             try
             {
@@ -142,13 +141,14 @@ namespace LetsEncrypt.Azure.Core
                 var service = new AcmeService(config, this.challengeProvider);
 
                 var cert = await service.RequestCertificate();
-                this.certificateService.Install(new CertificateInstallModel()
+                var model = new CertificateInstallModel()
                 {
                     CertificateInfo = cert,
                     AllDnsIdentifiers = config.Hostnames.ToList(),
                     Host = config.Host,
-                });
-                return cert.Certificate.Thumbprint;
+                };
+                this.certificateService.Install(model);
+                return model;
             }
             catch (Exception ex)
             {
