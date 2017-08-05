@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -27,6 +28,8 @@ namespace LetsEncrypt.SiteExtension.Test
             var model = JsonConvert.DeserializeObject<CertificateInstallModel[]>(await res.Content.ReadAsStringAsync());
 
             Assert.AreEqual(1, model.Count());
+
+            File.WriteAllBytes(Path.GetFileName(model.First().CertificateInfo.Name), model.First().CertificateInfo.PfxCertificate);
         }
     }
 }

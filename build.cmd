@@ -12,3 +12,6 @@ xcopy LetsEncrypt.SiteExtension.Core\bin\Release\*.* artifacts\app_data\jobs\con
 xcopy LetsEncrypt.SiteExtension.WebJob\bin\Release\*.* artifacts\app_data\jobs\continuous\letsencrypt.siteextension.job\ /sy
 
 nuget pack letsencrypt.nuspec
+
+RMDIR /S /Q artifacts\app_data\jobs
+nuget pack LetsEncrypt.WebAppOnly.nuspec

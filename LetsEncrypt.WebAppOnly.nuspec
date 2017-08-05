@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>letsencrypt.webapponly</id>
+    <title>Azure Let's Encrypt</title>
+    <version>0.7.5</version>
+    <authors>SJKP</authors>
+    <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
+    <projectUrl>https://github.com/sjkp/letsencrypt-siteextension</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/sjkp/letsencrypt-siteextension/master/icon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Site extension for easy install and renewals of Let's Encrypt SSL certificates. This package contains no web jobs, so if you want automatic renewal of certificates you have to call the API endpoint yourself. PLEASE READ and understand the known limitations listed here: https://github.com/sjkp/letsencrypt-siteextension/blob/master/README.md#known-issues</description>
+    <tags>letsencrypt siteextension ssl https</tags>
+  </metadata>
+  <files>
+    <file src="artifacts\**\*.*" target="content" />
+  </files>
+</package>
