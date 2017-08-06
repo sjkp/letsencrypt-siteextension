@@ -1,4 +1,5 @@
 ﻿using LetsEncrypt.Azure.Core.Models;
+using Microsoft.Azure.Management.Dns;
 using Microsoft.Azure.Management.WebSites;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
@@ -21,6 +22,16 @@ namespace LetsEncrypt.Azure.Core
             var websiteClient = new WebSiteManagementClient(model.ManagementEndpoint, creds);
             websiteClient.SubscriptionId = model.SubscriptionId.ToString();
             return websiteClient;
+        }
+
+        public static DnsManagementClient GetDnsManagementClient(IAzureEnvironment model)
+        {
+            AuthenticationResult token = GetToken(model);
+            var creds = new TokenCredentials(token.AccessToken);
+
+            var dnsClient = new DnsManagementClient(model.ManagementEndpoint, creds);
+            dnsClient.SubscriptionId = model.SubscriptionId.ToString();
+            return dnsClient;
         }
 
         private static AuthenticationResult GetToken(IAzureEnvironment model)
