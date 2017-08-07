@@ -9,8 +9,19 @@ namespace LetsEncrypt.Azure.Core.Models
 
         Guid ClientId { get; }
 
-        string ClientSecret { get;}
+        string ClientSecret { get; }
         Guid SubscriptionId { get; }
+
+        Uri ManagementEndpoint { get; }
+
+        Uri TokenAudience { get; }
+
+        Uri AuthenticationEndpoint { get; }
+    }
+
+    public interface IAzureWebAppEnvironment : IAzureEnvironment
+    {
+       
         string WebAppName { get; }
         string ResourceGroupName { get; }
 
@@ -20,41 +31,35 @@ namespace LetsEncrypt.Azure.Core.Models
 
         string AzureWebSitesDefaultDomainName { get; }
 
-        Uri ManagementEndpoint { get; }
-
-        Uri TokenAudience { get; }
-
-        Uri AuthenticationEndpoint { get; }
+      
     }
+
+    public interface IAzureDnsEnvironment : IAzureEnvironment
+    {       
+        string ResourceGroupName { get; }
+
+        string RelativeRecordSetName { get; }
+
+        string ZoneName { get; } 
+    }
+
 
     public class AzureEnvironment : IAzureEnvironment
     {
-        public AzureEnvironment(string tenant, Guid subscription, Guid clientId, string clientSecret, string resourceGroup, string webAppName, string servicePlanResourceGroupName = null, string siteSlotName = null)
+        public AzureEnvironment(string tenant, Guid subscription, Guid clientId, string clientSecret, string resourceGroup)
         {
             this.Tenant = tenant;
             this.SubscriptionId = subscription;
             this.ClientId = clientId;
             this.ClientSecret = clientSecret;
             this.ResourceGroupName = resourceGroup;
-            this.WebAppName = webAppName;
-            this.ServicePlanResourceGroupName = string.IsNullOrEmpty(servicePlanResourceGroupName) ? resourceGroup : servicePlanResourceGroupName;
-            this.SiteSlotName = siteSlotName;
         }
-
 
         public Uri AuthenticationEndpoint
         {
             get
             {
                 return new Uri("https://login.windows.net/");
-            }
-        }
-
-        public string AzureWebSitesDefaultDomainName
-        {
-            get
-            {
-                return "azurewebsites.net";
             }
         }
 
@@ -84,17 +89,6 @@ namespace LetsEncrypt.Azure.Core.Models
             get; private set;
         }
 
-
-        public string ServicePlanResourceGroupName
-        {
-            get; private set;
-        }
-        
-        public string SiteSlotName
-        {
-            get; private set;
-        }
-
         [Required]
         public Guid SubscriptionId
         {
@@ -114,6 +108,48 @@ namespace LetsEncrypt.Azure.Core.Models
                 return new Uri("https://management.core.windows.net/");
             }
         }
+    }
+
+    public class AzureDnsEnvironment : AzureEnvironment, IAzureDnsEnvironment
+    {
+        public AzureDnsEnvironment(string tenant, Guid subscription, Guid clientId, string clientSecret, string resourceGroup, string zoneName, string relativeRecordSetName)
+            : base(tenant, subscription,clientId, clientSecret, resourceGroup)
+        {
+            this.ZoneName = zoneName;
+            this.RelativeRecordSetName = relativeRecordSetName;
+        }
+
+        public string RelativeRecordSetName { get; }
+        public string ZoneName { get; }
+    }
+
+    public class AzureWebAppEnvironment : AzureEnvironment, IAzureWebAppEnvironment
+    {
+        public AzureWebAppEnvironment(string tenant, Guid subscription, Guid clientId, string clientSecret, string resourceGroup, string webAppName, string servicePlanResourceGroupName = null, string siteSlotName = null)
+            : base(tenant, subscription, clientId, clientSecret, resourceGroup)
+        {          
+            this.WebAppName = webAppName;
+            this.ServicePlanResourceGroupName = string.IsNullOrEmpty(servicePlanResourceGroupName) ? resourceGroup : servicePlanResourceGroupName;
+            this.SiteSlotName = siteSlotName;            
+        }
+
+        public string AzureWebSitesDefaultDomainName
+        {
+            get
+            {
+                return "azurewebsites.net";
+            }
+        }     
+
+        public string ServicePlanResourceGroupName
+        {
+            get; private set;
+        }
+        
+        public string SiteSlotName
+        {
+            get; private set;
+        }      
 
         [Required]
         public string WebAppName

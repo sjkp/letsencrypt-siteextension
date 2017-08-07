@@ -14,7 +14,7 @@ namespace LetsEncrypt.Azure.Core
     public class CertificateManager
     {
         private readonly ICertificateService certificateService;
-        private readonly IAzureEnvironment settings;
+        private readonly IAzureWebAppEnvironment settings;
         private readonly IAcmeConfig acmeConfig;
         private readonly IAuthorizationChallengeProvider challengeProvider;
 
@@ -38,13 +38,13 @@ namespace LetsEncrypt.Azure.Core
 
         }
 
-        public CertificateManager(IAzureEnvironment settings, IAcmeConfig acmeConfig, ICertificateServiceSettings certSettings, IAuthorizationChallengeProviderConfig authProviderConfig) 
+        public CertificateManager(IAzureWebAppEnvironment settings, IAcmeConfig acmeConfig, ICertificateServiceSettings certSettings, IAuthorizationChallengeProviderConfig authProviderConfig) 
             : this(settings, acmeConfig, new CertificateService(settings, certSettings), new KuduFileSystemAuthorizationChallengeProvider(settings, authProviderConfig))
         {
 
         }
 
-        public CertificateManager(IAzureEnvironment settings, IAcmeConfig acmeConfig, ICertificateService certificateService, IAuthorizationChallengeProvider challengeProvider)
+        public CertificateManager(IAzureWebAppEnvironment settings, IAcmeConfig acmeConfig, ICertificateService certificateService, IAuthorizationChallengeProvider challengeProvider)
         {
             this.settings = settings;
             this.certificateService = certificateService;

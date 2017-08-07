@@ -8,7 +8,7 @@ using System.Web;
 
 namespace LetsEncrypt.Azure.Core.Models
 {
-    public class AppSettingsAuthConfig : IAzureEnvironment, IAcmeConfig
+    public class AppSettingsAuthConfig : IAzureWebAppEnvironment, IAcmeConfig
     {
         public const string clientIdKey = "letsencrypt:ClientId";
         public const string clientSecretKey = "letsencrypt:ClientSecret";

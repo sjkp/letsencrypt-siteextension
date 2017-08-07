@@ -18,10 +18,10 @@ namespace LetsEncrypt.Azure.Core.Services
     /// </summary>
     public class CertificateService : ICertificateService
     {
-        private readonly IAzureEnvironment azureEnvironment;
+        private readonly IAzureWebAppEnvironment azureEnvironment;
         private readonly ICertificateServiceSettings settings;
 
-        public CertificateService(IAzureEnvironment azureEnvironment, ICertificateServiceSettings settings)
+        public CertificateService(IAzureWebAppEnvironment azureEnvironment, ICertificateServiceSettings settings)
         {
             this.azureEnvironment = azureEnvironment;
             this.settings = settings;

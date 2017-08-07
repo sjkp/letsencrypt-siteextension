@@ -18,10 +18,10 @@ namespace LetsEncrypt.Azure.Core.Services
 {
     public class LocalFileSystemAuthorizationChallengeProvider : BaseAuthorizationChallengeProvider
     {       
-        private readonly IAzureEnvironment azureEnvironment;
+        private readonly IAzureWebAppEnvironment azureEnvironment;
         private readonly IAuthorizationChallengeProviderConfig config;
 
-        public LocalFileSystemAuthorizationChallengeProvider(IAzureEnvironment azureEnvironment, IAuthorizationChallengeProviderConfig config)
+        public LocalFileSystemAuthorizationChallengeProvider(IAzureWebAppEnvironment azureEnvironment, IAuthorizationChallengeProviderConfig config)
         {
             this.azureEnvironment = azureEnvironment;
             this.config = config;

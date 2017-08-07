@@ -7,7 +7,7 @@ using System.Web;
 
 namespace LetsEncrypt.SiteExtension.Models
 {
-    public class AuthenticationModel : IAzureEnvironment
+    public class AuthenticationModel : IAzureWebAppEnvironment
     {
         [Required]
         public string Tenant { get; set; }

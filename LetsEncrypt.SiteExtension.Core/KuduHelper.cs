@@ -10,7 +10,7 @@ namespace LetsEncrypt.Azure.Core
 {
     public static class KuduHelper
     {
-        public static KuduRestClient GetKuduClient(this WebSiteManagementClient client, IAzureEnvironment settings)
+        public static KuduRestClient GetKuduClient(this WebSiteManagementClient client, IAzureWebAppEnvironment settings)
         {
             var user = client.WebApps.GetPublsihingCredentialSiteOrSlot(settings.ResourceGroupName, settings.WebAppName, settings.SiteSlotName);
 

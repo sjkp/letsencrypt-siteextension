@@ -17,7 +17,7 @@ namespace LetsEncrypt.Azure.Core.Services
         private readonly KuduRestClient kuduClient;
         private readonly IAuthorizationChallengeProviderConfig config;
 
-        public KuduFileSystemAuthorizationChallengeProvider(IAzureEnvironment azureEnvironment, IAuthorizationChallengeProviderConfig config)
+        public KuduFileSystemAuthorizationChallengeProvider(IAzureWebAppEnvironment azureEnvironment, IAuthorizationChallengeProviderConfig config)
         {
             this.config = config;
             var website = ArmHelper.GetWebSiteManagementClient(azureEnvironment);

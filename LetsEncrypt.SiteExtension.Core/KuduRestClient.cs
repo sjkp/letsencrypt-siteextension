@@ -16,7 +16,7 @@ namespace LetsEncrypt.Azure.Core
         private string publishingUserName;
         private string webAppName;
 
-        public KuduRestClient(IAzureEnvironment azureEnvironment, string publishingUserName, string publishingPassword)
+        public KuduRestClient(IAzureWebAppEnvironment azureEnvironment, string publishingUserName, string publishingPassword)
         {
             this.webAppName = string.IsNullOrEmpty(azureEnvironment.SiteSlotName) ? azureEnvironment.WebAppName : azureEnvironment.WebAppName + "-" + azureEnvironment.SiteSlotName;
             this.publishingUserName = publishingUserName;

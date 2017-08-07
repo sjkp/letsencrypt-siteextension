@@ -14,7 +14,7 @@ namespace LetsEncrypt.Azure.Core
 {
     public static class ArmHelper
     {
-        public static WebSiteManagementClient GetWebSiteManagementClient(IAzureEnvironment model)
+        public static WebSiteManagementClient GetWebSiteManagementClient(IAzureWebAppEnvironment model)
         {            
             AuthenticationResult token = GetToken(model);
             var creds = new TokenCredentials(token.AccessToken);
@@ -24,7 +24,7 @@ namespace LetsEncrypt.Azure.Core
             return websiteClient;
         }
 
-        public static DnsManagementClient GetDnsManagementClient(IAzureEnvironment model)
+        public static DnsManagementClient GetDnsManagementClient(IAzureDnsEnvironment model)
         {
             AuthenticationResult token = GetToken(model);
             var creds = new TokenCredentials(token.AccessToken);
@@ -42,7 +42,7 @@ namespace LetsEncrypt.Azure.Core
             return token;
         }
 
-        public static HttpClient GetHttpClient(IAzureEnvironment model)
+        public static HttpClient GetHttpClient(IAzureWebAppEnvironment model)
         {        
             AuthenticationResult token = GetToken(model);
 
