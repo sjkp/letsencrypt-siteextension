@@ -31,18 +31,12 @@ namespace LetsEncrypt.Azure.Core
             {
                 DisableWebConfigUpdate = config.DisableWebConfigUpdate
             });
-            this.certificateService = new CertificateService(this.settings, new CertificateServiceSettings()
+            this.certificateService = new WebAppCertificateService(this.settings, new CertificateServiceSettings()
             {
                 UseIPBasedSSL = config.UseIPBasedSSL
             });
 
-        }
-
-        public CertificateManager(IAzureWebAppEnvironment settings, IAcmeConfig acmeConfig, ICertificateServiceSettings certSettings, IAuthorizationChallengeProviderConfig authProviderConfig) 
-            : this(settings, acmeConfig, new CertificateService(settings, certSettings), new KuduFileSystemAuthorizationChallengeProvider(settings, authProviderConfig))
-        {
-
-        }
+        } 
 
         public CertificateManager(IAzureWebAppEnvironment settings, IAcmeConfig acmeConfig, ICertificateService certificateService, IAuthorizationChallengeProvider challengeProvider)
         {
@@ -52,6 +46,33 @@ namespace LetsEncrypt.Azure.Core
             this.challengeProvider = challengeProvider;
         }
 
+        /// <summary>
+        /// Returns a <see cref="CertificateManager"/> configured to use HTTP Challenge, placing the challenge file on Azure Web App 
+        /// using Kudu, and assigning the obtained certificate directly to the web app service. 
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="acmeConfig"></param>
+        /// <param name="certSettings"></param>
+        /// <param name="authProviderConfig"></param>
+        /// <returns></returns>
+        public static CertificateManager CreateKuduWebAppCertificateManager(IAzureWebAppEnvironment settings, IAcmeConfig acmeConfig, IWebAppCertificateSettings certSettings, IAuthorizationChallengeProviderConfig authProviderConfig)
+        {
+            return new CertificateManager(settings, acmeConfig, new WebAppCertificateService(settings, certSettings), new KuduFileSystemAuthorizationChallengeProvider(settings, authProviderConfig));
+        }
+
+        /// <summary>
+        /// Returns a <see cref="CertificateManager"/> configured to use DNS Challenge, placing the challenge record in Azure DNS,
+        /// and assigning the obtained certificate directly to the web app service. 
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="acmeConfig"></param>
+        /// <param name="certSettings"></param>
+        /// <param name="dnsEnvironment"></param>
+        /// <returns></returns>
+        public static CertificateManager CreateAzureDnsWebAppCertificateManager(IAzureWebAppEnvironment settings, IAcmeConfig acmeConfig, IWebAppCertificateSettings certSettings, IAzureDnsEnvironment dnsEnvironment)
+        {
+            return new CertificateManager(settings, acmeConfig, new WebAppCertificateService(settings, certSettings), new AzureDnsAuthorizationChallengeProvider(dnsEnvironment));
+        }
 
         /// <summary>
         /// Used for automatic installation of letsencrypt certificate 

@@ -22,23 +22,18 @@ namespace LetsEncrypt.Azure.Core.Services
 
             foreach (var dnsIdentifier in allDnsIdentifiers)
             {
-                //var dnsIdentifier = target.Host;                
-                Console.WriteLine($"\nAuthorizing Identifier {dnsIdentifier} Using Challenge Type {AcmeProtocol.CHALLENGE_TYPE_DNS}");
                 Trace.TraceInformation("Authorizing Identifier {0} Using Challenge Type {1}", dnsIdentifier, AcmeProtocol.CHALLENGE_TYPE_DNS);
                 var authzState = client.AuthorizeIdentifier(dnsIdentifier);                
                 var challenge = client.DecodeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS);
                 var dnsChallenge = challenge.Challenge as DnsChallenge;
 
                 await PersistsChallenge(dnsChallenge);
-
-                var answerUri = new Uri(dnsChallenge.RecordValue);
-                Console.WriteLine($" DNS Answer should now be available as {dnsChallenge.RecordName} with value {answerUri}");
-                Trace.TraceInformation($" DNS Answer should now be available as {dnsChallenge.RecordName} with value {answerUri}");
+                
+                Trace.TraceInformation($" DNS Answer should now be available as {dnsChallenge.RecordName} with value {dnsChallenge.RecordValue}");
 
                 try
                 {
                     var retry = 10;
-                    Console.WriteLine(" Submitting answer");
                     Trace.TraceInformation("Submitting answer");
                     authzState.Challenges = new AuthorizeChallenge[] { challenge };
                     client.SubmitChallengeAnswer(authzState, AcmeProtocol.CHALLENGE_TYPE_DNS, true);
@@ -48,7 +43,6 @@ namespace LetsEncrypt.Azure.Core.Services
                     while (authzState.Status == "pending" && retry < 6)
                     {
                         retry++;
-                        Console.WriteLine(" Refreshing authorization attempt " + retry);
                         Trace.TraceInformation("Refreshing authorization attempt " + retry);
                         await Task.Delay(2000*retry);  // this has to be here to give ACME server a chance to think
                         var newAuthzState = client.RefreshIdentifierAuthorization(authzState);
@@ -56,16 +50,13 @@ namespace LetsEncrypt.Azure.Core.Services
                             authzState = newAuthzState;
                     }
 
-                    Console.WriteLine($" Authorization Result: {authzState.Status}");
                     Trace.TraceInformation("Auth Result {0}", authzState.Status);
                     if (authzState.Status == "invalid" || authzState.Status == "pending")
                     {
                         Trace.TraceError("Authorization Failed {0}", authzState.Status);
                         Trace.TraceInformation("Full Error Details {0}", JsonConvert.SerializeObject(authzState));
-                        Console.WriteLine($"The ACME server was probably unable to reach {answerUri}");
-                        Trace.TraceError("Unable to reach {0}", answerUri);
-                        Console.WriteLine("\nCheck in a browser to see if the answer file is being served correctly.");
-                        throw new Exception($"The Lets Encrypt ACME server was probably unable to reach {answerUri} view error report from Lets Encrypt at {authzState.Uri} for more information");
+                        Trace.TraceError("Unable to find TXT record {0}", dnsChallenge.RecordValue);
+                        throw new Exception($"The Lets Encrypt ACME server was probably unable to find TXT record with value {dnsChallenge.RecordValue} view error report from Lets Encrypt at {authzState.Uri} for more information");
                     }
                     authStatus.Add(authzState);
                 }

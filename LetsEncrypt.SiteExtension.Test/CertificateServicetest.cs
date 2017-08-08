@@ -15,7 +15,7 @@ namespace LetsEncrypt.SiteExtension.Test
         public void TestInstall()
         {
             var config = new AppSettingsAuthConfig();
-            var service = new CertificateService(config, new CertificateServiceSettings { });
+            var service = new WebAppCertificateService(config, new CertificateServiceSettings { });
             var pfx = File.ReadAllBytes("letsencrypt.sjkp.dk-all.pfx");
           
             service.Install(new CertificateInstallModel
@@ -37,7 +37,7 @@ namespace LetsEncrypt.SiteExtension.Test
         public void TestRemove()
         {
             var config = new AppSettingsAuthConfig();
-            var service = new CertificateService(config, new CertificateServiceSettings { });            
+            var service = new WebAppCertificateService(config, new CertificateServiceSettings { });            
             
             service.RemoveExpired(180);
         }

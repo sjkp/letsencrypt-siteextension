@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.Azure.Core.Services
 {
-    public class LocalFileSystemAuthorizationChallengeProvider : BaseAuthorizationChallengeProvider
+    public class LocalFileSystemAuthorizationChallengeProvider : BaseHttpAuthorizationChallengeProvider
     {       
         private readonly IAzureWebAppEnvironment azureEnvironment;
         private readonly IAuthorizationChallengeProviderConfig config;

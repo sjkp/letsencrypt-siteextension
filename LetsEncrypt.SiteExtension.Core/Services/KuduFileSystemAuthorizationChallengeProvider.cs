@@ -12,7 +12,7 @@ using System.Diagnostics;
 
 namespace LetsEncrypt.Azure.Core.Services
 {
-    public class KuduFileSystemAuthorizationChallengeProvider : BaseAuthorizationChallengeProvider
+    public class KuduFileSystemAuthorizationChallengeProvider : BaseHttpAuthorizationChallengeProvider
     {
         private readonly KuduRestClient kuduClient;
         private readonly IAuthorizationChallengeProviderConfig config;

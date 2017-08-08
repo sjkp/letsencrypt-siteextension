@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace LetsEncrypt.Azure.Core.Services
 {
-    public abstract class BaseAuthorizationChallengeProvider : IAuthorizationChallengeProvider
+    public abstract class BaseHttpAuthorizationChallengeProvider : IAuthorizationChallengeProvider
     {
         protected const string webConfig = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <configuration>

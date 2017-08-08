@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -30,16 +31,31 @@ namespace LetsEncrypt.SiteExtension.Controllers.Api
         }
 
         [HttpPost]
-        [Route("api/certificates/provider/kudu/install")]
+        [Route("api/certificates/challengeprovider/http/kudu/certificateinstall/azurewebapp")]
         [ResponseType(typeof(CertificateInstallModel))]
-        public async Task<IHttpActionResult> GenerateAndInstall(GenerateAndInstallModel model, [FromUri(Name = "api-version")]string apiversion = null)
+        public async Task<IHttpActionResult> GenerateAndInstall(HttpKuduInstallModel model, [FromUri(Name = "api-version")]string apiversion = null)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var mgr = CertificateManager.CreateKuduWebAppCertificateManager(model.AzureEnvironment, model.AcmeConfig, model.CertificateSettings, model.AuthorizationChallengeProviderConfig);
+
+            return Ok(await mgr.AddCertificate());
+        }
+
+        [HttpPost]
+        [Route("api/certificates/challengeprovider/dns/azure/certificateinstall/azurewebapp")]
+        [ResponseType(typeof(CertificateInstallModel))]
+        public async Task<IHttpActionResult> GenerateAndInstall(DnsAzureInstallModel model, [FromUri(Name = "api-version")]string apiversion = null)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var mgr = new CertificateManager(model.AzureEnvironment, model.AcmeConfig, model.CertificateSettings, model.AuthorizationChallengeProviderConfig);
+            var mgr = CertificateManager.CreateAzureDnsWebAppCertificateManager(model.AzureEnvironment, model.AcmeConfig, model.CertificateSettings, model.AzureDnsEnvironment);
 
             return Ok(await mgr.AddCertificate());
         }

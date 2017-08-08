@@ -16,12 +16,12 @@ namespace LetsEncrypt.Azure.Core.Services
     /// <summary>
     /// Installs and assigns the certificate directly to the app service plan. 
     /// </summary>
-    public class CertificateService : ICertificateService
+    public class WebAppCertificateService : ICertificateService
     {
         private readonly IAzureWebAppEnvironment azureEnvironment;
-        private readonly ICertificateServiceSettings settings;
+        private readonly IWebAppCertificateSettings settings;
 
-        public CertificateService(IAzureWebAppEnvironment azureEnvironment, ICertificateServiceSettings settings)
+        public WebAppCertificateService(IAzureWebAppEnvironment azureEnvironment, IWebAppCertificateSettings settings)
         {
             this.azureEnvironment = azureEnvironment;
             this.settings = settings;

@@ -2,13 +2,13 @@
 
 namespace LetsEncrypt.SiteExtension.Models
 {
-    public class GenerateAndInstallModel
+    public class DnsAzureInstallModel
     {
         public AzureWebAppEnvironment AzureEnvironment { get; set; }
         public AcmeConfig AcmeConfig { get; set; }
 
         public CertificateServiceSettings CertificateSettings { get; set; }
 
-        public AuthorizationChallengeProviderConfig AuthorizationChallengeProviderConfig { get; set; }
+        public AzureDnsEnvironment AzureDnsEnvironment { get; set; }        
     }
 }

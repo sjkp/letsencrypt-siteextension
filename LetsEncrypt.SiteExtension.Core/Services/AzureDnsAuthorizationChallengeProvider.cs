@@ -7,6 +7,7 @@ using ACMESharp.ACME;
 using LetsEncrypt.Azure.Core.Models;
 using Microsoft.Azure.Management.Dns;
 using Microsoft.Azure.Management.Dns.Models;
+using Microsoft.Rest.Azure;
 
 namespace LetsEncrypt.Azure.Core.Services
 {
@@ -23,13 +24,9 @@ namespace LetsEncrypt.Azure.Core.Services
 
         public override async Task CleanupChallenge(DnsChallenge dnsChallenge)
         {
-            var existingRecords = await dnsClient.RecordSets.GetAsync(environment.ResourceGroupName, environment.ZoneName, environment.RelativeRecordSetName, RecordType.TXT);
+            var existingRecords = await SafeGetExistingRecords(dnsChallenge);
             
-            await this.dnsClient.RecordSets.CreateOrUpdateAsync(this.environment.ResourceGroupName, this.environment.ZoneName, environment.RelativeRecordSetName, RecordType.TXT, new RecordSet()
-            {
-                TxtRecords = existingRecords.TxtRecords.Where(s => !s.Value.Contains(dnsChallenge.RecordValue)).ToList(),
-                TTL = 60
-            });
+            await this.dnsClient.RecordSets.DeleteAsync(this.environment.ResourceGroupName, this.environment.ZoneName, GetRelativeRecordSetName(dnsChallenge), RecordType.TXT);
         }
 
         public override async Task PersistsChallenge(DnsChallenge dnsChallenge)
@@ -40,21 +37,46 @@ namespace LetsEncrypt.Azure.Core.Services
             };
             if ((await dnsClient.RecordSets.ListByTypeAsync(environment.ResourceGroupName, environment.ZoneName, RecordType.TXT)).Any())
             {
-                var existingRecords = await dnsClient.RecordSets.GetAsync(environment.ResourceGroupName, environment.ZoneName, environment.RelativeRecordSetName, RecordType.TXT);
-                if (existingRecords.TxtRecords.Any(s => s.Value.Contains(dnsChallenge.RecordValue)))
+                var existingRecords = await SafeGetExistingRecords(dnsChallenge);
+                if (existingRecords != null)
                 {
-                    records = existingRecords.TxtRecords.ToList();
-                }
-                else
-                {
-                    records.AddRange(existingRecords.TxtRecords);
+                    if (existingRecords.TxtRecords.Any(s => s.Value.Contains(dnsChallenge.RecordValue)))
+                    {
+                        records = existingRecords.TxtRecords.ToList();
+                    }
+                    else
+                    {
+                        records.AddRange(existingRecords.TxtRecords);
+                    }
                 }
             }
-            await this.dnsClient.RecordSets.CreateOrUpdateAsync(this.environment.ResourceGroupName, this.environment.ZoneName, environment.RelativeRecordSetName, RecordType.TXT, new RecordSet()
+            await this.dnsClient.RecordSets.CreateOrUpdateAsync(this.environment.ResourceGroupName, this.environment.ZoneName, GetRelativeRecordSetName(dnsChallenge), RecordType.TXT, new RecordSet()
             {
                 TxtRecords = records,
                 TTL = 60
             });
+        }
+
+        private string GetRelativeRecordSetName(DnsChallenge dnsChallenge)
+        {
+            return dnsChallenge.RecordName.Replace($".{this.environment.ZoneName}", "");
+        }
+
+        private async Task<RecordSet> SafeGetExistingRecords(DnsChallenge dnsChallenge)
+        {
+            try
+            {
+                return await dnsClient.RecordSets.GetAsync(environment.ResourceGroupName, environment.ZoneName, GetRelativeRecordSetName(dnsChallenge), RecordType.TXT);
+
+            }
+            catch (CloudException cex)
+            {
+                if (!cex.Message.StartsWith("The resource record '_acme-challenge"))
+                {
+                    throw;
+                }
+            }
+            return null;
         }
     }
 }

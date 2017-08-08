@@ -24,7 +24,7 @@ namespace LetsEncrypt.Azure.Core.Models
         }
     }
 
-    public class CertificateServiceSettings : ICertificateServiceSettings
+    public class CertificateServiceSettings : IWebAppCertificateSettings
     {
         public bool UseIPBasedSSL
         {
@@ -42,7 +42,7 @@ namespace LetsEncrypt.Azure.Core.Models
         string Host { get; set; }
     }
 
-    public interface ICertificateServiceSettings
+    public interface IWebAppCertificateSettings
     {
         bool UseIPBasedSSL { get; set; }
     }

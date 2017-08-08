@@ -202,7 +202,8 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Api\CertificateController.cs" />
     <Compile Include="Controllers\Api\ValidateApiVersionAttribute.cs" />
-    <Compile Include="Models\GenerateAndInstallModel.cs" />
+    <Compile Include="Models\DnsAzureInstallModel.cs" />
+    <Compile Include="Models\HttpKuduInstallModel.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HyakUtils.cs" />
     <Compile Include="Controllers\Utils.cs" />
