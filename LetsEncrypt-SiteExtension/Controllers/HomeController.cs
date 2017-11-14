@@ -203,6 +203,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
             if (ModelState.IsValid)
             {
                 var s = SettingsStore.Instance.Load();
+                s.Clear();
                 s.Add(new SettingEntry()
                 {
                     Name = "email",
