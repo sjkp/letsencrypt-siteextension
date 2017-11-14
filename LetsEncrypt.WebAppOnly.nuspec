@@ -2,8 +2,8 @@
 <package >
   <metadata>
     <id>letsencrypt.webapponly</id>
-    <title>Azure Let's Encrypt</title>
-    <version>0.7.5</version>
+    <title>Azure Let's Encrypt (No Web Jobs)</title>
+    <version>0.8.1</version>
     <authors>SJKP</authors>
     <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
     <projectUrl>https://github.com/sjkp/letsencrypt-siteextension</projectUrl>

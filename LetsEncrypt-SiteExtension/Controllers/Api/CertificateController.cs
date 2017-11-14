@@ -17,6 +17,13 @@ namespace LetsEncrypt.SiteExtension.Controllers.Api
     [ValidateApiVersion]
     public class CertificateController : ApiController
     {
+        /// <summary>
+        /// Renews the already configured Let's Encrypt certificate for the web app. 
+        /// The settings for the renewal process must exists as app settings, or a
+        /// manually installed certificate must have been installed at least once.
+        /// </summary>
+        /// <param name="apiversion"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("api/certificates/renew")]    
         [ResponseType(typeof(List<CertificateInstallModel>))]    
@@ -30,6 +37,14 @@ namespace LetsEncrypt.SiteExtension.Controllers.Api
             return Ok(res);
         }
 
+        /// <summary>
+        /// Installs a Let's Encrypt certificate onto a azure web using http challenge and the 
+        /// kudu file API to place the challenge file on the web app.
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="apiversion"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("api/certificates/challengeprovider/http/kudu/certificateinstall/azurewebapp")]
         [ResponseType(typeof(CertificateInstallModel))]
@@ -45,6 +60,13 @@ namespace LetsEncrypt.SiteExtension.Controllers.Api
             return Ok(await mgr.AddCertificate());
         }
 
+        /// <summary>
+        /// Requests a Let's Encrypt certificate using the DNS challenge, using Azure DNS. The 
+        /// certificate is installed using the k
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="apiversion"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("api/certificates/challengeprovider/dns/azure/certificateinstall/azurewebapp")]
         [ResponseType(typeof(CertificateInstallModel))]

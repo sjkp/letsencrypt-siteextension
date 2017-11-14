@@ -55,59 +55,73 @@ namespace LetsEncrypt.Azure.Core.Models
             this.ResourceGroupName = resourceGroup;
         }
 
+        /// <summary>
+        /// The authentication endpoint to use when signin in the service principal.
+        /// Defaults to https://login.windows.net/.
+        /// </summary>
         public Uri AuthenticationEndpoint
         {
-            get
-            {
-                return new Uri("https://login.windows.net/");
-            }
-        }
+            get; set;
+        } = new Uri("https://login.windows.net/");
 
+        /// <summary>
+        /// The client id of the service principal. 
+        /// </summary>
         [Required]
         public Guid ClientId
         {
-            get; private set;
+            get; set;
         }
 
+        /// <summary>
+        /// The client secret for the service principal to use.
+        /// </summary>
         [Required]
         public string ClientSecret
         {
-            get; private set;
+            get; set;
         }
 
+        /// <summary>
+        /// The Azure Management API endpoint to use. Defaults to https://management.azure.com
+        /// </summary>
         public Uri ManagementEndpoint
         {
-            get
-            {
-                return new Uri("https://management.azure.com");
-            }
-        }
+            get; set;
+        } = new Uri("https://management.azure.com");
 
+        /// <summary>
+        /// The resource group name that the web app belongs to.
+        /// </summary>
         [Required]
         public string ResourceGroupName
         {
-            get; private set;
+            get; set;
         }
 
+        /// <summary>
+        /// The Azure subscription to use. 
+        /// </summary>
         [Required]
         public Guid SubscriptionId
         {
-            get; private set;
+            get; set;
         }
 
+        /// <summary>
+        /// The Azure AD tenant to use. 
+        /// </summary>
         [Required]
         public string Tenant
         {
-            get; private set;
+            get; set;
         }
 
-        public Uri TokenAudience
-        {
-            get
-            {
-                return new Uri("https://management.core.windows.net/");
-            }
-        }
+        /// <summary>
+        /// The token audience to use. Defaults to https://management.core.windows.net/
+        /// </summary>
+        public Uri TokenAudience { get; set; } = new Uri("https://management.core.windows.net/");
+        
     }
 
     public class AzureDnsEnvironment : AzureEnvironment, IAzureDnsEnvironment
@@ -123,6 +137,9 @@ namespace LetsEncrypt.Azure.Core.Models
         public string ZoneName { get; }
     }
 
+    /// <summary>
+    /// Description of the Azure environment.
+    /// </summary>
     public class AzureWebAppEnvironment : AzureEnvironment, IAzureWebAppEnvironment
     {
         public AzureWebAppEnvironment(string tenant, Guid subscription, Guid clientId, string clientSecret, string resourceGroup, string webAppName, string servicePlanResourceGroupName = null, string siteSlotName = null)
@@ -133,28 +150,38 @@ namespace LetsEncrypt.Azure.Core.Models
             this.SiteSlotName = siteSlotName;            
         }
 
+        /// <summary>
+        /// The azure domain name for the web app. Defaults to azurewebsites.net
+        /// </summary>
         public string AzureWebSitesDefaultDomainName
         {
-            get
-            {
-                return "azurewebsites.net";
-            }
-        }     
+            get; set;
+        } = "azurewebsites.net";
 
+        /// <summary>
+        /// The app service plan resource group name, 
+        /// only required if the web app and app service plan is in different resource groups.
+        /// </summary>
         public string ServicePlanResourceGroupName
         {
-            get; private set;
+            get; set;
         }
         
+        /// <summary>
+        /// The site slot to install the certificate on. Only required if multiple slots is used.
+        /// </summary>
         public string SiteSlotName
         {
-            get; private set;
+            get; set;
         }      
 
+        /// <summary>
+        /// The name of the web app (without .azurewebsites.net)
+        /// </summary>
         [Required]
         public string WebAppName
         {
-            get; private set;
+            get; set;
         }
     }
 }

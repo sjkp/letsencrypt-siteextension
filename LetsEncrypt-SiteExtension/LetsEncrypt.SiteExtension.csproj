@@ -33,6 +33,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <DocumentationFile>bin\LetsEncrypt.SiteExtension.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -178,6 +179,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\LetsEncrypt.Azure.Core.xml" />
+    <Content Include="App_Data\LetsEncrypt.SiteExtension.XML" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\icon.png" />
@@ -208,7 +211,6 @@
     <Compile Include="Controllers\HyakUtils.cs" />
     <Compile Include="Controllers\Utils.cs" />
     <Compile Include="Models\HostnameModel.cs" />
-    <Compile Include="Controllers\SettingsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -247,7 +249,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Views\Default\" />
   </ItemGroup>
   <PropertyGroup>
@@ -320,6 +321,10 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy  "$(TargetDir)LetsEncrypt.SiteExtension.XML" "$(TargetDir)..\App_Data\*" /y
+xcopy  "$(TargetDir)LetsEncrypt.Azure.Core.xml" "$(TargetDir)..\App_Data\*" /y</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

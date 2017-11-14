@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,9 +10,16 @@ namespace LetsEncrypt.Azure.Core.Models
 {
     public class AcmeConfig : IAcmeConfig
     {
+        /// <summary>
+        /// The registration email used when registering the Let's Encrypt certificate.
+        /// Will receive notification when certificates expire. 
+        /// </summary>
         [Required]
         public string RegistrationEmail { get; set; }
 
+        /// <summary>
+        /// The Let's Encrypt API url. 
+        /// </summary>
         public string BaseUri { get; set; }
 
         /// <summary>
@@ -20,6 +28,7 @@ namespace LetsEncrypt.Azure.Core.Models
         [Required]
         public string Host { get; set; }
 
+        [JsonIgnore]
         public IEnumerable<string> Hostnames
         {
             get
@@ -35,12 +44,21 @@ namespace LetsEncrypt.Azure.Core.Models
             }
         }
 
+        /// <summary>
+        /// Alternate DNS names besides the host name that should be included in the certificate.
+        /// </summary>
         public List<string> AlternateNames { get; set; }
 
+        /// <summary>
+        /// The Certificate key length. Defaults to 2048.
+        /// </summary>
         [Required]
-        [Range(1024,8096)]
-        public int RSAKeyLength { get; set; }
+        [Range(1024, 8096)]
+        public int RSAKeyLength { get; set; } = 2048;
 
+        /// <summary>
+        /// The password used to protect the pfx file. 
+        /// </summary>
         public string PFXPassword { get; set; }
 
         /// <summary>
