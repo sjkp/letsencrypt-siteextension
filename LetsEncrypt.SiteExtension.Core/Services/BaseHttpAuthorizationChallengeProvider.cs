@@ -29,7 +29,7 @@ namespace LetsEncrypt.Azure.Core.Services
   </system.webServer>
   <system.web>
     <authorization>
-      <allow users=""?""/>
+      <allow users=""*""/>
     </authorization>
   </system.web>
 </configuration>";
