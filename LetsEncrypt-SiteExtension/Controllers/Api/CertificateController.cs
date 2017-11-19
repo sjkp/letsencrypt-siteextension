@@ -68,6 +68,28 @@ namespace LetsEncrypt.SiteExtension.Controllers.Api
         /// <param name="apiversion"></param>
         /// <returns></returns>
         [HttpPost]
+        [Route("api/certificates/challengeprovider/dns/azure")]
+        [ResponseType(typeof(CertificateInstallModel))]
+        public async Task<IHttpActionResult> Generate(DnsAzureModel model, [FromUri(Name = "api-version")]string apiversion = null)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var res = await CertificateManager.RequestDnsChallengeCertificate(model.AzureDnsEnvironment, model.AcmeConfig);
+
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// Requests a Let's Encrypt certificate using the DNS challenge, using Azure DNS. The 
+        /// certificate is installed to the web app. 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="apiversion"></param>
+        /// <returns></returns>
+        [HttpPost]
         [Route("api/certificates/challengeprovider/dns/azure/certificateinstall/azurewebapp")]
         [ResponseType(typeof(CertificateInstallModel))]
         public async Task<IHttpActionResult> GenerateAndInstall(DnsAzureInstallModel model, [FromUri(Name = "api-version")]string apiversion = null)
@@ -77,7 +99,7 @@ namespace LetsEncrypt.SiteExtension.Controllers.Api
                 return BadRequest(ModelState);
             }
 
-            var mgr = CertificateManager.CreateAzureDnsWebAppCertificateManager(model.AzureEnvironment, model.AcmeConfig, model.CertificateSettings, model.AzureDnsEnvironment);
+            var mgr = CertificateManager.CreateAzureDnsWebAppCertificateManager(model.AzureWebAppEnvironment, model.AcmeConfig, model.CertificateSettings, model);
 
             return Ok(await mgr.AddCertificate());
         }

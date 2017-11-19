@@ -8,9 +8,11 @@ using LetsEncrypt.Azure.Core.Services;
 
 namespace LetsEncrypt.SiteExtension.Test
 {
+    
     [TestClass]
     public class CertificateManagerTest
     {
+        [TestCategory("Integration")]
         [TestMethod]
         public async Task RenewCertificateTest()
         {
@@ -19,6 +21,7 @@ namespace LetsEncrypt.SiteExtension.Test
             Assert.AreNotEqual(0, result.Count());
         }
 
+        [TestCategory("Integration")]
         [TestMethod]
         public async Task RenewCertificateConstructorTest()
         {
@@ -32,7 +35,7 @@ namespace LetsEncrypt.SiteExtension.Test
             Assert.AreNotEqual(0, result.Count());
         }
 
-
+        [TestCategory("Integration")]
         [TestMethod]
         public async Task RenewCertificateDnsChallengeTest()
         {
@@ -47,15 +50,16 @@ namespace LetsEncrypt.SiteExtension.Test
             Assert.AreNotEqual(0, result.Count());
         }
 
+        [TestCategory("Integration")]
         [TestMethod]
         public async Task AddCertificateDnsChallengeTest()
         {
             var config = new AppSettingsAuthConfig();
 
-            var dnsEnvironment = new AzureDnsEnvironment(config.Tenant, new Guid("14fe4c66-c75a-4323-881b-ea53c1d86a9d"), config.ClientId, config.ClientSecret, "dns", "ai4bots.com", "@");
+            var dnsEnvironment = new AzureDnsEnvironment(config.Tenant, new Guid("14fe4c66-c75a-4323-881b-ea53c1d86a9d"), config.ClientId, config.ClientSecret, "dns", "ai4bots.com", "letsencrypt");
             var mgr = new CertificateManager(config, new AcmeConfig()
             {
-                Host = "ai4bots.com",
+                Host = "letsencrypt.ai4bots.com",
                 PFXPassword = "Simon123",
                 RegistrationEmail = "mail@sjkp.dk",
                 RSAKeyLength = 2048                
@@ -66,6 +70,24 @@ namespace LetsEncrypt.SiteExtension.Test
             var result = await mgr.AddCertificate();
 
             Assert.IsNotNull(result);
+        }
+
+        [TestCategory("Integration")]
+        [TestMethod]
+        public async Task RequestCertificateDnsChallengeTest()
+        {
+            var config = new AppSettingsAuthConfig();
+            var dnsEnvironment = new AzureDnsEnvironment(config.Tenant, new Guid("14fe4c66-c75a-4323-881b-ea53c1d86a9d"), config.ClientId, config.ClientSecret, "dns", "ai4bots.com", "@");
+
+            var res = await CertificateManager.RequestDnsChallengeCertificate(dnsEnvironment, new AcmeConfig()
+            {
+                Host = "ai4bots.com",
+                PFXPassword = "Simon123",
+                RegistrationEmail = "mail@sjkp.dk",
+                RSAKeyLength = 2048
+            });
+
+            Assert.IsTrue(res.CertificateInfo.Certificate.Subject.Contains("ai4bots.com"));
         }
     }
 }

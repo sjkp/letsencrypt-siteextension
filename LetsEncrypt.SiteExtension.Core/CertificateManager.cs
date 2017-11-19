@@ -75,6 +75,18 @@ namespace LetsEncrypt.Azure.Core
         }
 
         /// <summary>
+        /// Request a certificate from lets encrypt using the DNS challenge, placing the challenge record in Azure DNS. 
+        /// The certifiacte is not assigned, but just returned. 
+        /// </summary>
+        /// <param name="azureDnsEnvironment"></param>
+        /// <param name="acmeConfig"></param>
+        /// <returns></returns>
+        public static async Task<CertificateInstallModel> RequestDnsChallengeCertificate(IAzureDnsEnvironment azureDnsEnvironment, IAcmeConfig acmeConfig)
+        {
+            return await new CertificateManager(null, acmeConfig, null, new AzureDnsAuthorizationChallengeProvider(azureDnsEnvironment)).RequestInternalAsync(acmeConfig);
+        }
+
+        /// <summary>
         /// Used for automatic installation of letsencrypt certificate 
         /// </summary>
         public async Task<CertificateInstallModel> AddCertificate()
@@ -154,30 +166,28 @@ namespace LetsEncrypt.Azure.Core
            return RequestAndInstallInternalAsync(config).GetAwaiter().GetResult();
         }
 
+        internal async Task<CertificateInstallModel> RequestInternalAsync(IAcmeConfig config)
+        {
+            var service = new AcmeService(config, this.challengeProvider);
+
+            var cert = await service.RequestCertificate();
+            var model = new CertificateInstallModel()
+            {
+                CertificateInfo = cert,
+                AllDnsIdentifiers = config.Hostnames.ToList(),
+                Host = config.Host,
+            };
+            return model;
+        }
+
         internal async Task<CertificateInstallModel> RequestAndInstallInternalAsync(IAcmeConfig config)
         {
-            try
-            {
-                Trace.TraceInformation("RequestAndInstallInternal");
-                var service = new AcmeService(config, this.challengeProvider);
+            Trace.TraceInformation("RequestAndInstallInternal");
+            var model = await RequestInternalAsync(config);
+            this.certificateService.Install(model);
+            return model;
+        }
 
-                var cert = await service.RequestCertificate();
-                var model = new CertificateInstallModel()
-                {
-                    CertificateInfo = cert,
-                    AllDnsIdentifiers = config.Hostnames.ToList(),
-                    Host = config.Host,
-                };
-                this.certificateService.Install(model);
-                return model;
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("Unabled to create Azure Web Site Management client " + ex.ToString());
-                throw;
-            }
-        }        
-       
         public List<string> Cleanup()
         {
             return this.certificateService.RemoveExpired();

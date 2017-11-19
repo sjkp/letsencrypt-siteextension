@@ -158,13 +158,23 @@ namespace LetsEncrypt.Azure.Core.Models
             get; set;
         } = "azurewebsites.net";
 
+
+        string _servicePlanResourceGroupName;
+
         /// <summary>
         /// The app service plan resource group name, 
         /// only required if the web app and app service plan is in different resource groups.
         /// </summary>
         public string ServicePlanResourceGroupName
         {
-            get; set;
+            get
+            {
+                return _servicePlanResourceGroupName ?? this.ResourceGroupName;
+            }
+            set
+            {
+                _servicePlanResourceGroupName = value;
+            }
         }
         
         /// <summary>
