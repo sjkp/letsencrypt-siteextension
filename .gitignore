@@ -41,3 +41,4 @@ azuredeploy.parameters.serviceplan.local.json
 /push-core-nuget.cmd
 /push-core-myget.cmd
 /LetsEncrypt.SiteExtension.Test/App.secret.config
+/push-siteextension.ps1
