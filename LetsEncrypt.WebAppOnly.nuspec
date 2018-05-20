@@ -10,7 +10,10 @@
     <iconUrl>https://raw.githubusercontent.com/sjkp/letsencrypt-siteextension/master/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Site extension for easy install and renewals of Let's Encrypt SSL certificates. This package contains no web jobs, so if you want automatic renewal of certificates you have to call the API endpoint yourself. PLEASE READ and understand the known limitations listed here: https://github.com/sjkp/letsencrypt-siteextension/blob/master/README.md#known-issues</description>
-    <tags>letsencrypt siteextension ssl https</tags>
+    <tags>AzureSiteExtension letsencrypt siteextension ssl https</tags>
+    <packageTypes>
+      <packageType name="AzureSiteExtension" />
+    </packageTypes>
   </metadata>
   <files>
     <file src="artifacts\**\*.*" target="content" />
