@@ -10,6 +10,8 @@ using System.Web.Http;
 
 namespace LetsEncrypt.SiteExtension
 {
+    using System.Net;
+
     public class Global : HttpApplication
     {
         void Application_Start(object sender, EventArgs e)
@@ -18,7 +20,8 @@ namespace LetsEncrypt.SiteExtension
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-           
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11;
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
         }
     }
 }
