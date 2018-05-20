@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using System.Configuration;
 using LetsEncrypt.Azure.Core.Models;
+using System.Net;
 
 namespace LetsEncrypt.SiteExtension.WebJob
 {
@@ -15,7 +16,9 @@ namespace LetsEncrypt.SiteExtension.WebJob
         // Please set the following connection strings in app.config for this WebJob to run:
         // AzureWebJobsDashboard and AzureWebJobsStorage
         static void Main()
-        {            
+        {
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11;
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             var config = new JobHostConfiguration();
             config.UseTimers();
             //A host ID must be between 1 and 32 characters, contain only lowercase letters, numbers, and 

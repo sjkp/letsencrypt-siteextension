@@ -42,3 +42,7 @@ azuredeploy.parameters.serviceplan.local.json
 /push-core-myget.cmd
 /LetsEncrypt.SiteExtension.Test/App.secret.config
 /push-siteextension.ps1
+/.vs/LetsEncrypt-SiteExtension/v15/Server/sqlite3/storage.ide-wal
+/.vs/LetsEncrypt-SiteExtension/v15/Server/sqlite3/storage.ide-shm
+/.vs/LetsEncrypt-SiteExtension/v15/Server/sqlite3/storage.ide
+/.vs/LetsEncrypt-SiteExtension/v15/Server/sqlite3/db.lock
