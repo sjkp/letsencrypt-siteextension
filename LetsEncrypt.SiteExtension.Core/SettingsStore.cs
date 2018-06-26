@@ -44,13 +44,27 @@ namespace LetsEncrypt.Azure.Core
 
         public List<SettingEntry> Load()
         {
-            if (File.Exists(_settingsFilePath))
+            var empty = new List<SettingEntry>();
+            if (!File.Exists(_settingsFilePath))
             {
-                return JsonConvert.DeserializeObject<List<SettingEntry>>(File.ReadAllText(_settingsFilePath));
+                return empty;
             }
-            else
+            
+            var text = File.ReadAllText(_settingsFilePath);
+            if (String.IsNullOrWhiteSpace(text))
             {
-                return new List<SettingEntry>();
+                return empty;
+            }
+
+            try
+            {
+                return JsonConvert.DeserializeObject<List<SettingEntry>>(text);
+            }
+            catch(Exception ex)
+            {
+                // TODO: Probably some proper logging would be good here
+                Console.Error.WriteLine(ex);
+                return empty;
             }
         }
 
