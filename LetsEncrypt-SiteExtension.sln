@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.SiteExtension", "LetsEncrypt-SiteExtension\LetsEncrypt.SiteExtension.csproj", "{87F0FF62-16C3-43CE-B154-1B9BC28DED67}"
 EndProject
@@ -32,6 +32,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp", "ACMESharp\ACMESharp\ACMESharp\ACMESharp.csproj", "{D551234B-0A8D-4DEE-8178-A81998DF0EDB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACMESharp.PKI.Providers.BouncyCastle", "ACMESharp\ACMESharp\ACMESharp.PKI.Providers.BouncyCastle\ACMESharp.PKI.Providers.BouncyCastle.csproj", "{473BFF7D-C7F0-471D-B7A3-19AD9ADFDBA9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LetsEncrypt.Azure.Core.V2", "LetsEncrypt.Azure.Core.V2\LetsEncrypt.Azure.Core.V2.csproj", "{3C6B67BD-0F9A-49BC-9F07-68BCF171E58C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Letsencrypt.Azure.Core.Test", "Letsencrypt.Azure.Core.Test\Letsencrypt.Azure.Core.Test.csproj", "{071D6E02-E478-48B8-A515-67FFDB8BDCB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -127,6 +131,30 @@ Global
 		{473BFF7D-C7F0-471D-B7A3-19AD9ADFDBA9}.Release|x64.Build.0 = Release|Any CPU
 		{473BFF7D-C7F0-471D-B7A3-19AD9ADFDBA9}.Release|x86.ActiveCfg = Release|Any CPU
 		{473BFF7D-C7F0-471D-B7A3-19AD9ADFDBA9}.Release|x86.Build.0 = Release|Any CPU
+		{3C6B67BD-0F9A-49BC-9F07-68BCF171E58C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C6B67BD-0F9A-49BC-9F07-68BCF171E58C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C6B67BD-0F9A-49BC-9F07-68BCF171E58C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3C6B67BD-0F9A-49BC-9F07-68BCF171E58C}.Debug|x64.Build.0 = Debug|Any CPU
+		{3C6B67BD-0F9A-49BC-9F07-68BCF171E58C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3C6B67BD-0F9A-49BC-9F07-68BCF171E58C}.Debug|x86.Build.0 = Debug|Any CPU
+		{3C6B67BD-0F9A-49BC-9F07-68BCF171E58C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C6B67BD-0F9A-49BC-9F07-68BCF171E58C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C6B67BD-0F9A-49BC-9F07-68BCF171E58C}.Release|x64.ActiveCfg = Release|Any CPU
+		{3C6B67BD-0F9A-49BC-9F07-68BCF171E58C}.Release|x64.Build.0 = Release|Any CPU
+		{3C6B67BD-0F9A-49BC-9F07-68BCF171E58C}.Release|x86.ActiveCfg = Release|Any CPU
+		{3C6B67BD-0F9A-49BC-9F07-68BCF171E58C}.Release|x86.Build.0 = Release|Any CPU
+		{071D6E02-E478-48B8-A515-67FFDB8BDCB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{071D6E02-E478-48B8-A515-67FFDB8BDCB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{071D6E02-E478-48B8-A515-67FFDB8BDCB5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{071D6E02-E478-48B8-A515-67FFDB8BDCB5}.Debug|x64.Build.0 = Debug|Any CPU
+		{071D6E02-E478-48B8-A515-67FFDB8BDCB5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{071D6E02-E478-48B8-A515-67FFDB8BDCB5}.Debug|x86.Build.0 = Debug|Any CPU
+		{071D6E02-E478-48B8-A515-67FFDB8BDCB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{071D6E02-E478-48B8-A515-67FFDB8BDCB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{071D6E02-E478-48B8-A515-67FFDB8BDCB5}.Release|x64.ActiveCfg = Release|Any CPU
+		{071D6E02-E478-48B8-A515-67FFDB8BDCB5}.Release|x64.Build.0 = Release|Any CPU
+		{071D6E02-E478-48B8-A515-67FFDB8BDCB5}.Release|x86.ActiveCfg = Release|Any CPU
+		{071D6E02-E478-48B8-A515-67FFDB8BDCB5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -134,5 +162,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D551234B-0A8D-4DEE-8178-A81998DF0EDB} = {E4B09348-2E98-4A58-8D5A-B55231D6A2E3}
 		{473BFF7D-C7F0-471D-B7A3-19AD9ADFDBA9} = {E4B09348-2E98-4A58-8D5A-B55231D6A2E3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CE278D6B-F8FA-4F40-A67B-A8367F40FCA4}
 	EndGlobalSection
 EndGlobal

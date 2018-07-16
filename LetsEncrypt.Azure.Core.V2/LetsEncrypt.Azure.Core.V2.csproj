@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\LetsEncrypt.SiteExtension.Core\IAzureEnvironment.cs" Link="IAzureEnvironment.cs" />
+    <Compile Include="..\LetsEncrypt.SiteExtension.Core\Models\AcmeConfig.cs" Link="Models\AcmeConfig.cs" />
+    <Compile Include="..\LetsEncrypt.SiteExtension.Core\Models\CertificateInstallModel.cs" Link="Models\CertificateInstallModel.cs" />
+    <Compile Include="..\LetsEncrypt.SiteExtension.Core\Models\IAcmeConfig.cs" Link="Models\IAcmeConfig.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Certes" Version="2.3.0" />
+    <PackageReference Include="DnsClient" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.11.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6\System.ComponentModel.DataAnnotations.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

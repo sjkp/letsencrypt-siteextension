@@ -86,6 +86,7 @@ namespace LetsEncrypt.Azure.Core
             return await new CertificateManager(null, acmeConfig, null, new AzureDnsAuthorizationChallengeProvider(azureDnsEnvironment)).RequestInternalAsync(acmeConfig);
         }
 
+
         /// <summary>
         /// Used for automatic installation of letsencrypt certificate 
         /// </summary>
