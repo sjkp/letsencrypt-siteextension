@@ -8,6 +8,7 @@ using LetsEncrypt.Azure.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -38,7 +39,8 @@ namespace LetsEncrypt.Azure.Core.Services
         {   using (var signer = new RS256Signer())
             using (var client = Register(signer))
             {
-                var auth = await this.authorizeChallengeProvider.Authorize(client, config.Hostnames.ToList());
+                IdnMapping idn = new IdnMapping();
+                var auth = await this.authorizeChallengeProvider.Authorize(client, config.Hostnames.Select(s => idn.GetAscii(s)).ToList());
 
                 //GetCertificate
                 if (auth.Status == "valid")
@@ -147,8 +149,8 @@ namespace LetsEncrypt.Azure.Core.Services
 
         public string GetCertificate(AcmeClient client)
         {
-
-            var dnsIdentifier = config.Host;
+            IdnMapping idn = new IdnMapping();
+            var dnsIdentifier = idn.GetAscii(config.Host);
             CertificateProvider.RegisterProvider<BouncyCastleProvider>(BouncyCastleProvider.PROVIDER_NAME);
             var cp = CertificateProvider.GetProvider(BouncyCastleProvider.PROVIDER_NAME);
             var rsaPkp = new RsaPrivateKeyParams();
@@ -179,7 +181,7 @@ namespace LetsEncrypt.Azure.Core.Services
             {
                 if (config.AlternateNames.Count > 0)
                 {
-                    csrDetails.AlternativeNames = config.AlternateNames;
+                    csrDetails.AlternativeNames = config.AlternateNames.Select(s => idn.GetAscii(s));
                 }
             }
             var csrParams = new CsrParams
