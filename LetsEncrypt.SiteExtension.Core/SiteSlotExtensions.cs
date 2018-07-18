@@ -41,6 +41,8 @@ namespace LetsEncrypt.Azure.Core
             {
                 //We want the slot settings to be fixed to the slot, so we don't swap the wrong LetsEncrypt webjob settings into production.
                 var existingSlotConfigs = sites.ListSlotConfigurationNames(resourceGroupName, webAppName);
+                if (existingSlotConfigs.AppSettingNames == null)
+                    existingSlotConfigs.AppSettingNames = new List<string>();
                 var updateRequired = false;
                 foreach(var appSettingName in settings.Properties.Keys)
                 {
