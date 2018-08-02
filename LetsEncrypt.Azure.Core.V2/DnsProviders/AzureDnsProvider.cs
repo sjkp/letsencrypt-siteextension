@@ -1,4 +1,4 @@
-﻿using LetsEncrypt.Azure.Core.Models;
+﻿using LetsEncrypt.Azure.Core.V2.Models;
 using Microsoft.Azure.Management.Dns.Fluent;
 using Microsoft.Azure.Management.Dns.Fluent.Models;
 using Microsoft.Rest.Azure;
@@ -6,23 +6,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LetsEncrypt.Azure.Core.V2
+namespace LetsEncrypt.Azure.Core.V2.DnsProviders
 {
-    public class AzureDnsProviderService : IDnsProviderService
+    public class AzureDnsProvider : IDnsProvider
     {
         private readonly IDnsManagementClient client;
-        private readonly IAzureDnsEnvironment environment;
+        private readonly AzureDnsSettings settings;
 
-        public AzureDnsProviderService(IDnsManagementClient client, IAzureDnsEnvironment environment)
+        public AzureDnsProvider(AzureDnsSettings settings)
         {
-            this.client = client;
-            this.environment = environment;
+            var credentials = AzureHelper.GetAzureCredentials(settings.AzureServicePrincipal, settings.AzureSubscription);
+         
+            this.client = new DnsManagementClient(credentials);
+            this.client.SubscriptionId = settings.AzureSubscription.SubscriptionId;
+            this.settings = settings;
         }
+
+        public int MinimumTtl => 60;
+
         public async Task Cleanup(string recordSetName)
         {
             var existingRecords = await SafeGetExistingRecords(recordSetName);
 
-            await this.client.RecordSets.DeleteAsync(this.environment.ResourceGroupName, this.environment.ZoneName, GetRelativeRecordSetName(recordSetName), RecordType.TXT);
+            await this.client.RecordSets.DeleteAsync(this.settings.ResourceGroupName, this.settings.ZoneName, GetRelativeRecordSetName(recordSetName), RecordType.TXT);
         }
 
         public async Task PersistChallenge(string recordSetName, string recordValue)
@@ -31,7 +37,7 @@ namespace LetsEncrypt.Azure.Core.V2
             {
                 new TxtRecord() { Value = new[] { recordValue } }
             };
-            if ((await client.RecordSets.ListByTypeAsync(environment.ResourceGroupName, environment.ZoneName, RecordType.TXT)).Any())
+            if ((await client.RecordSets.ListByTypeAsync(settings.ResourceGroupName, settings.ZoneName, RecordType.TXT)).Any())
             {
                 var existingRecords = await SafeGetExistingRecords(recordSetName);
                 if (existingRecords != null)
@@ -46,23 +52,23 @@ namespace LetsEncrypt.Azure.Core.V2
                     }
                 }
             }
-            await this.client.RecordSets.CreateOrUpdateAsync(this.environment.ResourceGroupName, this.environment.ZoneName, GetRelativeRecordSetName(recordSetName), RecordType.TXT, new RecordSetInner()
+            await this.client.RecordSets.CreateOrUpdateAsync(this.settings.ResourceGroupName, this.settings.ZoneName, GetRelativeRecordSetName(recordSetName), RecordType.TXT, new RecordSetInner()
             {
                 TxtRecords = records,
-                TTL = 60
+                TTL = MinimumTtl
             });
         }
 
         private string GetRelativeRecordSetName(string dnsTxt)
         {
-            return dnsTxt.Replace($".{this.environment.ZoneName}", "");
+            return dnsTxt.Replace($".{this.settings.ZoneName}", "");
         }
 
         private async Task<RecordSetInner> SafeGetExistingRecords(string recordSetName)
         {
             try
             {
-                return await client.RecordSets.GetAsync(environment.ResourceGroupName, environment.ZoneName, GetRelativeRecordSetName(recordSetName), RecordType.TXT);
+                return await client.RecordSets.GetAsync(settings.ResourceGroupName, settings.ZoneName, GetRelativeRecordSetName(recordSetName), RecordType.TXT);
 
             }
             catch (CloudException cex)

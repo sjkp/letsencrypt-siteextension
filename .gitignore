@@ -46,3 +46,5 @@ azuredeploy.parameters.serviceplan.local.json
 /.vs/LetsEncrypt-SiteExtension/v15/Server/sqlite3/storage.ide-shm
 /.vs/LetsEncrypt-SiteExtension/v15/Server/sqlite3/storage.ide
 /.vs/LetsEncrypt-SiteExtension/v15/Server/sqlite3/db.lock
+/Letsencrypt.Azure.Core.Test/unoeuro.json
+.vs/

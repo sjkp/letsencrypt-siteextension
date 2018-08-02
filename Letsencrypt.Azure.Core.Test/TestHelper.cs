@@ -1,4 +1,5 @@
-﻿using LetsEncrypt.Azure.Core.Models;
+﻿using LetsEncrypt.Azure.Core.V2.DnsProviders;
+using LetsEncrypt.Azure.Core.V2.Models;
 using Microsoft.Azure.Management.Dns.Fluent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Rest.Azure.Authentication;
@@ -11,30 +12,69 @@ namespace Letsencrypt.Azure.Core.Test
 {
     public class TestHelper
     {
-        public static IAzureDnsEnvironment AzureDnsEnvironment
+        private static readonly string tenantId;
+        private static readonly string subscriptionId;
+        private static string clientId;
+        private static string secret;
+
+        static TestHelper()
+        {
+            var config = new ConfigurationBuilder()
+                .AddUserSecrets<TestHelper>()
+                  .Build();
+
+            tenantId = config["tenantId"];
+            subscriptionId = config["subscriptionId"];
+            clientId = config["clientId"];
+            secret = config["clientSecret"];
+        }
+        public static AzureDnsSettings AzureDnsSettings
+        {
+            get
+            {                
+                return new AzureDnsSettings("dns", "ai4bots.com", AzureServicePrincipal, new AzureSubscription()
+                {
+                    AzureRegion = "AzureGlobalCloud",
+                    SubscriptionId = subscriptionId,
+                    Tenant = tenantId
+                });
+            }
+        }
+
+        public static UnoEuroDnsProvider UnoEuroDnsProvider
         {
             get
             {
                 var config = new ConfigurationBuilder()
-                  .AddJsonFile("secrets.json")
-                  .Build();
+          .AddUserSecrets<UnoEuroDnsProviderTest>()
+          .Build();
 
-                string tenantId = config["tenantId"];
-                Guid subscriptionId = new Guid(config["subscriptionId"]);
-                string clientId = config["clientId"];
-                string secret = config["clientSecret"];
-
-
-                return new AzureDnsEnvironment(tenantId, subscriptionId, new Guid(clientId), secret, "dns", "ai4bots.com", "@");
+                return new UnoEuroDnsProvider(new UnoEuroDnsSettings()
+                {
+                    AccountName = config["accountName"],
+                    ApiKey = config["apiKey"],
+                    Domain = config["domain"]
+                });
             }
         }
 
-        public static async Task<DnsManagementClient> MakeDnsClient(IAzureDnsEnvironment config)
+        public static AzureServicePrincipal AzureServicePrincipal => new AzureServicePrincipal()
         {
-            var serviceCreds = await ApplicationTokenProvider.LoginSilentAsync(config.Tenant, config.ClientId.ToString(), config.ClientSecret);
-            var client = new Microsoft.Azure.Management.Dns.Fluent.DnsManagementClient(serviceCreds);
-            client.SubscriptionId = config.SubscriptionId.ToString();
-            return client;
+            ClientId = clientId,
+            ClientSecret = secret
+        };
+
+        public static AzureWebAppSettings AzureWebAppSettings
+        {
+            get
+            {               
+                return new AzureWebAppSettings("webappcfmv5fy7lcq7o", "LetsEncrypt-SiteExtension2", AzureServicePrincipal, new AzureSubscription()
+                {
+                    Tenant = tenantId,
+                    SubscriptionId = "3f09c367-93e0-4b61-bbe5-dcb5c686bf8a",
+                    AzureRegion = "AzureGlobalCloud"
+                });
+            }
         }
     }
 }

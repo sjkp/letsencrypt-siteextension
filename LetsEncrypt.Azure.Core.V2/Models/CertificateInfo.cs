@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace LetsEncrypt.Azure.Core.Models
+namespace LetsEncrypt.Azure.Core.V2.Models
 {
     /// <summary>
     /// Information about the requested certificate.

@@ -5,17 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\LetsEncrypt.SiteExtension.Core\IAzureEnvironment.cs" Link="IAzureEnvironment.cs" />
-    <Compile Include="..\LetsEncrypt.SiteExtension.Core\Models\AcmeConfig.cs" Link="Models\AcmeConfig.cs" />
-    <Compile Include="..\LetsEncrypt.SiteExtension.Core\Models\CertificateInstallModel.cs" Link="Models\CertificateInstallModel.cs" />
-    <Compile Include="..\LetsEncrypt.SiteExtension.Core\Models\IAcmeConfig.cs" Link="Models\IAcmeConfig.cs" />
+    <PackageReference Include="Certes" Version="2.3.0" />
+    <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.13.0" />
+    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.11.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.3.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Certes" Version="2.3.0" />
-    <PackageReference Include="DnsClient" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Azure.Management.Dns.Fluent" Version="1.11.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <ProjectReference Include="..\DnsClient.NET\src\DnsClient\DnsClient.csproj" />
   </ItemGroup>
 
   <ItemGroup>
