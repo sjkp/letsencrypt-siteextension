@@ -61,8 +61,7 @@ namespace LetsEncrypt.SiteExtension.Controllers.Api
         }
 
         /// <summary>
-        /// Requests a Let's Encrypt certificate using the DNS challenge, using Azure DNS. The 
-        /// certificate is installed using the k
+        /// Requests a Let's Encrypt certificate using the DNS challenge, using Azure DNS. 
         /// </summary>
         /// <param name="model"></param>
         /// <param name="apiversion"></param>
@@ -71,6 +70,27 @@ namespace LetsEncrypt.SiteExtension.Controllers.Api
         [Route("api/certificates/challengeprovider/dns/azure")]
         [ResponseType(typeof(CertificateInstallModel))]
         public async Task<IHttpActionResult> Generate(DnsAzureModel model, [FromUri(Name = "api-version")]string apiversion = null)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var res = await CertificateManager.RequestDnsChallengeCertificate(model.AzureDnsEnvironment, model.AcmeConfig);
+
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// Requests a Let's Encrypt certificate using the DNS challenge, using Azure DNS. 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="apiversion"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("api/certificates/challengeprovider/dns-v2/azure")]
+        [ResponseType(typeof(CertificateInstallModel))]
+        public async Task<IHttpActionResult> Generate_v2(DnsAzureModel model, [FromUri(Name = "api-version")]string apiversion = null)
         {
             if (!ModelState.IsValid)
             {
