@@ -35,7 +35,7 @@ namespace LetsEncrypt.Azure.Core.V2.CertificateStores
         public Task SaveCertificate(CertificateInfo certificate)
         {
             this.fileSystem.Write(certificate.Name, certificate.PfxCertificate);
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }
