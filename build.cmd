@@ -1,4 +1,4 @@
-nuget restore
+nuget restore LetsEncrypt-SiteExtension.sln
 
 RMDIR /S /Q artifacts
 md artifacts
