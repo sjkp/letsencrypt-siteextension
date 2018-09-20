@@ -39,9 +39,9 @@ namespace LetsEncrypt.Azure.Core.V2
                     }
 
                     var existingCerts = await appServiceManager.AppServiceCertificates.ListByResourceGroupAsync(setting.ServicePlanResourceGroupName ?? setting.ResourceGroupName);
-                    if (existingCerts.All(_ => _.Thumbprint != cert.Certificate.Thumbprint))
+                    if (existingCerts.Where(_=> _.RegionName == s.RegionName).All(_ => _.Thumbprint != cert.Certificate.Thumbprint))
                     {
-                        await appServiceManager.AppServiceCertificates.Define(model.Host + "-" + cert.Certificate.Thumbprint).WithRegion(s.RegionName).WithExistingResourceGroup(setting.ServicePlanResourceGroupName ?? setting.ResourceGroupName).WithPfxByteArray(model.CertificateInfo.PfxCertificate).WithPfxPassword(model.CertificateInfo.Password).CreateAsync();
+                        await appServiceManager.AppServiceCertificates.Define($"{cert.Certificate.Thumbprint}-{model.Host}-{s.RegionName}").WithRegion(s.RegionName).WithExistingResourceGroup(setting.ServicePlanResourceGroupName ?? setting.ResourceGroupName).WithPfxByteArray(model.CertificateInfo.PfxCertificate).WithPfxPassword(model.CertificateInfo.Password).CreateAsync();
                     }
 
 
@@ -65,11 +65,11 @@ namespace LetsEncrypt.Azure.Core.V2
                             };
                             if (!string.IsNullOrEmpty(setting.SiteSlotName))
                             {
-                                await appServiceManager.Inner.WebApps.CreateOrUpdateHostNameBindingSlotAsync(setting.ServicePlanResourceGroupName ?? setting.ResourceGroupName, setting.WebAppName, hostName, binding, setting.SiteSlotName);
+                                await appServiceManager.Inner.WebApps.CreateOrUpdateHostNameBindingSlotAsync(setting.ResourceGroupName, setting.WebAppName, hostName, binding, setting.SiteSlotName);
                             }
                             else
                             {
-                                await appServiceManager.Inner.WebApps.CreateOrUpdateHostNameBindingAsync(setting.ServicePlanResourceGroupName ?? setting.ResourceGroupName, setting.WebAppName, hostName, binding);
+                                await appServiceManager.Inner.WebApps.CreateOrUpdateHostNameBindingAsync( setting.ResourceGroupName, setting.WebAppName, hostName, binding);
                             }
                         }
                     }
