@@ -21,6 +21,7 @@ namespace LetsEncrypt.Azure.Core.V2.Models
         /// The host name to request a certificate for e.g. *.example.com 
         /// </summary>
         public string Host { get; set; }
+        public string[] AlternateNames { get; set; }
 
         public string PFXPassword { get; set; }
 
@@ -42,7 +43,10 @@ namespace LetsEncrypt.Azure.Core.V2.Models
         /// The host name to request a certificate for e.g. *.example.com 
         /// </summary>
         string Host { get; }
-
+        /// <summary>
+        /// The Certificate Alternate Names
+        /// </summary>
+        string[] AlternateNames { get; set; }
         string PFXPassword { get; }
 
         CsrInfo CsrInfo { get; }

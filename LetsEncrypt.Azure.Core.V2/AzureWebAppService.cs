@@ -47,7 +47,8 @@ namespace LetsEncrypt.Azure.Core.V2
 
 
                     var sslStates = siteOrSlot.HostNameSslStates;
-                    var domainSslMappings = new List<KeyValuePair<string, HostNameSslState>>(sslStates.Where(_ => _.Key.Contains($".{model.Host.Substring(2)}")));
+                    
+                    var domainSslMappings = new List<KeyValuePair<string, HostNameSslState>>(sslStates.Where(_ => _.Key.Contains($"{model.Host}")));
 
                     if (domainSslMappings.Any())
                     {

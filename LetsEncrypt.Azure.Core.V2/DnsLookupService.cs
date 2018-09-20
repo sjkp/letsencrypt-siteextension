@@ -26,7 +26,8 @@ namespace LetsEncrypt.Azure.Core.V2
             hostname = idn.GetAscii(GetNoneWildcardDomain(hostname));
             var dnsClient = GetDnsClient(hostname);
             var startTime = DateTime.UtcNow;
-            string queriedDns = "";
+            var valid = false;
+            //string queriedDns = "";
             //Lets encrypt checks a random authoritative server, thus we need to ensure that all respond with the challenge. 
             foreach (var ns in dnsClient.NameServers)
             {
@@ -34,17 +35,20 @@ namespace LetsEncrypt.Azure.Core.V2
                 do
                 {
                     var dnsRes = dnsClient.QueryServer(new[] { ns.Endpoint.Address }, $"_acme-challenge.{hostname}", QueryType.TXT);
-                    queriedDns = dnsRes.Answers.TxtRecords().FirstOrDefault()?.Text.FirstOrDefault();
-                    if (queriedDns != dnsTxt)
+                    var queriedDns = dnsRes.Answers.TxtRecords();
+                   
+                    if (!queriedDns.Any(_ => _.Text.Any(t => t == dnsTxt)))
                     {
                         logger.LogInformation("Challenge record was {existingTxt} should have been {Challenge}, retrying again in 5 seconds", queriedDns, dnsTxt);
                         await Task.Delay(5000);
                     }
+                    else
+                        valid = true;
 
-                } while (queriedDns != dnsTxt && (DateTime.UtcNow - startTime).TotalSeconds < timeout);
+                } while (!valid && (DateTime.UtcNow - startTime).TotalSeconds < timeout);
             }
 
-            return queriedDns == dnsTxt;
+            return valid;
         }
 
         private static LookupClient GetDnsClient(params string[] hostnames)
@@ -68,7 +72,8 @@ namespace LetsEncrypt.Azure.Core.V2
 
         public static string GetNoneWildcardDomain(string hostname)
         {
-            return hostname.Replace("*.", "");
+            var parts = DnsString.Parse(hostname);
+            return $"{parts.Labels[2]}{parts.Labels[1]}";
         }
     }
 }
