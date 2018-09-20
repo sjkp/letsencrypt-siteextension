@@ -19,10 +19,11 @@ namespace LetsEncrypt.Azure.Runner
             Configuration = new ConfigurationBuilder()
                   .AddJsonFile("settings.json", true)
                   .AddEnvironmentVariables()
+                  .AddUserSecrets<Program>()
                   .Build();
 
             var azureAppSettings = new AzureWebAppSettings[] { };
-            
+
             if (Configuration.GetSection("AzureAppService").Exists())
             {
                 azureAppSettings = new[] { Configuration.GetSection("AzureAppService").Get<AzureWebAppSettings>() };
@@ -43,17 +44,19 @@ namespace LetsEncrypt.Azure.Runner
                 c.AddConsole();
                 //c.AddDebug();
             })
-            .Configure<LoggerFilterOptions>(options => options.MinLevel = LogLevel.Information)            
+            .Configure<LoggerFilterOptions>(options => options.MinLevel = LogLevel.Information)
             .AddAzureAppService(azureAppSettings);
 
             string azureStorageConnectionString = Configuration.GetConnectionString("AzureStorageAccount");
             if (Configuration.GetSection("DnsSettings").Get<GoDaddyDnsProvider.GoDaddyDnsSettings>().ShopperId != null)
             {
                 serviceCollection.AddAcmeClient<GoDaddyDnsProvider>(Configuration.GetSection("DnsSettings").Get<GoDaddyDnsProvider.GoDaddyDnsSettings>(), azureStorageConnectionString);
-            } else if (Configuration.GetSection("DnsSettings").Get<UnoEuroDnsSettings>().AccountName != null)
+            }
+            else if (Configuration.GetSection("DnsSettings").Get<UnoEuroDnsSettings>().AccountName != null)
             {
                 serviceCollection.AddAcmeClient<UnoEuroDnsProvider>(Configuration.GetSection("DnsSettings").Get<UnoEuroDnsSettings>(), azureStorageConnectionString);
-            } else if (Configuration.GetSection("DnsSettings").Get<AzureDnsSettings>().ResourceGroupName != null)
+            }
+            else if (Configuration.GetSection("DnsSettings").Get<AzureDnsSettings>().ResourceGroupName != null)
             {
                 serviceCollection.AddAcmeClient<AzureDnsProvider>(Configuration.GetSection("DnsSettings").Get<AzureDnsSettings>(), azureStorageConnectionString);
             }
