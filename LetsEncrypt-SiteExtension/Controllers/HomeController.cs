@@ -194,7 +194,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
             {
                 Text = s,
                 Value = s
-            });
+            }).OrderBy(s => s.Text);
         }
 
         [HttpPost]

@@ -30,8 +30,8 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var hostName in Model.HostNames)
-            {
+                @foreach (var hostName in Model.HostNames.OrderBy(o => o))
+                {
                     <tr>
                         <td>@Html.DisplayTextFor(h => hostName)</td>
                     </tr>
@@ -55,7 +55,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var hostName in Model.HostNameSslStates)
+                @foreach (var hostName in Model.HostNameSslStates.OrderBy(o => o.Name))
                 {
                     <tr>
 
