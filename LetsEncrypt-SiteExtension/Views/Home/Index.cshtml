@@ -20,11 +20,12 @@
     </thead>
     <tbody>
         <tr>
-            <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.tenantKey</td><td>The tenant name e.g. myazuretenant.onmicrosoft.com</td>                     
+            <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.tenantKey</td>
+            <td>The tenant name e.g. myazuretenant.onmicrosoft.com</td>
         </tr>
         <tr>
             <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.subscriptionIdKey</td>
-            <td>(Optional) The subscription id, if left empty the environment variable WEBSITE_OWNER_NAME will be used</td>            
+            <td>(Optional) The subscription id, if left empty the environment variable WEBSITE_OWNER_NAME will be used</td>
         </tr>
         <tr>
             <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.clientIdKey</td>
@@ -32,7 +33,7 @@
         </tr>
         <tr>
             <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.clientSecretKey</td>
-            <td>The secret for the service principal</td>            
+            <td>The secret for the service principal</td>
         </tr>
         <tr>
             <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.resourceGroupNameKey</td>
@@ -41,10 +42,14 @@
         <tr>
             <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.servicePlanResourceGroupNameKey</td>
             <td>(Optional) The name of the resource group that the app service plan hosting the web app (only required if the app service plan is in a different resource group than the web app)</td>
-        </tr>         
+        </tr>
         <tr>
             <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.useIPBasedSSL</td>
             <td>Check this if you want the certificate to be bound to the WebApps' IP address instead of using SNI. With IP based SSL additional costs might be charged.</td>
+        </tr>
+        <tr>
+            <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.siteSlotNameKey</td>
+            <td>(Optional) Use this setting if you want to use the extension to setup SSL certificate for deployment slots, the value should be the name of the slot (and the extension should be installed in that slots kudu portal)</td>
         </tr>
     </tbody>
 </table>
