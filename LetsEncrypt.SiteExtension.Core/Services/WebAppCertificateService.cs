@@ -66,7 +66,7 @@ namespace LetsEncrypt.Azure.Core.Services
                     {
                         sslState = new HostNameSslState()
                         {
-                            Name = model.Host,
+                            Name = dnsName,
                             SslState = settings.UseIPBasedSSL ? SslState.IpBasedEnabled : SslState.SniEnabled,
                         };
                         s.HostNameSslStates.Add(sslState);
