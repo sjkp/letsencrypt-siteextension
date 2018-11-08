@@ -252,58 +252,6 @@ namespace LetsEncrypt.SiteExtension.Controllers
                 }
             }
             return View();
-        }
-
-        public ActionResult CreateServicePrincipal()
-        {
-            var head = Request.Headers.GetValues(Utils.X_MS_OAUTH_TOKEN).FirstOrDefault();
-
-            var client = new SubscriptionClient(new TokenCredentials(head));
-            client.SubscriptionId = Guid.NewGuid().ToString();
-            var tenants = client.Tenants.List();
-
-
-            var subs = client.Subscriptions.List();
-            var cookie = ARMOAuthModule.ReadOAuthTokenCookie(HttpContext.ApplicationInstance);
-
-            //var graphToken = AADOAuth2AccessToken.GetAccessTokenByRefreshToken(cookie.TenantId, cookie.refresh_token, "https://graph.windows.net/");
-
-            var settings = ActiveDirectoryServiceSettings.Azure;
-            var authContext = new AuthenticationContext(settings.AuthenticationEndpoint + "common");
-            var graphToken = authContext.AcquireToken("https://management.core.windows.net/", new ClientCredential("d1b853e2-6e8c-4e9e-869d-60ce913a280c", "hVAAmWMFjX0Z0T4F9JPlslfg8roQNRHgIMYIXAIAm8s="));
-
-
-            var graphClient = new GraphRbacManagementClient(new TokenCredentials(graphToken.AccessToken));
-
-            graphClient.SubscriptionId = subs.FirstOrDefault().SubscriptionId;
-            graphClient.TenantID = tenants.FirstOrDefault().TenantId;
-            //var servicePrincipals = graphClient.ServicePrincipal.List();
-            try
-            {
-                var res = graphClient.Application.Create(new Microsoft.Azure.Graph.RBAC.Models.ApplicationCreateParameters()
-                {
-                    DisplayName = "Test Application created by ARM",
-                    Homepage = "https://test.sjkp.dk",
-                    AvailableToOtherTenants = false,
-                    IdentifierUris = new string[] { "https://absaad12312.sjkp.dk" },
-                    ReplyUrls = new string[] { "https://test.sjkp.dk" },
-                    PasswordCredentials = new PasswordCredential[] { new PasswordCredential() {
-                    EndDate = DateTime.UtcNow.AddYears(1),
-                    KeyId = Guid.NewGuid().ToString(),
-                    Value = "s3nheiser",
-                    StartDate = DateTime.UtcNow
-                } },
-                });
-
-            }
-            catch (CloudException ex)
-            {
-                var s = ex.Body.Message;
-                var s2 = ex.Response.Content;
-
-            }
-
-            return View();
-        }
+        }     
     }
 }

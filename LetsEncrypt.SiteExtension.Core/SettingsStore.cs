@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Hosting;
 using Newtonsoft.Json;
 using LetsEncrypt.Azure.Core.Models;
+using System.Diagnostics;
 
 namespace LetsEncrypt.Azure.Core
 {
@@ -44,12 +45,15 @@ namespace LetsEncrypt.Azure.Core
 
         public List<SettingEntry> Load()
         {
+            
             if (File.Exists(_settingsFilePath))
             {
+                Trace.TraceInformation($"Trying to load setttings from {_settingsFilePath}");
                 return JsonConvert.DeserializeObject<List<SettingEntry>>(File.ReadAllText(_settingsFilePath));
             }
             else
             {
+                Trace.TraceInformation($"Settings not found at {_settingsFilePath} returning empty settings");
                 return new List<SettingEntry>();
             }
         }
