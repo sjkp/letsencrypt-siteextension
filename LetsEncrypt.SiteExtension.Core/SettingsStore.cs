@@ -44,12 +44,20 @@ namespace LetsEncrypt.Azure.Core
         }
 
         public List<SettingEntry> Load()
-        {
-            
+        {            
             if (File.Exists(_settingsFilePath))
             {
                 Trace.TraceInformation($"Trying to load setttings from {_settingsFilePath}");
-                return JsonConvert.DeserializeObject<List<SettingEntry>>(File.ReadAllText(_settingsFilePath));
+                string contents = String.Empty;
+                try
+                {
+                    contents = File.ReadAllText(_settingsFilePath);
+                    return JsonConvert.DeserializeObject<List<SettingEntry>>(contents);
+                } catch(Exception e)
+                {
+                    Trace.TraceError($"Unable to deserialize content from {_settingsFilePath} contents was: '{contents}'");
+                    return new List<SettingEntry>();
+                }
             }
             else
             {
