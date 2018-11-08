@@ -154,7 +154,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
                 model.InstalledCertificateThumbprint = id;
                 if (model.HostNames.Count == 1)
                 {
-                    model.ErrorMessage = "No custom host names registered. At least one custom domain name must be registed for the web site to request a letsencrypt certificate.";
+                    model.ErrorMessage = "No custom host names registered. At least one custom domain name must be registered for the web site to request a letsencrypt certificate.";
                 }
 
             }
@@ -194,7 +194,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
             {
                 Text = s,
                 Value = s
-            });
+            }).OrderBy(s => s.Text);
         }
 
         [HttpPost]

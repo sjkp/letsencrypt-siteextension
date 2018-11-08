@@ -2,7 +2,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/mdg0e31rp0qdu16m/branch/master?svg=true
 )](https://ci.appveyor.com/project/sjkp/letsencrypt-siteextension) [![Build status](https://dockerbuildbadges.quelltext.eu/status.svg?organization=sjkp&repository=letsencrypt-azure)](https://hub.docker.com/r/sjkp/letsencrypt-azure/)
 
-This Azure Web App Site Extension enables easy installation and configuration of [Let's Encrypt](https://letsencrypt.org/) issued SSL certifcates for you custom domain names. 
+This Azure Web App Site Extension enables easy installation and configuration of [Let's Encrypt](https://letsencrypt.org/) issued SSL certificates for you custom domain names. 
 
 The site extension requires that you have configured a DNS entry for you custom domain to point to Azure Web App. 
 
