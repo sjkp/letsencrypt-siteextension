@@ -5,6 +5,12 @@ using System.Threading.Tasks;
 using LetsEncrypt.Azure.Core.Models;
 using LetsEncrypt.Azure.Core;
 using LetsEncrypt.Azure.Core.Services;
+using System.Collections.Generic;
+using System.Security;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Net;
+using System.IO;
 
 namespace LetsEncrypt.SiteExtension.Test
 {
@@ -18,7 +24,7 @@ namespace LetsEncrypt.SiteExtension.Test
         {
             var result = await new CertificateManager(new AppSettingsAuthConfig()).RenewCertificate();
 
-            Assert.AreNotEqual(0, result.Count());
+            Assert.AreEqual(0, result.Count());            
         }
 
         [TestCategory("Integration")]
@@ -33,6 +39,7 @@ namespace LetsEncrypt.SiteExtension.Test
             var result = await mgr.RenewCertificate(renewXNumberOfDaysBeforeExpiration: 200);
 
             Assert.AreNotEqual(0, result.Count());
+            ValidateCertificate(result, "https://letsencrypt.sjkp.dk");
         }
 
         [TestCategory("Integration")]
@@ -70,6 +77,7 @@ namespace LetsEncrypt.SiteExtension.Test
             var result = await mgr.AddCertificate();
 
             Assert.IsNotNull(result);
+            ValidateCertificate(new[] { result }, "https://letsencrypt.ai4bots.com");
         }
 
         [TestCategory("Integration")]
@@ -89,5 +97,42 @@ namespace LetsEncrypt.SiteExtension.Test
 
             Assert.IsTrue(res.CertificateInfo.Certificate.Subject.Contains("ai4bots.com"));
         }
+
+        [DeploymentItem("certArray.json")]
+        [DeploymentItem("certArrayWithValue.json")]
+        [TestMethod]
+        public void ExtractCertificates()
+        {
+            var t1 = File.ReadAllText("certArray.json");
+            var t2 = File.ReadAllText("certArrayWithValue.json");
+            var res1 = CertificateManager.ExtractCertificates(t1);
+            var res2 = CertificateManager.ExtractCertificates(t2);
+
+            Assert.AreEqual("A19D760D4D50552DA48B1D493738BD754E5EA8DA", res1.FirstOrDefault().Thumbprint);
+            Assert.AreEqual("A19D760D4D50552DA48B1D493738BD754E5EA8DA", res2.FirstOrDefault().Thumbprint);
+        }
+
+        
+        private void ValidateCertificate(IEnumerable<CertificateInstallModel> certs, string uri)
+        {
+            //Do webrequest to get info on secure site            
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            response.Close();
+
+            //retrieve the ssl cert and assign it to an X509Certificate object
+            X509Certificate cert = request.ServicePoint.Certificate;
+
+            //convert the X509Certificate to an X509Certificate2 object by passing it into the constructor
+            X509Certificate2 cert2 = new X509Certificate2(cert);
+
+            string cn = cert2.Issuer;
+            Assert.AreEqual("CN=Fake LE Intermediate X1", cn);
+            string tb = cert2.Thumbprint;
+            Assert.AreEqual(certs.FirstOrDefault().CertificateInfo.Certificate.Thumbprint, tb);
+            string cedate = cert2.GetExpirationDateString();
+            string cpub = cert2.GetPublicKeyString();
+        }
     }
 }
+

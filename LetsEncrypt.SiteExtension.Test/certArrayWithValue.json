@@ -1,0 +1,35 @@
+﻿{
+  "value": [
+    {
+      "id": "/subscriptions/3f09c367-93e0-4b61-bbe5-dcb5c686bf8a/resourceGroups/LetsEncrypt-SiteExtension/providers/Microsoft.Web/certificates/letsencrypt.sjkp.dk-A19D760D4D50552DA48B1D493738BD754E5EA8DA",
+      "name": "letsencrypt.sjkp.dk-A19D760D4D50552DA48B1D493738BD754E5EA8DA",
+      "type": "Microsoft.Web/certificates",
+      "location": "West US",
+      "properties": {
+        "friendlyName": "CN=letsencrypt.sjkp.dk",
+        "subjectName": "letsencrypt.sjkp.dk",
+        "hostNames": [
+          "letsencrypt.sjkp.dk"
+        ],
+        "pfxBlob": null,
+        "siteName": null,
+        "selfLink": null,
+        "issuer": "Fake LE Intermediate X1",
+        "issueDate": "2018-11-13T20:19:24+01:00",
+        "expirationDate": "2019-02-11T20:19:24+01:00",
+        "password": null,
+        "thumbprint": "A19D760D4D50552DA48B1D493738BD754E5EA8DA",
+        "valid": null,
+        "toDelete": null,
+        "cerBlob": null,
+        "publicKeyHash": null,
+        "hostingEnvironment": null,
+        "hostingEnvironmentProfile": null,
+        "keyVaultSecretStatus": "Initialized",
+        "webSpace": "LetsEncrypt-SiteExtension-WestUSwebspace",
+        "serverFarmId": null,
+        "tags": null
+      }
+    }
+  ]
+}

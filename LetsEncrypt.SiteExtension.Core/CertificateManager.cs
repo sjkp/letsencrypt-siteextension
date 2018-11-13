@@ -3,6 +3,7 @@ using LetsEncrypt.Azure.Core.Services;
 using Microsoft.Azure.Management.WebSites;
 using Microsoft.Azure.Management.WebSites.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -122,7 +123,7 @@ namespace LetsEncrypt.Azure.Core
                 var response = await httpClient.GetAsync($"/subscriptions/{settings.SubscriptionId}/providers/Microsoft.Web/certificates?api-version=2016-03-01");
                 response.EnsureSuccessStatusCode();
                 var body = await response.Content.ReadAsStringAsync();
-                IEnumerable<Certificate> certs = JsonConvert.DeserializeObject<Certificate[]>(body, JsonHelper.DefaultSerializationSettings);
+                IEnumerable<Certificate> certs = ExtractCertificates(body);
 
                 var expiringCerts = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(renewXNumberOfDaysBeforeExpiration) && (s.Issuer.Contains("Let's Encrypt") || s.Issuer.Contains("Fake LE")));
 
@@ -143,24 +144,41 @@ namespace LetsEncrypt.Azure.Core
                     }
                     var target = new AcmeConfig()
                     {
-                     
+
                         RegistrationEmail = this.acmeConfig.RegistrationEmail ?? ss.FirstOrDefault(s => s.Name == "email").Value,
                         Host = sslStates.First().Name,
-                        BaseUri = this.acmeConfig.BaseUri ?? ss.FirstOrDefault(s => s.Name == "baseUri").Value,                        
+                        BaseUri = this.acmeConfig.BaseUri ?? ss.FirstOrDefault(s => s.Name == "baseUri").Value,
                         AlternateNames = sslStates.Skip(1).Select(s => s.Name).ToList(),
                         PFXPassword = this.acmeConfig.PFXPassword,
                         RSAKeyLength = this.acmeConfig.RSAKeyLength
-                        
+
                     };
                     if (!skipInstallCertificate)
                     {
                         res.Add(await RequestAndInstallInternalAsync(target));
-                    }                    
+                    }
                 }
                 return res;
             }
-        }             
+        }
 
+        internal static IEnumerable<Certificate> ExtractCertificates(string body)
+        {
+            
+            var json = JToken.Parse(body);
+            var certs = Enumerable.Empty<Certificate>();
+            // Handle issue #269
+            if (json.Type == JTokenType.Object && json["value"] != null)
+            {
+                certs = JsonConvert.DeserializeObject<Certificate[]>(json["value"].ToString(), JsonHelper.DefaultSerializationSettings);
+            }
+            else
+            {
+                certs = JsonConvert.DeserializeObject<Certificate[]>(body, JsonHelper.DefaultSerializationSettings);
+            }
+
+            return certs;
+        }
 
         internal CertificateInstallModel RequestAndInstallInternal(IAcmeConfig config)
         {
