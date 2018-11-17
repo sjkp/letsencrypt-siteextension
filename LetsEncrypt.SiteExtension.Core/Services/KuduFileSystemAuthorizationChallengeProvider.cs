@@ -16,13 +16,16 @@ namespace LetsEncrypt.Azure.Core.Services
     {
         private readonly KuduRestClient kuduClient;
         private readonly IAuthorizationChallengeProviderConfig config;
+        private readonly IAzureWebAppEnvironment azureEnvironment;
 
         public KuduFileSystemAuthorizationChallengeProvider(IAzureWebAppEnvironment azureEnvironment, IAuthorizationChallengeProviderConfig config)
         {
             this.config = config;
             var website = ArmHelper.GetWebSiteManagementClient(azureEnvironment);
             this.kuduClient = KuduHelper.GetKuduClient(website, azureEnvironment);
+            this.azureEnvironment = azureEnvironment;
         }
+
         public override Task CleanupChallengeFile(HttpChallenge challenge)
         {
             return Task.CompletedTask;
@@ -55,7 +58,7 @@ namespace LetsEncrypt.Azure.Core.Services
             }
         }
 
-        private static string GetAnswerPath(HttpChallenge httpChallenge)
+        private string GetAnswerPath(HttpChallenge httpChallenge)
         {
             // We need to strip off any leading '/' in the path
             var filePath = httpChallenge.FilePath;
@@ -65,14 +68,13 @@ namespace LetsEncrypt.Azure.Core.Services
             return answerPath;
         }
 
-        private static string WebRootPath()
+        private string WebRootPath()
         {
             
-            var webrootPath = ConfigurationManager.AppSettings["letsencrypt:WebRootPath"];
-            if (string.IsNullOrEmpty(webrootPath))
+            if (string.IsNullOrEmpty(azureEnvironment.WebRootPath))
                 return "site/wwwroot";
             //Ensure this is a backwards compatible with the LocalFileSystemProvider that was the only option before
-            return webrootPath.Replace(Environment.ExpandEnvironmentVariables("%HOME%"), "").Replace('\\', '/');
+            return azureEnvironment.WebRootPath.Replace(Environment.ExpandEnvironmentVariables("%HOME%"), "").Replace('\\', '/');
         }
     }
 }
