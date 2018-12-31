@@ -13,7 +13,7 @@ https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install
 * Note that Let's Encrypt works by providing automated certificates of a short (currently three month) duration. This extension is BETA SOFTWARE. You will need to keep this extension updated or risk losing SSL access when your certificate expires.
 * There are presently no email notifications for certificate renewal problems, but Lets Encrypt will email you weeks in advance of certificate expiration, when the extension is running properly the certificate should have been renewed before Let's Encrypt send the reminder email.
 * Due to rate limiting of Let's Encrypt servers, you can only request five certificates per domain name per week. Configuration errors or errors in this site extension may render you unable to retrieve a new certificate for seven days. If up-time is critical, have a plan for deploying a SSL certificate from another source in place.
-* No support for multi-region web apps, so if you use traffic mananger or some other load balancer to route traffic between web apps in different regions please dont use this extension. 
+* No support for multi-region web apps, so if you use traffic manager or some other load balancer to route traffic between web apps in different regions please dont use this extension. 
 * If you publish your project from Visual Studio with the "Delete Existing files" option, you will remove the web jobs the site extension uses to renew the certificate once they expire every 3 months (you can renew them manually or install the site extension again after publish). 
 * The site-extension will not work with [Azure App Service Local Cache](https://azure.microsoft.com/en-us/documentation/articles/app-service-local-cache/)
 * If you use the "Run From Zip" deployment method, please take a look at this: https://github.com/sjkp/letsencrypt-siteextension/issues/239#issuecomment-440785470 
@@ -32,7 +32,7 @@ With the semi-automated installation you manually add the site extension to your
 Once this process is complete your custom domain for the site is setup with a Let's Encrypt issued SSL certificate. 
 
 ## Fully-Automated Installation
-To use the Fully Automated Installtion the following Web App settings must be added. 
+To use the Fully Automated Installation the following Web App settings must be added. 
 
 | Key |	Value
 |-----| ----
@@ -45,7 +45,7 @@ To use the Fully Automated Installtion the following Web App settings must be ad
 | letsencrypt:AcmeBaseUri |	The url to Let's Encrypt servers e.g. https://acme-v01.api.letsencrypt.org/ or https://acme-staging.api.letsencrypt.org/ (defaults to this)
 | letsencrypt:Email	| The Email used for registering with Let's Encrypt
 | letsencrypt:Hostnames |	Comma separated list of custom hostnames (externally hosted setup with CNames), that should automatically be configured for the site.
-| letsencrypt:WebRootPath | Use this setting, if you are not serving the website from site\wwwroot, then you can sepecify the other folder that serves your website here - should be in the format d:\home\site\wwwroot\public or where ever your files are located on the web server. 
+| letsencrypt:WebRootPath | Use this setting, if you are not serving the website from site\wwwroot, then you can specify the other folder that serves your website here - should be in the format d:\home\site\wwwroot\public or where ever your files are located on the web server. 
 | letsencrypt:DisableWebConfigUpdate | true / false, defaults to false, set this to true if you don't want the site extension to write the default webconfig to wwwroot\.well-known\acme-challenge
 | letsencrypt:SiteSlot | Use this setting if you want to use the extension to setup SSL certificate for deployment slots, the value should be the name of the slot (and the extension should be installed in that slots kudu portal)
 | letsencrypt:UseIPBasedSSL | Set to true if you want to use IP Based SSL (required by some older clients). Defaults to false, which results in SNI. 
@@ -56,5 +56,3 @@ As it can be seen from the list of App Settings a service principal is needed. T
 Besides the App Settings, the two Azure Web Job required connection strings ```AzureWebJobsStorage``` and ```AzureWebJobsDashboard``` must also exists, as the extension relies on an internal Web Job to renew the certificates once they expire. 
 
 To see an example of an ARM template installation look at [azuredeploy.json](LetsEncrypt.ResourceGroup/Templates/azuredeploy.json)
-
-
