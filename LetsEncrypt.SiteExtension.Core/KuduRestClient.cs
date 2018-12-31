@@ -1,6 +1,7 @@
 ﻿using LetsEncrypt.Azure.Core.Models;
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -70,6 +71,10 @@ namespace LetsEncrypt.Azure.Core
             var res = await client.SendAsync(request);
 
             var body = await res.Content.ReadAsStringAsync();
+
+            Trace.TraceInformation($"KuduClient PutFile responsecode {res.StatusCode} responsebody: {body}");
+
+            res.EnsureSuccessStatusCode();
         }
     }
 }
