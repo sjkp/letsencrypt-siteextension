@@ -87,6 +87,11 @@ namespace LetsEncrypt.SiteExtension.Models
             get;set;
         }
 
+        public string WebRootPath
+        {
+            get; set;
+        }
+
         public static explicit operator AuthenticationModel(AppSettingsAuthConfig config)
         {
             return new AuthenticationModel()
@@ -103,7 +108,8 @@ namespace LetsEncrypt.SiteExtension.Models
                 AzureWebSitesDefaultDomainName = config.AzureWebSitesDefaultDomainName,
                 ManagementEndpoint = config.ManagementEndpoint,
                 TokenAudience = config.TokenAudience,
-                SiteSlotName = config.SiteSlotName
+                SiteSlotName = config.SiteSlotName,
+                WebRootPath = config.WebRootPath
             };
         }
     }
