@@ -21,6 +21,7 @@ namespace LetsEncrypt.Azure.Core.Models
         public const string acmeBaseUriKey = "letsencrypt:AcmeBaseUri";
         public const string siteSlotNameKey = "letsencrypt:SiteSlot";
         public const string webAppNameKey = "WEBSITE_SITE_NAME";
+        public const string webRootPath = "letsencrypt:WebRootPath";
         public const string servicePlanResourceGroupNameKey = "letsencrypt:ServicePlanResourceGroupName";
         public const string rsaKeyLengthKey = "letsencrypt:RSAKeyLength";
         private readonly WebAppEnviromentVariables environemntVariables;
@@ -104,6 +105,14 @@ namespace LetsEncrypt.Azure.Core.Models
             get
             {
                 return ConfigurationManager.AppSettings[webAppNameKey]; 
+            }
+        }
+
+        public string WebRootPath
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings[webRootPath];
             }
         }
 

@@ -30,9 +30,9 @@ namespace LetsEncrypt.Azure.Core.Services
 
        
 
-        private static string WebRootPath()
+        private string WebRootPath()
         {
-            return ConfigurationManager.AppSettings["letsencrypt:WebRootPath"] ?? Path.Combine(Environment.ExpandEnvironmentVariables("%HOME%"), "site", "wwwroot");
+            return azureEnvironment.WebRootPath ?? Path.Combine(Environment.ExpandEnvironmentVariables("%HOME%"), "site", "wwwroot");
         }
 
         private string ChallengeDirectory
@@ -84,7 +84,7 @@ namespace LetsEncrypt.Azure.Core.Services
             return Task.CompletedTask;
         }
 
-        private static string GetAnswerPath(HttpChallenge httpChallenge)
+        private string GetAnswerPath(HttpChallenge httpChallenge)
         {
             // We need to strip off any leading '/' in the path
             var filePath = httpChallenge.FilePath;

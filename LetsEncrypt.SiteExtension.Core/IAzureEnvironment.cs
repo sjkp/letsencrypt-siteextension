@@ -31,7 +31,7 @@ namespace LetsEncrypt.Azure.Core.Models
 
         string AzureWebSitesDefaultDomainName { get; }
 
-      
+        string WebRootPath { get; }
     }
 
     public interface IAzureDnsEnvironment : IAzureEnvironment
@@ -142,10 +142,11 @@ namespace LetsEncrypt.Azure.Core.Models
     /// </summary>
     public class AzureWebAppEnvironment : AzureEnvironment, IAzureWebAppEnvironment
     {
-        public AzureWebAppEnvironment(string tenant, Guid subscription, Guid clientId, string clientSecret, string resourceGroup, string webAppName, string servicePlanResourceGroupName = null, string siteSlotName = null)
+        public AzureWebAppEnvironment(string tenant, Guid subscription, Guid clientId, string clientSecret, string resourceGroup, string webAppName, string servicePlanResourceGroupName = null, string siteSlotName = null, string webrootPath = null)
             : base(tenant, subscription, clientId, clientSecret, resourceGroup)
         {          
             this.WebAppName = webAppName;
+            this.WebRootPath = webrootPath;
             this.ServicePlanResourceGroupName = string.IsNullOrEmpty(servicePlanResourceGroupName) ? resourceGroup : servicePlanResourceGroupName;
             this.SiteSlotName = siteSlotName;            
         }
@@ -190,6 +191,14 @@ namespace LetsEncrypt.Azure.Core.Models
         /// </summary>
         [Required]
         public string WebAppName
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// The path to the web root.
+        /// </summary>
+        public string WebRootPath
         {
             get; set;
         }
