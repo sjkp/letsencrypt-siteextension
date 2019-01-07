@@ -60,6 +60,30 @@ namespace LetsEncrypt.SiteExtension.Controllers.Api
             return Ok(await mgr.AddCertificate());
         }
 
+
+        /// <summary>
+        /// Installs a Let's Encrypt certificate onto a azure web using http challenge which stores
+        /// the challenge file in azure blob storage. For the challenge to succeed the web app must implement functionality 
+        /// to return the challenge from blob storage. 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="apiversion"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("api/certificates/challengeprovider/http/blob/certificateinstall/azurewebapp")]
+        [ResponseType(typeof(CertificateInstallModel))]
+        public async Task<IHttpActionResult> GenerateAndInstallBlob(HttpKuduInstallModel model, [FromUri(Name = "api-version")]string apiversion = null)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var mgr = CertificateManager.CreateBlobWebAppCertificateManager(model.AzureEnvironment, model.AcmeConfig, model.CertificateSettings);
+
+            return Ok(await mgr.AddCertificate());
+        }
+
         /// <summary>
         /// Requests a Let's Encrypt certificate using the DNS challenge, using Azure DNS. 
         /// </summary>

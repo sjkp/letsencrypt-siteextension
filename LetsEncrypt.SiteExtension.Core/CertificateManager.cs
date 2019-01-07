@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,10 +29,18 @@ namespace LetsEncrypt.Azure.Core
             
             this.settings = config;
             this.acmeConfig = config;
-            this.challengeProvider = new KuduFileSystemAuthorizationChallengeProvider(this.settings, new AuthorizationChallengeProviderConfig()
+            string storageAccount = AuthorizationChallengeBlobStorageAccount();
+            if (string.IsNullOrEmpty(storageAccount))
             {
-                DisableWebConfigUpdate = config.DisableWebConfigUpdate
-            });
+                this.challengeProvider = new KuduFileSystemAuthorizationChallengeProvider(this.settings, new AuthorizationChallengeProviderConfig()
+                {
+                    DisableWebConfigUpdate = config.DisableWebConfigUpdate
+                });
+            }
+            else
+            {
+                this.challengeProvider = NewBlobStorageAuthorizationChallengeProvider();
+            }
             this.certificateService = new WebAppCertificateService(this.settings, new CertificateServiceSettings()
             {
                 UseIPBasedSSL = config.UseIPBasedSSL
@@ -45,6 +54,29 @@ namespace LetsEncrypt.Azure.Core
             this.certificateService = certificateService;
             this.acmeConfig = acmeConfig;
             this.challengeProvider = challengeProvider;
+        }
+
+        /// <summary>
+        /// Returns a <see cref="CertificateManager"/> configured to use HTTP Challenge, placing the challenge file on Azure Blob Storage,
+        /// and assigning the obtained certificate directly to the web app service. 
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="acmeConfig"></param>
+        /// <param name="certSettings"></param>
+        /// <returns></returns>
+        public static CertificateManager CreateBlobWebAppCertificateManager(IAzureWebAppEnvironment settings, IAcmeConfig acmeConfig, IWebAppCertificateSettings certSettings)
+        {
+            return new CertificateManager(settings, acmeConfig, new WebAppCertificateService(settings, certSettings), NewBlobStorageAuthorizationChallengeProvider());
+        }
+
+        private static BlobStorageAuthorizationChallengeProvider NewBlobStorageAuthorizationChallengeProvider()
+        {
+            return new BlobStorageAuthorizationChallengeProvider(AuthorizationChallengeBlobStorageAccount(), ConfigurationManager.AppSettings[AppSettingsAuthConfig.authorizationChallengeBlobStorageContainer]);
+        }
+
+        private static string AuthorizationChallengeBlobStorageAccount()
+        {
+            return ConfigurationManager.AppSettings[AppSettingsAuthConfig.authorizationChallengeBlobStorageAccount];
         }
 
         /// <summary>

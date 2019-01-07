@@ -51,6 +51,15 @@
             <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.siteSlotNameKey</td>
             <td>(Optional) Use this setting if you want to use the extension to setup SSL certificate for deployment slots, the value should be the name of the slot (and the extension should be installed in that slots kudu portal)</td>
         </tr>
+        <tr>
+            <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.authorizationChallengeBlobStorageAccount</td>
+            <td>(Optional) Set this setting to the connection string of a storage account, if you want to persist the http challenge file to an external azure blob storage, and serve it yourself when let's encrypt request it from the http://yourdomain/.well-known/acme-challenge/{filename} path. (Can be used when local file system cache is enabled or the web app is deployed to multiple region behind traffic manager etc.)</td>
+        </tr>
+        <tr>
+            <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.authorizationChallengeBlobStorageContainer</td>
+            <td>(Optional) Used in conjuction with @LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.authorizationChallengeBlobStorageAccount if you want to specify the name of the container that is used, if not specified then letsencrypt-siteextension is used</td>
+        </tr>
+
     </tbody>
 </table>
 <h3><a id="automatedInstallHeader" href="#">Automated Installation (click to expand)</a></h3>

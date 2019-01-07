@@ -31,6 +31,8 @@ namespace LetsEncrypt.Azure.Core.Models
         public const string managementEndpointKey = "letsencrypt:AzureManagementEndpoint";
         public const string azureDefaultWebSiteDomainName = "letsencrypt:AzureDefaultWebSiteDomainName";
         public const string disableWebConfigUpdateKey = "letsencrypt:DisableWebConfigUpdate";
+        public const string authorizationChallengeBlobStorageAccount = "letsencrypt:AuthorizationChallengeBlobStorageAccount";
+        public const string authorizationChallengeBlobStorageContainer = "letsencrypt:AuthorizationChallengeBlobStorageContainer";
 
         public AppSettingsAuthConfig()
         {

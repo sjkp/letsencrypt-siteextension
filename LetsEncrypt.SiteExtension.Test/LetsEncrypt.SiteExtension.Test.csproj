@@ -122,6 +122,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AzureDnsAuthorizationChallengeProviderTest.cs" />
+    <Compile Include="BlobStorageAuthorizationChallengeTest.cs" />
     <Compile Include="CertificateControllerTest.cs" />
     <Compile Include="CleanupCertificates.cs" />
     <Compile Include="PublishingCrendentialsTest.cs" />
