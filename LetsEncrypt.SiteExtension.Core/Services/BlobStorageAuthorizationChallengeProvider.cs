@@ -40,6 +40,13 @@ namespace LetsEncrypt.Azure.Core.Services
             var client = storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
             await container.CreateIfNotExistsAsync();
+            if (!"$web".Equals(containerName, StringComparison.InvariantCultureIgnoreCase) && container.Properties.PublicAccess != BlobContainerPublicAccessType.Blob)
+            {
+                await container.SetPermissionsAsync(new BlobContainerPermissions()
+                {
+                    PublicAccess = BlobContainerPublicAccessType.Blob
+                });
+            }
             // We need to strip off any leading '/' in the path
             var filePath = challenge.FilePath;
             if (filePath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
