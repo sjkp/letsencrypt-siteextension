@@ -29,6 +29,8 @@ namespace LetsEncrypt.SiteExtension
         public MonthlySchedule()
         { }
 
+        public override bool AdjustForDST => false;
+
         public override DateTime GetNextOccurrence(DateTime now)
         {
             return now.AddMonths(1);
