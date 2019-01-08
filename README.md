@@ -15,7 +15,7 @@ https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install
 * Due to rate limiting of Let's Encrypt servers, you can only request five certificates per domain name per week. Configuration errors or errors in this site extension may render you unable to retrieve a new certificate for seven days. If up-time is critical, have a plan for deploying a SSL certificate from another source in place.
 * No support for multi-region web apps, so if you use traffic manager or some other load balancer to route traffic between web apps in different regions please dont use this extension. 
 * If you publish your project from Visual Studio with the "Delete Existing files" option, you will remove the web jobs the site extension uses to renew the certificate once they expire every 3 months (you can renew them manually or install the site extension again after publish). 
-* The site-extension will not work with [Azure App Service Local Cache](https://azure.microsoft.com/en-us/documentation/articles/app-service-local-cache/)
+* The site-extension can now work with [Azure App Service Local Cache](https://azure.microsoft.com/en-us/documentation/articles/app-service-local-cache/), however you must do a little manual work, see https://github.com/sjkp/letsencrypt-siteextension/wiki/Azure-Function,-Multi-Region,-Local-Cache-support
 * If you use the "Run From Zip" deployment method, please take a look at this: https://github.com/sjkp/letsencrypt-siteextension/issues/239#issuecomment-440785470 
 
 ## How to troubleshoot
@@ -50,6 +50,8 @@ To use the Fully Automated Installation the following Web App settings must be a
 | letsencrypt:SiteSlot | Use this setting if you want to use the extension to setup SSL certificate for deployment slots, the value should be the name of the slot (and the extension should be installed in that slots kudu portal)
 | letsencrypt:UseIPBasedSSL | Set to true if you want to use IP Based SSL (required by some older clients). Defaults to false, which results in SNI. 
 | letsencrypt:RenewXNumberOfDaysBeforeExpiration | Set to an integer defining the number of days before expiration the certificates should be renewed. Defaults to 22 days before expiration, as letencrypt sends reminder emails 20 days before
+| letsencrypt:AuthorizationChallengeBlobStorageAccount | (Optional) Set this setting to the connection string of a storage account, if you want to persist the http challenge file to an external azure blob storage, and serve it yourself when let's encrypt request it from the http://yourdomain/.well-known/acme-challenge/{filename} path. (Can be used when local file system cache is enabled or the web app is deployed to multiple region behind traffic manager etc.)
+| letsencrypt:AuthorizationChallengeBlobStorageContainer | Used in conjuction with letsencrypt:AuthorizationChallengeBlobStorageAccount if you want to specify the name of the container that is used, if not specified then letsencrypt-siteextension is used
 
 As it can be seen from the list of App Settings a service principal is needed. The service principal must be assigned permissions to the web app, that is required as the extension use it for installing and updating the certificate. (If two resource groups are used, the app service principal must have access to both). 
 
