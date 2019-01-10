@@ -10,6 +10,7 @@ using Microsoft.Azure.Management.WebSites;
 using System.Diagnostics;
 using System.Net.Http;
 using Newtonsoft.Json;
+using Polly;
 
 namespace LetsEncrypt.Azure.Core.Services
 {
@@ -26,7 +27,7 @@ namespace LetsEncrypt.Azure.Core.Services
             this.azureEnvironment = azureEnvironment;
             this.settings = settings;
         }
-        public void Install(ICertificateInstallModel model)
+        public async Task Install(ICertificateInstallModel model)
         {
             var cert = model.CertificateInfo;
             using (var webSiteClient = ArmHelper.GetWebSiteManagementClient(azureEnvironment))
@@ -53,10 +54,13 @@ namespace LetsEncrypt.Azure.Core.Services
 
                 var body = JsonConvert.SerializeObject(newCert, JsonHelper.DefaultSerializationSettings);
 
-                var t = client.PutAsync($"/subscriptions/{azureEnvironment.SubscriptionId}/resourceGroups/{azureEnvironment.ServicePlanResourceGroupName}/providers/Microsoft.Web/certificates/{newCert.Name}?api-version=2016-03-01", new StringContent(body, Encoding.UTF8, "application/json")).Result;
+                Polly.Retry.RetryPolicy retryPolicy = ArmHelper.ExponentialBackoff();
 
-                t.EnsureSuccessStatusCode();
-
+                await retryPolicy.ExecuteAsync(async () =>
+                {
+                    var t = await client.PutAsync($"/subscriptions/{azureEnvironment.SubscriptionId}/resourceGroups/{azureEnvironment.ServicePlanResourceGroupName}/providers/Microsoft.Web/certificates/{newCert.Name}?api-version=2016-03-01", new StringContent(body, Encoding.UTF8, "application/json"));
+                    t.EnsureSuccessStatusCode();
+                });
 
                 foreach (var dnsName in model.AllDnsIdentifiers)
                 {
@@ -83,7 +87,7 @@ namespace LetsEncrypt.Azure.Core.Services
             }
 
 
-        }
+        }        
 
         public List<string> RemoveExpired(int removeXNumberOfDaysBeforeExpiration = 0)
         {

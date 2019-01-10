@@ -150,11 +150,17 @@ namespace LetsEncrypt.Azure.Core
             using (var client = ArmHelper.GetWebSiteManagementClient(settings))
             using (var httpClient = ArmHelper.GetHttpClient(settings))
             {
+                var retryPolicy = ArmHelper.ExponentialBackoff();
+                var body = string.Empty;
                 //Cant just get certificates by resource group, because sites that have been moved, have their certs sitting in the old RG.
                 //Also cant use client.Certificates.List() due to bug in the nuget
-                var response = await httpClient.GetAsync($"/subscriptions/{settings.SubscriptionId}/providers/Microsoft.Web/certificates?api-version=2016-03-01");
-                response.EnsureSuccessStatusCode();
-                var body = await response.Content.ReadAsStringAsync();
+                await retryPolicy.ExecuteAsync(async () =>
+                {
+                    var response = await httpClient.GetAsync($"/subscriptions/{settings.SubscriptionId}/providers/Microsoft.Web/certificates?api-version=2016-03-01");
+                    response.EnsureSuccessStatusCode();
+                    body = await response.Content.ReadAsStringAsync();
+
+                });
                 IEnumerable<Certificate> certs = ExtractCertificates(body);
 
                 var expiringCerts = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(renewXNumberOfDaysBeforeExpiration) && (s.Issuer.Contains("Let's Encrypt") || s.Issuer.Contains("Fake LE")));

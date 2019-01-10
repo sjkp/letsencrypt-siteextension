@@ -9,7 +9,7 @@ namespace LetsEncrypt.Azure.Core.Services
 {
     class AppServiceCerticiateCertificateService : ICertificateService
     {
-        public void Install(ICertificateInstallModel model)
+        public async Task Install(ICertificateInstallModel model)
         {
             throw new NotImplementedException();
         }

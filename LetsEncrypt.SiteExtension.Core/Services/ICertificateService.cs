@@ -9,7 +9,7 @@ namespace LetsEncrypt.Azure.Core.Services
 {
     public interface ICertificateService
     {
-        void Install(ICertificateInstallModel model);
+        Task Install(ICertificateInstallModel model);
 
         List<string> RemoveExpired(int removeXNumberOfDaysBeforeExpiration = 0);
     }

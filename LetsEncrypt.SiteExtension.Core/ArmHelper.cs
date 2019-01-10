@@ -4,10 +4,13 @@ using Microsoft.Azure.Management.WebSites;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
 using Microsoft.Rest.Azure.Authentication;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace LetsEncrypt.Azure.Core
@@ -46,11 +49,44 @@ namespace LetsEncrypt.Azure.Core
         {        
             AuthenticationResult token = GetToken(model);
 
-            var client = new HttpClient();
+            var client = HttpClientFactory.Create(new HttpClientHandler(), new TimeoutHandler());
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token.AccessToken);
             client.BaseAddress = model.ManagementEndpoint;
 
             return client;
+        }
+
+        public static Polly.Retry.RetryPolicy ExponentialBackoff(int retryCount = 3, int firstBackOffDelay = 2)
+        {
+            return Policy
+          .Handle<HttpRequestException>()
+          .WaitAndRetryAsync(retryCount, retryAttempt =>
+            TimeSpan.FromSeconds(Math.Pow(firstBackOffDelay, retryAttempt))
+          );
+        }
+
+        public class TimeoutHandler : DelegatingHandler
+        {
+            private static TimeSpan Timeout = TimeSpan.FromSeconds(120);
+
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+            CancellationToken cancellationToken)
+            {
+                var cts = new CancellationTokenSource();
+                cts.CancelAfter(Timeout);
+                var timeoutToken = cts.Token;
+
+                var linkedToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutToken);
+
+                try
+                {
+                    return await base.SendAsync(request, linkedToken.Token);
+                }
+                catch (OperationCanceledException) when (timeoutToken.IsCancellationRequested)
+                {
+                    throw new TimeoutException();
+                }
+            }
         }
     }
 }
