@@ -4,6 +4,7 @@ using LetsEncrypt.Azure.Core.Services;
 using LetsEncrypt.Azure.Core.Models;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace LetsEncrypt.SiteExtension.Test
 {
@@ -11,14 +12,16 @@ namespace LetsEncrypt.SiteExtension.Test
     public class CertificateServiceTest
     {
         [DeploymentItem("letsencrypt.sjkp.dk-all.pfx")]
+        [DeploymentItem("App.secret.config")]
         [TestMethod]
-        public void TestInstall()
+        public async Task TestInstall()
         {
+            Console.WriteLine(typeof(Microsoft.IdentityModel.Clients.ActiveDirectory.AdalOption).AssemblyQualifiedName);
             var config = new AppSettingsAuthConfig();
             var service = new WebAppCertificateService(config, new CertificateServiceSettings { });
             var pfx = File.ReadAllBytes("letsencrypt.sjkp.dk-all.pfx");
           
-            service.Install(new CertificateInstallModel
+            await service.Install(new CertificateInstallModel
             {
                 AllDnsIdentifiers = new List<string>() { "letsencrypt.sjkp.dk" },
                 Host = "letsencrypt.sjkp.dk",
@@ -34,12 +37,12 @@ namespace LetsEncrypt.SiteExtension.Test
             });
         }
         [TestMethod]
-        public void TestRemove()
+        public async Task TestRemove()
         {
             var config = new AppSettingsAuthConfig();
             var service = new WebAppCertificateService(config, new CertificateServiceSettings { });            
             
-            service.RemoveExpired(180);
+            await service.RemoveExpired(180);
         }
     }
 }
