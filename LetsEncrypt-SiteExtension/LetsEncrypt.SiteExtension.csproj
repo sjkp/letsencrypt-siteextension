@@ -48,6 +48,10 @@
     <DocumentationFile>bin\LetsEncrypt.SiteExtension.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Kudu.Services.Web, Version=62.60603.3754.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\dlls\Kudu.Services.Web.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Azure.Graph.RBAC, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Graph.RBAC.2.2.0-preview\lib\net45\Microsoft.Azure.Graph.RBAC.dll</HintPath>
       <Private>True</Private>

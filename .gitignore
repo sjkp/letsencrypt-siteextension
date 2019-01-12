@@ -49,3 +49,4 @@ azuredeploy.parameters.serviceplan.local.json
 /Letsencrypt.Azure.Core.Test/unoeuro.json
 .vs/
 /LetsEncrypt.ResourceGroup/Templates/azuredeploy.acm.parameters.local.json
+*.pubxml

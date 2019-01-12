@@ -217,9 +217,9 @@ namespace LetsEncrypt.SiteExtension.Controllers
                     PFXPassword = settings.PFXPassword,
                     RSAKeyLength = settings.RSAKeyLength,    
                 };
-                var thumbprint = await new CertificateManager(settings).RequestAndInstallInternalAsync(target);
-                if (thumbprint != null)
-                    return RedirectToAction("Hostname", new { id = thumbprint });
+                var certModel = await new CertificateManager(settings).RequestAndInstallInternalAsync(target);
+                if (certModel != null)
+                    return RedirectToAction("Hostname", new { id = certModel.CertificateInfo.Certificate.Thumbprint });
             }
             SetViewBagHostnames();
             return View(model);
