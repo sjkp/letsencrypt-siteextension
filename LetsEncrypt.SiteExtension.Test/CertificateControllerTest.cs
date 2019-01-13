@@ -22,7 +22,7 @@ namespace LetsEncrypt.SiteExtension.Test
         public async Task TestRenewCertificate()
         {
             var config = new AppSettingsAuthConfig();            
-            var client = ArmHelper.GetWebSiteManagementClient(config);
+            var client = await ArmHelper.GetWebSiteManagementClient(config);
             var kuduClient = KuduHelper.GetKuduClient(client, config);
 
             var res = await kuduClient.HttpClient.PostAsync("https://webappcfmv5fy7lcq7o.scm.azurewebsites.net/letsencrypt/api/certificates/renew?api-version=2017-09-01", new StringContent(""));
@@ -42,7 +42,7 @@ namespace LetsEncrypt.SiteExtension.Test
         public async Task TestRequestAndInstallCertificate()
         {
             var config = new AppSettingsAuthConfig();
-            var client = ArmHelper.GetWebSiteManagementClient(config);
+            var client = await ArmHelper.GetWebSiteManagementClient(config);
             var kuduClient = KuduHelper.GetKuduClient(client, config);
 
             var body = new HttpKuduInstallModel()
@@ -71,7 +71,7 @@ namespace LetsEncrypt.SiteExtension.Test
         public async Task TestRequestAndInstallDnsCertificate()
         {
             var config = new AppSettingsAuthConfig();
-            var client = ArmHelper.GetWebSiteManagementClient(config);
+            var client =  await ArmHelper.GetWebSiteManagementClient(config);
             var kuduClient = KuduHelper.GetKuduClient(client, config);
 
             var body = new DnsAzureInstallModel()
@@ -114,7 +114,7 @@ namespace LetsEncrypt.SiteExtension.Test
         public async Task TestRequestDnsCertificate()
         {
             var config = new AppSettingsAuthConfig();
-            var client = ArmHelper.GetWebSiteManagementClient(config);
+            var client = await ArmHelper.GetWebSiteManagementClient(config);
             var kuduClient = KuduHelper.GetKuduClient(client, config);
 
             var body = new DnsAzureModel()

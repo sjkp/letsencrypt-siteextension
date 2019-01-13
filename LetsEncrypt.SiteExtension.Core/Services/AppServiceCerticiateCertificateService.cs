@@ -9,12 +9,12 @@ namespace LetsEncrypt.Azure.Core.Services
 {
     class AppServiceCerticiateCertificateService : ICertificateService
     {
-        public void Install(ICertificateInstallModel model)
+        public async Task Install(ICertificateInstallModel model)
         {
             throw new NotImplementedException();
         }
 
-        public List<string> RemoveExpired(int removeXNumberOfDaysBeforeExpiration = 0)
+        public async Task<List<string>> RemoveExpired(int removeXNumberOfDaysBeforeExpiration = 0)
         {
             throw new NotImplementedException();
         }

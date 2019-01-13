@@ -20,7 +20,7 @@ namespace LetsEncrypt.SiteExtension.Test
         { 
 
             var model = new AppSettingsAuthConfig();
-            var helper = ArmHelper.GetWebSiteManagementClient(model);
+            var helper = await ArmHelper.GetWebSiteManagementClient(model);
 
             var kuduClient = KuduHelper.GetKuduClient(helper, model);
 

@@ -213,7 +213,7 @@
       }
     },
     {
-      "apiVersion": "2015-08-01",
+      "apiVersion": "2018-02-01",
       "type": "Microsoft.Web/sites/hostNameBindings",
       "name": "[concat(variables('webAppName'),'/', split(parameters('hostnames'), ',')[copyIndex()])]",
       "dependsOn": [
@@ -229,6 +229,8 @@
       },
       "copy": {
         "name": "hostnameloop",
+        "mode": "serial",
+        "batchSize": 1,
         "count": "[length(split(parameters('hostnames'),','))]"
       }
     }

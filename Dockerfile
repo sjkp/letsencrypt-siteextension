@@ -6,7 +6,6 @@ WORKDIR /src
 COPY LetsEncrypt.Azure.Core.V2 /src/LetsEncrypt.Azure.Core.V2
 COPY Letsencrypt.Azure.Core.Test /src/Letsencrypt.Azure.Core.Test
 COPY LetsEncrypt.Azure.Runner /src/LetsEncrypt.Azure.Runner
-COPY DnsClient.NET /src/DnsClient.NET
 COPY LetsEncrypt.Azure.DotNetCore.sln /src/LetsEncrypt.Azure.DotNetCore.sln
 
 

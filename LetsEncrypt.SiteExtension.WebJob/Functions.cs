@@ -69,10 +69,10 @@ namespace LetsEncrypt.SiteExtension
             Console.WriteLine($"Completed renewal of '{count}' certificates");
         }   
         
-        public static void Cleanup([TimerTrigger(typeof(MyDailySchedule), RunOnStartup = true)] TimerInfo timerInfo)
+        public static async Task Cleanup([TimerTrigger(typeof(MyDailySchedule), RunOnStartup = true)] TimerInfo timerInfo)
         {
             Console.WriteLine("Clean up");
-            var res = new CertificateManager(new AppSettingsAuthConfig()).Cleanup();
+            var res = await new CertificateManager(new AppSettingsAuthConfig()).Cleanup();
             res.ForEach(s => Console.WriteLine($"Removed certificate with thumbprint {s}"));
         }    
 
