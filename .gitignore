@@ -49,3 +49,6 @@ azuredeploy.parameters.serviceplan.local.json
 /Letsencrypt.Azure.Core.Test/unoeuro.json
 .vs/
 /LetsEncrypt.ResourceGroup/Templates/azuredeploy.acm.parameters.local.json
+/LetsEncrypt-SiteExtension/Properties/PublishProfiles/webAppcfmv5fy7lcq7o - Web Deploy.pubxml
+/LetsEncrypt-SiteExtension/Properties/PublishProfiles/webAppcfmv5fy7lcq7o - FTP.pubxml
+.vs/
