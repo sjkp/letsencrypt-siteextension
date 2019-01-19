@@ -14,7 +14,7 @@ namespace LetsEncrypt.Azure.Core.Services
             throw new NotImplementedException();
         }
 
-        public List<string> RemoveExpired(int removeXNumberOfDaysBeforeExpiration = 0)
+        public async Task<List<string>> RemoveExpired(int removeXNumberOfDaysBeforeExpiration = 0)
         {
             throw new NotImplementedException();
         }

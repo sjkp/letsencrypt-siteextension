@@ -11,6 +11,6 @@ namespace LetsEncrypt.Azure.Core.Services
     {
         Task Install(ICertificateInstallModel model);
 
-        List<string> RemoveExpired(int removeXNumberOfDaysBeforeExpiration = 0);
+        Task<List<string>> RemoveExpired(int removeXNumberOfDaysBeforeExpiration = 0);
     }
 }

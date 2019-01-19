@@ -147,20 +147,21 @@ namespace LetsEncrypt.Azure.Core
         {
             Trace.TraceInformation("Checking certificate");
             var ss = SettingsStore.Instance.Load();
-            using (var client = ArmHelper.GetWebSiteManagementClient(settings))
-            using (var httpClient = ArmHelper.GetHttpClient(settings))
+            using (var client = await ArmHelper.GetWebSiteManagementClient(settings))
+            using (var httpClient = await ArmHelper.GetHttpClient(settings))
             {
                 var retryPolicy = ArmHelper.ExponentialBackoff();
                 var body = string.Empty;
                 //Cant just get certificates by resource group, because sites that have been moved, have their certs sitting in the old RG.
                 //Also cant use client.Certificates.List() due to bug in the nuget
-                await retryPolicy.ExecuteAsync(async () =>
+                var response = await retryPolicy.ExecuteAsync(async () =>
                 {
-                    var response = await httpClient.GetAsync($"/subscriptions/{settings.SubscriptionId}/providers/Microsoft.Web/certificates?api-version=2016-03-01");
-                    response.EnsureSuccessStatusCode();
-                    body = await response.Content.ReadAsStringAsync();
+                    return await httpClient.GetAsync($"/subscriptions/{settings.SubscriptionId}/providers/Microsoft.Web/certificates?api-version=2016-03-01");
+                    
 
                 });
+                response.EnsureSuccessStatusCode();
+                body = await response.Content.ReadAsStringAsync();
                 IEnumerable<Certificate> certs = ExtractCertificates(body);
 
                 var expiringCerts = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(renewXNumberOfDaysBeforeExpiration) && (s.Issuer.Contains("Let's Encrypt") || s.Issuer.Contains("Fake LE")));
@@ -241,13 +242,13 @@ namespace LetsEncrypt.Azure.Core
         {
             Trace.TraceInformation("RequestAndInstallInternal");
             var model = await RequestInternalAsync(config);
-            this.certificateService.Install(model);
+            await this.certificateService.Install(model);
             return model;
         }
 
-        public List<string> Cleanup()
+        public async Task<List<string>> Cleanup()
         {
-            return this.certificateService.RemoveExpired();
+            return await this.certificateService.RemoveExpired();
         }
     }
 }

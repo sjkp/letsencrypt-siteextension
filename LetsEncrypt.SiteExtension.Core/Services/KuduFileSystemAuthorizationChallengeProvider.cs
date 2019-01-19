@@ -14,15 +14,14 @@ namespace LetsEncrypt.Azure.Core.Services
 {
     public class KuduFileSystemAuthorizationChallengeProvider : BaseHttpAuthorizationChallengeProvider
     {
-        private readonly KuduRestClient kuduClient;
+        
         private readonly IAuthorizationChallengeProviderConfig config;
         private readonly IAzureWebAppEnvironment azureEnvironment;
 
         public KuduFileSystemAuthorizationChallengeProvider(IAzureWebAppEnvironment azureEnvironment, IAuthorizationChallengeProviderConfig config)
         {
             this.config = config;
-            var website = ArmHelper.GetWebSiteManagementClient(azureEnvironment);
-            this.kuduClient = KuduHelper.GetKuduClient(website, azureEnvironment);
+            
             this.azureEnvironment = azureEnvironment;
         }
 
@@ -54,7 +53,7 @@ namespace LetsEncrypt.Azure.Core.Services
                 var streamwriter = new StreamWriter(ms);
                 streamwriter.Write(content);
                 streamwriter.Flush();
-                await kuduClient.PutFile(answerPath, ms);          
+                await (await GetKuduRestClient()).PutFile(answerPath, ms);          
             }
         }
 
@@ -75,6 +74,11 @@ namespace LetsEncrypt.Azure.Core.Services
                 return "site/wwwroot";
             //Ensure this is a backwards compatible with the LocalFileSystemProvider that was the only option before
             return azureEnvironment.WebRootPath.Replace(Environment.ExpandEnvironmentVariables("%HOME%"), "").Replace('\\', '/');
+        }
+        private async Task<KuduRestClient> GetKuduRestClient()
+        {
+            var website = await ArmHelper.GetWebSiteManagementClient(azureEnvironment);
+            return KuduHelper.GetKuduClient(website, azureEnvironment);
         }
     }
 }

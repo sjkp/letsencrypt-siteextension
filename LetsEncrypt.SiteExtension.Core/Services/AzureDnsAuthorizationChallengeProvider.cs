@@ -13,20 +13,18 @@ namespace LetsEncrypt.Azure.Core.Services
 {
     public class AzureDnsAuthorizationChallengeProvider : BaseDnsAuthorizationChallengeProvider
     {
-        private readonly DnsManagementClient dnsClient;
         private IAzureDnsEnvironment environment;
 
         public AzureDnsAuthorizationChallengeProvider(IAzureDnsEnvironment azureDnsSettings) 
-        {
-            this.dnsClient = ArmHelper.GetDnsManagementClient(azureDnsSettings);
+        {            
             this.environment = azureDnsSettings;
         }
 
         public override async Task CleanupChallenge(DnsChallenge dnsChallenge)
         {
             var existingRecords = await SafeGetExistingRecords(dnsChallenge);
-            
-            await this.dnsClient.RecordSets.DeleteAsync(this.environment.ResourceGroupName, this.environment.ZoneName, GetRelativeRecordSetName(dnsChallenge), RecordType.TXT);
+            var dnsClient = await ArmHelper.GetDnsManagementClient(this.environment);
+            await dnsClient.RecordSets.DeleteAsync(this.environment.ResourceGroupName, this.environment.ZoneName, GetRelativeRecordSetName(dnsChallenge), RecordType.TXT);
         }
 
         public override async Task PersistsChallenge(DnsChallenge dnsChallenge)
@@ -35,6 +33,7 @@ namespace LetsEncrypt.Azure.Core.Services
             {
                 new TxtRecord() { Value = new[] { dnsChallenge.RecordValue } }
             };
+            var dnsClient = await ArmHelper.GetDnsManagementClient(this.environment);
             if ((await dnsClient.RecordSets.ListByTypeAsync(environment.ResourceGroupName, environment.ZoneName, RecordType.TXT)).Any())
             {
                 var existingRecords = await SafeGetExistingRecords(dnsChallenge);
@@ -50,7 +49,7 @@ namespace LetsEncrypt.Azure.Core.Services
                     }
                 }
             }
-            await this.dnsClient.RecordSets.CreateOrUpdateAsync(this.environment.ResourceGroupName, this.environment.ZoneName, GetRelativeRecordSetName(dnsChallenge), RecordType.TXT, new RecordSet()
+            await dnsClient.RecordSets.CreateOrUpdateAsync(this.environment.ResourceGroupName, this.environment.ZoneName, GetRelativeRecordSetName(dnsChallenge), RecordType.TXT, new RecordSet()
             {
                 TxtRecords = records,
                 TTL = 60
@@ -66,6 +65,7 @@ namespace LetsEncrypt.Azure.Core.Services
         {
             try
             {
+                var dnsClient = await ArmHelper.GetDnsManagementClient(this.environment);
                 return await dnsClient.RecordSets.GetAsync(environment.ResourceGroupName, environment.ZoneName, GetRelativeRecordSetName(dnsChallenge), RecordType.TXT);
 
             }

@@ -17,9 +17,9 @@ namespace LetsEncrypt.SiteExtension.Test
             var client = HttpClientFactory.Create(new HttpClientHandler(), new TimeoutHandler());
             
             var retry = ArmHelper.ExponentialBackoff();
-            await retry.ExecuteAsync(async () =>
+            var resp = await retry.ExecuteAsync(async () =>
             {
-                await client.PostAsJsonAsync("https://en8zkq5hogjyi.x.pipedream.net", new { text = "hello" });
+                return await client.PostAsJsonAsync("https://en8zkq5hogjyi.x.pipedream.net", new { text = "hello" });
             });
         }
     }
