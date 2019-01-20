@@ -29,7 +29,7 @@ steps:
   displayName: dotnet pack
   inputs:
     command: pack
-    projects: 'LetsEncrypt.Azure.Core.V2/*.csproj'
+    packagesToPack: 'LetsEncrypt.Azure.Core.V2/*.csproj'
     packDirectory: '$(Build.ArtifactStagingDirectory)/packages'
  
 - task: PublishBuildArtifacts@1
