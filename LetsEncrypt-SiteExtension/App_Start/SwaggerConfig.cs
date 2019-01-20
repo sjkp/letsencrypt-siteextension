@@ -4,7 +4,6 @@ using LetsEncrypt.SiteExtension;
 using Swashbuckle.Application;
 using System;
 
-[assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
 namespace LetsEncrypt.SiteExtension
 {
