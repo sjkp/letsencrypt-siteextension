@@ -17,8 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{ED36B174
 	ProjectSection(SolutionItems) = preProject
 		build.cmd = build.cmd
 		build.core.cmd = build.core.cmd
+		LetsEncrypt.SiteExtension.Core\LetsEncrypt.Azure.Core.nuspec = LetsEncrypt.SiteExtension.Core\LetsEncrypt.Azure.Core.nuspec
 		LetsEncrypt.nuspec = LetsEncrypt.nuspec
-		LetsEncrypt.SiteExtension.Core\LetsEncrypt.SiteExtension.Core.nuspec = LetsEncrypt.SiteExtension.Core\LetsEncrypt.SiteExtension.Core.nuspec
 		LetsEncrypt.WebAppOnly.nuspec = LetsEncrypt.WebAppOnly.nuspec
 	EndProjectSection
 EndProject

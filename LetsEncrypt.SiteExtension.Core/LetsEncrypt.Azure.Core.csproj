@@ -214,7 +214,7 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="LetsEncrypt.SiteExtension.Core.nuspec">
+    <None Include="LetsEncrypt.Azure.Core.nuspec">
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config">
