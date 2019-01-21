@@ -25,7 +25,7 @@
         </tr>
         <tr>
             <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.subscriptionIdKey</td>
-            <td>(Optional) The subscription id, if left empty the environment variable WEBSITE_OWNER_NAME will be used</td>
+            <td>The subscription id, prepopulated with subscription id from the environment variable WEBSITE_OWNER_NAME</td>
         </tr>
         <tr>
             <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.clientIdKey</td>
@@ -37,11 +37,11 @@
         </tr>
         <tr>
             <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.resourceGroupNameKey</td>
-            <td>(Optional) The name of the resource group this web app belongs to, if left empty the environment variable WEBSITE_OWNER_NAME will be used</td>
+            <td>The name of the resource group this web app belongs to, prepopulated with subscription id from the environment variable WEBSITE_OWNER_NAME</td>
         </tr>
         <tr>
             <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.servicePlanResourceGroupNameKey</td>
-            <td>(Optional) The name of the resource group that the app service plan hosting the web app (only required if the app service plan is in a different resource group than the web app)</td>
+            <td>The name of the resource group that the app service plan hosting the web app (should be the same as @LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.resourceGroupNameKey if app service plan and web app are placed in the same resource group)</td>
         </tr>
         <tr>
             <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.useIPBasedSSL</td>
