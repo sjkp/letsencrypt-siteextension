@@ -36,6 +36,11 @@ namespace LetsEncrypt.SiteExtension.Controllers
                     {
                         //Update web config.
                         var site = client.WebApps.GetSiteOrSlot(model.ResourceGroupName, model.WebAppName, model.SiteSlotName);
+                        if (site == null)
+                        {
+                            ModelState.AddModelError(nameof(model.ResourceGroupName), string.Format("No web app could be found, please validate that Resource Group Name and/or Site Slot Name are correct"));
+                            return View(model);
+                        }
                         //Validate that the service plan resource group name is correct, to avoid more issues on this specific problem.
                         var azureServerFarmResourceGroup = site.ServerFarmResourceGroup();
                         if (!string.Equals(azureServerFarmResourceGroup, model.ServicePlanResourceGroupName, StringComparison.InvariantCultureIgnoreCase))
