@@ -16,6 +16,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LetsEncrypt.Azure.FunctionV2", "examples\LetsEncrypt.Azure.FunctionV2\LetsEncrypt.Azure.FunctionV2.csproj", "{FF8A14C9-8AC7-4057-A2EC-BA31C3965079}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{33597FE6-D5E9-4F8E-9009-294BFC3D5F9A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,9 +66,24 @@ Global
 		{6C89066E-0418-4303-809D-9F3F9BBB1013}.Release|x64.Build.0 = Release|Any CPU
 		{6C89066E-0418-4303-809D-9F3F9BBB1013}.Release|x86.ActiveCfg = Release|Any CPU
 		{6C89066E-0418-4303-809D-9F3F9BBB1013}.Release|x86.Build.0 = Release|Any CPU
+		{FF8A14C9-8AC7-4057-A2EC-BA31C3965079}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF8A14C9-8AC7-4057-A2EC-BA31C3965079}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF8A14C9-8AC7-4057-A2EC-BA31C3965079}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FF8A14C9-8AC7-4057-A2EC-BA31C3965079}.Debug|x64.Build.0 = Debug|Any CPU
+		{FF8A14C9-8AC7-4057-A2EC-BA31C3965079}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FF8A14C9-8AC7-4057-A2EC-BA31C3965079}.Debug|x86.Build.0 = Debug|Any CPU
+		{FF8A14C9-8AC7-4057-A2EC-BA31C3965079}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF8A14C9-8AC7-4057-A2EC-BA31C3965079}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF8A14C9-8AC7-4057-A2EC-BA31C3965079}.Release|x64.ActiveCfg = Release|Any CPU
+		{FF8A14C9-8AC7-4057-A2EC-BA31C3965079}.Release|x64.Build.0 = Release|Any CPU
+		{FF8A14C9-8AC7-4057-A2EC-BA31C3965079}.Release|x86.ActiveCfg = Release|Any CPU
+		{FF8A14C9-8AC7-4057-A2EC-BA31C3965079}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FF8A14C9-8AC7-4057-A2EC-BA31C3965079} = {33597FE6-D5E9-4F8E-9009-294BFC3D5F9A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5AC649FA-BB48-4484-993B-2BBCFC05742D}

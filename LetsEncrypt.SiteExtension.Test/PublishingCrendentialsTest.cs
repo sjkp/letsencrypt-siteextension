@@ -37,5 +37,14 @@ namespace LetsEncrypt.SiteExtension.Test
             }
             
         }
+
+        [TestMethod]
+        public void TestScmUri()
+        {
+            var model = new AppSettingsAuthConfig();
+            var uri = "letsencrypt.azurewebsites.net";
+            var result = KuduHelper.MakeScmUri(uri, model);
+            Assert.AreEqual(new Uri("https://letsencrypt.scm.azurewebsites.net"), result);
+        }
     }
 }
