@@ -3,7 +3,7 @@
 
 This Azure Web App Site Extension enables easy installation and configuration of [Let's Encrypt](https://letsencrypt.org/) issued SSL certificates for you custom domain names. 
 
-The site extension requires that you have configured a DNS entry for you custom domain to point to Azure Web App. 
+The site extension requires that you have configured a DNS entry for your custom domain to point to Azure Web App. 
 
 ## How to install
 https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install
