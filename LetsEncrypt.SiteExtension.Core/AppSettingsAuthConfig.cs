@@ -34,6 +34,7 @@ namespace LetsEncrypt.Azure.Core.Models
         public const string disableWebConfigUpdateKey = "letsencrypt:DisableWebConfigUpdate";
         public const string authorizationChallengeBlobStorageAccount = "letsencrypt:AuthorizationChallengeBlobStorageAccount";
         public const string authorizationChallengeBlobStorageContainer = "letsencrypt:AuthorizationChallengeBlobStorageContainer";
+        public const string disableVirtualApplication = "letsencrypt:DisableVirtualApplication";
 
         public AppSettingsAuthConfig()
         {
@@ -303,7 +304,7 @@ namespace LetsEncrypt.Azure.Core.Models
                 }
                 return domain;
             }
-        }
+        }        
 
         #endregion
 
@@ -314,6 +315,22 @@ namespace LetsEncrypt.Azure.Core.Models
             result = new List<ValidationResult>();
 
             return Validator.TryValidateObject(this, context, result, true);
+        }
+
+        /// <summary>
+        /// Uses the environment variables to determine in site is using run from zip/package deployment.
+        /// </summary>
+        public static bool RunFromZip
+        {
+            get
+            {
+                var runFromZip = ConfigurationManager.AppSettings["WEBSITE_RUN_FROM_PACKAGE"];
+                if (string.IsNullOrEmpty(runFromZip))
+                {
+                    runFromZip = ConfigurationManager.AppSettings["WEBSITE_RUN_FROM_ZIP"]; //The old variable name
+                }
+                return "1".Equals(runFromZip) || (runFromZip?.StartsWith("http", StringComparison.InvariantCultureIgnoreCase) ?? false);
+            }
         }
     }
 }

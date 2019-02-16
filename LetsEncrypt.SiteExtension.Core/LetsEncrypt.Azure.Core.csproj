@@ -192,6 +192,7 @@
     <Compile Include="Models\KuduModels.cs" />
     <Compile Include="Models\SettingEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\PathProvider.cs" />
     <Compile Include="Services\AcmeService.cs" />
     <Compile Include="Services\AppServiceCerticiateCertificateService.cs" />
     <Compile Include="Services\AzureDnsAuthorizationChallengeProvider.cs" />

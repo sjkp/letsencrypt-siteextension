@@ -20,6 +20,33 @@ namespace LetsEncrypt.Azure.Core
                 return sites.GetSlot(resourceGroupName, webAppName, siteSlotName);
             }
         }
+
+        public static SiteConfigResource GetSiteConfigurationOrSlot(this IWebAppsOperations sites, string resourceGroupName, string webAppName, string siteSlotName)
+        {
+            if (string.IsNullOrEmpty(siteSlotName))
+            {
+                return sites.GetConfiguration(resourceGroupName, webAppName);
+            }
+            else
+            {
+                return sites.GetConfigurationSlot(resourceGroupName, webAppName, siteSlotName);
+            }
+        }
+
+        public static SiteConfigResource UpdateSiteConfigurationOrSlot(this IWebAppsOperations sites, string resourceGroupName, string webAppName, string siteSlotName, SiteConfigResource config)
+        {
+            if (string.IsNullOrEmpty(siteSlotName))
+            {
+                return sites.UpdateConfiguration(resourceGroupName, webAppName, config);
+            }
+            else
+            {
+                return sites.UpdateConfigurationSlot(resourceGroupName, webAppName, config, siteSlotName);
+            }
+        }
+
+
+
         public static StringDictionary ListSiteOrSlotAppSettings(this IWebAppsOperations sites, string resourceGroupName, string webAppName, string siteSlotName)
         {
             if (string.IsNullOrEmpty(siteSlotName))
