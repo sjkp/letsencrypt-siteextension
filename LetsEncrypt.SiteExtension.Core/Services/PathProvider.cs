@@ -76,6 +76,16 @@ namespace LetsEncrypt.Azure.Core.Services
             }
         }
 
+        public async Task<bool> IsVirtualDirectorySetup()
+        {
+            using (var client = await ArmHelper.GetWebSiteManagementClient(this.azureEnvironment))
+            {
+                var siteConfig = client.WebApps.GetSiteConfigurationOrSlot(azureEnvironment.ResourceGroupName, azureEnvironment.WebAppName, azureEnvironment.SiteSlotName);
+
+                return siteConfig.VirtualApplications.Any(s => s.VirtualPath.StartsWith("/.well-known"));               
+            }
+        }
+
         public async Task<string> ChallengeDirectory(bool uriPath)
         {
             

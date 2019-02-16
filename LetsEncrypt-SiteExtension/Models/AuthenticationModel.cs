@@ -46,7 +46,7 @@ namespace LetsEncrypt.SiteExtension.Models
             get; set;
         }
 
-        [Display(Name = "Update Application Settings")]
+        [Display(Name = "Update Application Settings and Virtual Application (if needed)")]
         public bool UpdateAppSettings
         {
             get;set;
