@@ -92,6 +92,8 @@ namespace LetsEncrypt.SiteExtension.Models
             get; set;
         }
 
+        public bool RunFromPackage { get; set; }
+
         public static explicit operator AuthenticationModel(AppSettingsAuthConfig config)
         {
             return new AuthenticationModel()
@@ -109,7 +111,8 @@ namespace LetsEncrypt.SiteExtension.Models
                 ManagementEndpoint = config.ManagementEndpoint,
                 TokenAudience = config.TokenAudience,
                 SiteSlotName = config.SiteSlotName,
-                WebRootPath = config.WebRootPath
+                WebRootPath = config.WebRootPath,
+                RunFromPackage = config.RunFromPackage,
             };
         }
     }

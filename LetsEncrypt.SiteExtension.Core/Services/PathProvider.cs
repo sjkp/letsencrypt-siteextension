@@ -31,7 +31,7 @@ namespace LetsEncrypt.Azure.Core.Services
                 //User supplied webroot path, just use it
                 path = azureEnvironment.WebRootPath;
             }
-            else if (AppSettingsAuthConfig.RunFromZip)
+            else if (this.azureEnvironment.RunFromPackage)
             {
                 if (bool.TryParse(ConfigurationManager.AppSettings[AppSettingsAuthConfig.disableVirtualApplication], out var disable) && disable)
                 {

@@ -317,10 +317,18 @@ namespace LetsEncrypt.Azure.Core.Models
             return Validator.TryValidateObject(this, context, result, true);
         }
 
+        public bool RunFromPackage
+        {
+            get
+            {
+                return RunFromZip;
+            }
+        }
+
         /// <summary>
         /// Uses the environment variables to determine in site is using run from zip/package deployment.
         /// </summary>
-        public static bool RunFromZip
+        private static bool RunFromZip
         {
             get
             {

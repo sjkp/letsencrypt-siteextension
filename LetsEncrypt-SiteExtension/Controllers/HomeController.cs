@@ -131,7 +131,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
             List<ValidationResult> validationResult = null;
             if (settings.IsValid(out validationResult))
             {
-                if (AppSettingsAuthConfig.RunFromZip)
+                if (settings.RunFromPackage)
                 {
                     if (await new PathProvider(settings).IsVirtualDirectorySetup())
                     {

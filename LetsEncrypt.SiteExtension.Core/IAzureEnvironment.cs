@@ -32,6 +32,8 @@ namespace LetsEncrypt.Azure.Core.Models
         string AzureWebSitesDefaultDomainName { get; }
 
         string WebRootPath { get; }
+
+        bool RunFromPackage { get; }
     }
 
     public interface IAzureDnsEnvironment : IAzureEnvironment
@@ -201,6 +203,14 @@ namespace LetsEncrypt.Azure.Core.Models
         public string WebRootPath
         {
             get; set;
+        }
+
+        /// <summary>
+        /// Is the web app using RunFromPackage deployment (wwwroot is readonly)
+        /// </summary>
+        public bool RunFromPackage
+        {
+            get;set;
         }
     }
 }

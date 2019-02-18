@@ -110,12 +110,12 @@
 <div class="form-horizontal">
     <hr />
 
-    @if (LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.RunFromZip && string.IsNullOrEmpty(Environment.GetEnvironmentVariable(LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.webRootPath)))
+    @if (Model.RunFromPackage && string.IsNullOrEmpty(Environment.GetEnvironmentVariable(LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.webRootPath)))
     {
     <div class="alert alert-warning" role="alert">
-        <p>Web Site was deployed using "Run From Package/Zip", the site extension will have to configure a virtual application to ensure the challenge file can be browsable at http://your-site/.well-known/acme-challenge. </p>
+        <p>Web Site was deployed using "Run From Package", the site extension will have to configure a virtual application to ensure the challenge file can be browsable at http://your-site/.well-known/acme-challenge. </p>
 
-        <p>If you already host content under /.well-known then you should not continue, instead you should follow the manual installation procedure at <a href="https://github.com/sjkp/letsencrypt-siteextension/wiki/Run-from-zip">https://github.com/sjkp/letsencrypt-siteextension/wiki/Run-from-zip</a></p>
+        <p>If you already host content under /.well-known then you should not continue, instead you should follow the manual setup procedure at <a href="https://github.com/sjkp/letsencrypt-siteextension/wiki/Run-From-Package">https://github.com/sjkp/letsencrypt-siteextension/wiki/Run-From-Package</a></p>
     </div>
     }
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
