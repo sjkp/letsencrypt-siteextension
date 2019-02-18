@@ -100,12 +100,13 @@
 @using (Html.BeginForm())
 {
     @*@Html.AntiForgeryToken()*@
-    
+
 
     @Html.HiddenFor(model => model.AuthenticationEndpoint)
     @Html.HiddenFor(model => model.AzureWebSitesDefaultDomainName)
     @Html.HiddenFor(model => model.ManagementEndpoint)
     @Html.HiddenFor(model => model.TokenAudience)
+    @Html.HiddenFor(model => model.RunFromPackage)
 
 <div class="form-horizontal">
     <hr />
@@ -120,13 +121,13 @@
     }
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @{
-        var authModel = (Model as LetsEncrypt.SiteExtension.Models.AuthenticationModel);
+    var authModel = (Model as LetsEncrypt.SiteExtension.Models.AuthenticationModel);
     }
     @if (authModel != null && authModel.Error)
     {
-        <div class="alert alert-danger" role="alert">
-            @authModel.ErrorMessage
-        </div>
+    <div class="alert alert-danger" role="alert">
+        @authModel.ErrorMessage
+    </div>
     }
     <div class="form-group">
         @Html.LabelFor(model => model.Tenant, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -206,11 +207,11 @@
         </div>
     </div>
 </div>
-    <div class="form-horizontal">
-        <input type="submit" value="Next" class="btn btn-primary pull-right" />
-        <br />
-        <br />
-    </div>
+<div class="form-horizontal">
+    <input type="submit" value="Next" class="btn btn-primary pull-right" />
+    <br />
+    <br />
+</div>
 }
 
 <div>
