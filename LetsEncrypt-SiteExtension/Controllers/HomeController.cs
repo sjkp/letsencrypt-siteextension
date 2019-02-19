@@ -1,5 +1,6 @@
 ﻿using LetsEncrypt.Azure.Core;
 using LetsEncrypt.Azure.Core.Models;
+using LetsEncrypt.Azure.Core.Services;
 using LetsEncrypt.SiteExtension.Models;
 using Microsoft.Azure.Management.WebSites;
 using Microsoft.Azure.Management.WebSites.Models;
@@ -74,7 +75,9 @@ namespace LetsEncrypt.SiteExtension.Controllers
                             }
 
                             client.WebApps.UpdateSiteOrSlotAppSettings(model.ResourceGroupName, model.WebAppName, model.SiteSlotName, webappsettings);
-                            ConfigurationManager.RefreshSection("appSettings");                            
+                            ConfigurationManager.RefreshSection("appSettings");
+                            var path = new PathProvider(model);
+                            await path.ChallengeDirectory(true);
                         }
                         else
                         {
@@ -122,13 +125,23 @@ namespace LetsEncrypt.SiteExtension.Controllers
             return true;
         }
 
-        public ActionResult PleaseWait()
+        public async Task<ActionResult> PleaseWait()
         {
             var settings = new AppSettingsAuthConfig();
             List<ValidationResult> validationResult = null;
             if (settings.IsValid(out validationResult))
             {
-                return RedirectToAction("Hostname");
+                if (settings.RunFromPackage)
+                {
+                    if (await new PathProvider(settings).IsVirtualDirectorySetup())
+                    {
+                        return RedirectToAction("Hostname");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Hostname");
+                }
             }
 
             return View();

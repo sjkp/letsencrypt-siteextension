@@ -10,12 +10,13 @@
     To automate the installation of Let's Encrypt SSL certificate on your Azure Web App, a few things need to be configured. The certificate is installed and renewed using the Azure Resource Manager API, because the renewal process should run unattended you need to register an Azure AD service principal that have access to at least the Azure Web App. Read more about how to register a service principal <a href="http://blogs.msdn.com/b/visualstudioalm/archive/2015/10/04/automating-azure-resource-group-deployment-using-a-service-principal-in-visual-studio-online-build-release-management.aspx">here</a>.
 </p>
 <p>
-    Once you have registered a service principal, you should add the following App Setting, since the site extension reads them from there. You can register them manually or enter them below and check 'Update Web App Settings'. 
+    Once you have registered a service principal, you should add the following App Setting, since the site extension reads them from there. You can register them manually or enter them below and check 'Update Web App Settings'.
 </p>
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Key</th><th>Value</th>
+            <th>Key</th>
+            <th>Value</th>
         </tr>
     </thead>
     <tbody>
@@ -93,126 +94,140 @@
         </tbody>
     </table>
 </div>
+
+
+
 @using (Html.BeginForm())
 {
     @*@Html.AntiForgeryToken()*@
+
 
     @Html.HiddenFor(model => model.AuthenticationEndpoint)
     @Html.HiddenFor(model => model.AzureWebSitesDefaultDomainName)
     @Html.HiddenFor(model => model.ManagementEndpoint)
     @Html.HiddenFor(model => model.TokenAudience)
+    @Html.HiddenFor(model => model.RunFromPackage)
 
-    <div class="form-horizontal">
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @{
-            var authModel = (Model as LetsEncrypt.SiteExtension.Models.AuthenticationModel);
-        }
-        @if (authModel != null && authModel.Error)
-        {
-            <div class="alert alert-danger" role="alert">
-                @authModel.ErrorMessage
-            </div>
-        }
-        <div class="form-group">
-            @Html.LabelFor(model => model.Tenant, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Tenant, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Tenant, "", new { @class = "text-danger" })
-            </div>
-        </div>
+<div class="form-horizontal">
+    <hr />
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.SubscriptionId, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.SubscriptionId, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.SubscriptionId, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    @if (Model.RunFromPackage && string.IsNullOrEmpty(Environment.GetEnvironmentVariable(LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.webRootPath)))
+    {
+    <div class="alert alert-warning" role="alert">
+        <p>Web Site was deployed using "Run From Package", the site extension will have to configure a virtual application to ensure the challenge file can be browsable at http://your-site/.well-known/acme-challenge. </p>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.ClientId, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ClientId, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ClientId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.ClientSecret, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ClientSecret, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ClientSecret, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.ResourceGroupName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ResourceGroupName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ResourceGroupName, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.ServicePlanResourceGroupName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ServicePlanResourceGroupName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ServicePlanResourceGroupName, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.UseIPBasedSSL, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.UseIPBasedSSL, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.UseIPBasedSSL, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.WebAppName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.WebAppName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                @Html.ValidationMessageFor(model => model.WebAppName, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.SiteSlotName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.SiteSlotName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.SiteSlotName, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.UpdateAppSettings, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.UpdateAppSettings, new { htmlAttributes = new { @class = "form-control" } })
-                <span class="text-danger" id="showwarning" style="display:none;">WARNING WEBSITE WILL RESTART.</span>
-                @Html.ValidationMessageFor(model => model.UpdateAppSettings, "", new { @class = "text-danger" })
-            </div>
+        <p>If you already host content under /.well-known then you should not continue, instead you should follow the manual setup procedure at <a href="https://github.com/sjkp/letsencrypt-siteextension/wiki/Run-From-Package">https://github.com/sjkp/letsencrypt-siteextension/wiki/Run-From-Package</a></p>
+    </div>
+    }
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @{
+    var authModel = (Model as LetsEncrypt.SiteExtension.Models.AuthenticationModel);
+    }
+    @if (authModel != null && authModel.Error)
+    {
+    <div class="alert alert-danger" role="alert">
+        @authModel.ErrorMessage
+    </div>
+    }
+    <div class="form-group">
+        @Html.LabelFor(model => model.Tenant, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Tenant, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Tenant, "", new { @class = "text-danger" })
         </div>
     </div>
-    <div class="form-horizontal">
-        <input type="submit" value="Next" class="btn btn-primary pull-right" />
-        <br />
-        <br />
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.SubscriptionId, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.SubscriptionId, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.SubscriptionId, "", new { @class = "text-danger" })
+        </div>
     </div>
-            }
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ClientId, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ClientId, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ClientId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ClientSecret, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ClientSecret, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ClientSecret, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ResourceGroupName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ResourceGroupName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ResourceGroupName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ServicePlanResourceGroupName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ServicePlanResourceGroupName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ServicePlanResourceGroupName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.UseIPBasedSSL, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.UseIPBasedSSL, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.UseIPBasedSSL, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.WebAppName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.WebAppName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            @Html.ValidationMessageFor(model => model.WebAppName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.SiteSlotName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.SiteSlotName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.SiteSlotName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.UpdateAppSettings, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.UpdateAppSettings, new { htmlAttributes = new { @class = "form-control" } })
+            <span class="text-danger" id="showwarning" style="display:none;">WARNING WEBSITE WILL RESTART.</span>
+            @Html.ValidationMessageFor(model => model.UpdateAppSettings, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+<div class="form-horizontal">
+    <input type="submit" value="Next" class="btn btn-primary pull-right" />
+    <br />
+    <br />
+</div>
+}
 
 <div>
 </div>
 @section scripts {
-        $(function () {
-            $('#UpdateAppSettings').change(function () {    
-                if (this.checked)  
-                {  
-                    $('#showwarning').show();
-                } else {
-                    $('#showwarning').hide();
-                }
-            });
-            $('#automatedInstallHeader').click(function () {
-                $('#automatedInstall').toggle();
-            });
-        });
+    $(function () {
+    $('#UpdateAppSettings').change(function () {
+    if (this.checked)
+    {
+    $('#showwarning').show();
+    } else {
+    $('#showwarning').hide();
     }
+    });
+    $('#automatedInstallHeader').click(function () {
+    $('#automatedInstall').toggle();
+    });
+    });
+}
