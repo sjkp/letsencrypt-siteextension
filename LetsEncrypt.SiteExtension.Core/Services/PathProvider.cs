@@ -18,6 +18,7 @@ namespace LetsEncrypt.Azure.Core.Services
     {
         private readonly IAzureWebAppEnvironment azureEnvironment;
         private bool virtualDirectorySetup = false;
+        private readonly string wellKnownPhysicalPath = @"site\letsencrypt\.well-known";
 
         public PathProvider(IAzureWebAppEnvironment azureEnvironment)
         {
@@ -61,13 +62,12 @@ namespace LetsEncrypt.Azure.Core.Services
             using (var client = await ArmHelper.GetWebSiteManagementClient(this.azureEnvironment))
             {
                 var siteConfig = client.WebApps.GetSiteConfigurationOrSlot(azureEnvironment.ResourceGroupName, azureEnvironment.WebAppName, azureEnvironment.SiteSlotName);
-                
-                    
-                if (!siteConfig.VirtualApplications.Any(s => s.VirtualPath.StartsWith("/.well-known")))
+
+                if (IsVirtualDirectorySetup(siteConfig))
                 {
-                    siteConfig.VirtualApplications.Add(new Microsoft.Azure.Management.WebSites.Models.VirtualApplication()
+                    siteConfig.VirtualApplications.First().VirtualDirectories.Add(new VirtualDirectory()
                     {
-                        PhysicalPath = @"site\letsencrypt\.well-known",
+                        PhysicalPath = wellKnownPhysicalPath,
                         VirtualPath = "/.well-known",
                     });
                     client.WebApps.UpdateSiteConfigurationOrSlot(azureEnvironment.ResourceGroupName, azureEnvironment.WebAppName, azureEnvironment.SiteSlotName, siteConfig);
@@ -82,8 +82,16 @@ namespace LetsEncrypt.Azure.Core.Services
             {
                 var siteConfig = client.WebApps.GetSiteConfigurationOrSlot(azureEnvironment.ResourceGroupName, azureEnvironment.WebAppName, azureEnvironment.SiteSlotName);
 
-                return siteConfig.VirtualApplications.Any(s => s.VirtualPath.StartsWith("/.well-known"));               
+                return IsVirtualDirectorySetup(siteConfig);               
             }
+        }
+
+        private bool IsVirtualDirectorySetup(SiteConfigResource siteConfig)
+        {
+            var isSetupAsAppliction = siteConfig.VirtualApplications.Any(s => s.PhysicalPath.StartsWith(wellKnownPhysicalPath));
+            var isSetupAsDirectory = siteConfig.VirtualApplications.Any(s => s.VirtualDirectories.Any(d => d.PhysicalPath.StartsWith(wellKnownPhysicalPath)));
+
+            return isSetupAsAppliction || isSetupAsDirectory;
         }
 
         public async Task<string> ChallengeDirectory(bool uriPath)
