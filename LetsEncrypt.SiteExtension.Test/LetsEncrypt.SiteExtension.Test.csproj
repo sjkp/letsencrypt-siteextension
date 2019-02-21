@@ -160,6 +160,7 @@
     <Compile Include="AppSettingsAuthConfigTest.cs" />
     <Compile Include="CertificateServiceTest.cs" />
     <Compile Include="UnitTest1.cs" />
+    <Compile Include="RunFromPackageTest.cs" />
     <Compile Include="WebAppEnviromentVariablesTest.cs" />
     <Compile Include="WebSiteManagementClientExtensionsTest.cs" />
   </ItemGroup>
