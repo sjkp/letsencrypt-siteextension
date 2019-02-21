@@ -49,6 +49,18 @@ namespace LetsEncrypt.SiteExtension.Controllers
                             ModelState.AddModelError("ServicePlanResourceGroupName", string.Format("The Service Plan Resource Group registered on the Web App in Azure in the ServerFarmId property '{0}' does not match the value you entered here {1}", azureServerFarmResourceGroup, model.ServicePlanResourceGroupName));
                             return View(model);
                         }
+                        var appServicePlan = client.AppServicePlans.Get(model.ServicePlanResourceGroupName, site.ServerFarmName());
+                        if (appServicePlan.Sku.Tier.Equals("Free") || appServicePlan.Sku.Tier.Equals("Shared"))
+                        {
+                            ModelState.AddModelError("ServicePlanResourceGroupName", $"The Service Plan is using the {appServicePlan.Sku.Tier} which doesn't support SSL certificates");
+                            return View(model);
+                        }
+                        var path = new PathProvider(model);
+                        if (model.RunFromPackage && !await path.IsVirtualDirectorySetup() && !model.UpdateAppSettings)
+                        {
+                            ModelState.AddModelError("UpdateAppSettings", string.Format("The site is using Run From Package. You need to to allow the site-extension to update app settings to setup the virtual directory."));
+                            return View(model);
+                        }
                         var webappsettings = client.WebApps.ListSiteOrSlotAppSettings(model.ResourceGroupName, model.WebAppName, model.SiteSlotName);
                         if (model.UpdateAppSettings)
                         {
@@ -76,7 +88,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
 
                             client.WebApps.UpdateSiteOrSlotAppSettings(model.ResourceGroupName, model.WebAppName, model.SiteSlotName, webappsettings);
                             ConfigurationManager.RefreshSection("appSettings");
-                            var path = new PathProvider(model);
+                            
                             await path.ChallengeDirectory(true);
                         }
                         else

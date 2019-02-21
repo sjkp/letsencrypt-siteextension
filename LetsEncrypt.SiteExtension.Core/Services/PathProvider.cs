@@ -63,9 +63,14 @@ namespace LetsEncrypt.Azure.Core.Services
             {
                 var siteConfig = client.WebApps.GetSiteConfigurationOrSlot(azureEnvironment.ResourceGroupName, azureEnvironment.WebAppName, azureEnvironment.SiteSlotName);
 
-                if (IsVirtualDirectorySetup(siteConfig))
+                if (!IsVirtualDirectorySetup(siteConfig))
                 {
-                    siteConfig.VirtualApplications.First().VirtualDirectories.Add(new VirtualDirectory()
+                    var app = siteConfig.VirtualApplications.First();
+                    if (app.VirtualDirectories == null)
+                    {
+                        app.VirtualDirectories = new List<VirtualDirectory>();
+                    }
+                    app.VirtualDirectories.Add(new VirtualDirectory()
                     {
                         PhysicalPath = wellKnownPhysicalPath,
                         VirtualPath = "/.well-known",
@@ -89,7 +94,7 @@ namespace LetsEncrypt.Azure.Core.Services
         private bool IsVirtualDirectorySetup(SiteConfigResource siteConfig)
         {
             var isSetupAsAppliction = siteConfig.VirtualApplications.Any(s => s.PhysicalPath.StartsWith(wellKnownPhysicalPath));
-            var isSetupAsDirectory = siteConfig.VirtualApplications.Any(s => s.VirtualDirectories.Any(d => d.PhysicalPath.StartsWith(wellKnownPhysicalPath)));
+            var isSetupAsDirectory = siteConfig.VirtualApplications.Any(s => s.VirtualDirectories?.Any(d => d.PhysicalPath.StartsWith(wellKnownPhysicalPath)) ?? false);
 
             return isSetupAsAppliction || isSetupAsDirectory;
         }

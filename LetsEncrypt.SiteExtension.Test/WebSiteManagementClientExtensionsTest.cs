@@ -20,5 +20,14 @@ namespace LetsEncrypt.SiteExtension.Test
 
             Assert.AreEqual("LetsEncrypt-SiteExtension", res);
         }
+
+        [TestMethod]
+        public void ServerFarmName()
+        {
+            var serverFarmId = "/subscriptions/3f09c367-93e0-4b61-bbe5-dcb5c686bf8a/resourceGroups/LetsEncrypt-SiteExtension/providers/Microsoft.Web/serverfarms/sjkp.testplan";
+            var res = WebSiteManagementClientExtensions.ServerFarmNameFromServerFarmId(serverFarmId);
+
+            Assert.AreEqual("sjkp.testplan", res);
+        }
     }
 }
