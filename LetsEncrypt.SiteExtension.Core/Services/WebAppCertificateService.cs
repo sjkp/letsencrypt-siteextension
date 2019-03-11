@@ -10,6 +10,7 @@ using Microsoft.Azure.Management.WebSites;
 using System.Diagnostics;
 using System.Net.Http;
 using Newtonsoft.Json;
+using Polly;
 
 namespace LetsEncrypt.Azure.Core.Services
 {
@@ -26,37 +27,33 @@ namespace LetsEncrypt.Azure.Core.Services
             this.azureEnvironment = azureEnvironment;
             this.settings = settings;
         }
-        public void Install(ICertificateInstallModel model)
+        public async Task Install(ICertificateInstallModel model)
         {
             var cert = model.CertificateInfo;
-            using (var webSiteClient = ArmHelper.GetWebSiteManagementClient(azureEnvironment))
+            using (var webSiteClient = await ArmHelper.GetWebSiteManagementClient(azureEnvironment))
             {
 
                 var s = webSiteClient.WebApps.GetSiteOrSlot(azureEnvironment.ResourceGroupName, azureEnvironment.WebAppName, azureEnvironment.SiteSlotName);
 
                 Trace.TraceInformation(String.Format("Installing certificate {0} on azure with server farm id {1}", cert.Name, s.ServerFarmId));
-                var newCert = new Certificate()
-                {
-                    PfxBlob = cert.PfxCertificate,
-                    Password = cert.Password,
-                    Location = s.Location,
-                    ServerFarmId = s.ServerFarmId,
-                    Name = model.Host + "-" + cert.Certificate.Thumbprint
-
-                };
+                var newCert = new Certificate(s.Location, cert.Password, name: model.Host + "-" + cert.Certificate.Thumbprint, pfxBlob: cert.PfxCertificate, serverFarmId: s.ServerFarmId);
                 //BUG https://github.com/sjkp/letsencrypt-siteextension/issues/99
                 //using this will not install the certificate with the correct webSpace property set, 
                 //and the app service will be unable to find the certificate if the app service plan has been moved between resource groups.
                 //webSiteClient.Certificates.CreateOrUpdate(azureEnvironment.ServicePlanResourceGroupName, cert.Certificate.Subject.Replace("CN=", ""), newCert);
 
-                var client = ArmHelper.GetHttpClient(azureEnvironment);
+                var client = await ArmHelper.GetHttpClient(azureEnvironment);
 
                 var body = JsonConvert.SerializeObject(newCert, JsonHelper.DefaultSerializationSettings);
 
-                var t = client.PutAsync($"/subscriptions/{azureEnvironment.SubscriptionId}/resourceGroups/{azureEnvironment.ServicePlanResourceGroupName}/providers/Microsoft.Web/certificates/{newCert.Name}?api-version=2016-03-01", new StringContent(body, Encoding.UTF8, "application/json")).Result;
+                var retryPolicy = ArmHelper.ExponentialBackoff();
 
+                var t = await retryPolicy.ExecuteAsync(async () =>
+                {
+                     return await client.PutAsync($"/subscriptions/{azureEnvironment.SubscriptionId}/resourceGroups/{azureEnvironment.ServicePlanResourceGroupName}/providers/Microsoft.Web/certificates/{newCert.Name}?api-version=2016-03-01", new StringContent(body, Encoding.UTF8, "application/json"));                    
+                });
+                Trace.TraceInformation(await t.Content.ReadAsStringAsync());
                 t.EnsureSuccessStatusCode();
-
 
                 foreach (var dnsName in model.AllDnsIdentifiers)
                 {
@@ -66,7 +63,7 @@ namespace LetsEncrypt.Azure.Core.Services
                     {
                         sslState = new HostNameSslState()
                         {
-                            Name = model.Host,
+                            Name = dnsName,
                             SslState = settings.UseIPBasedSSL ? SslState.IpBasedEnabled : SslState.SniEnabled,
                         };
                         s.HostNameSslStates.Add(sslState);
@@ -83,25 +80,28 @@ namespace LetsEncrypt.Azure.Core.Services
             }
 
 
-        }
+        }        
 
-        public List<string> RemoveExpired(int removeXNumberOfDaysBeforeExpiration = 0)
+        public async Task<List<string>> RemoveExpired(int removeXNumberOfDaysBeforeExpiration = 0)
         {
-            using (var webSiteClient = ArmHelper.GetWebSiteManagementClient(azureEnvironment))
+            using (var webSiteClient = await ArmHelper.GetWebSiteManagementClient(azureEnvironment))
             {
                 var certs = webSiteClient.Certificates.ListByResourceGroup(azureEnvironment.ServicePlanResourceGroupName);
-
-                var tobeRemoved = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(removeXNumberOfDaysBeforeExpiration) && (s.Issuer.Contains("Let's Encrypt") || s.Issuer.Contains("Fake LE"))).ToList();
-
-                tobeRemoved.ForEach(s => RemoveCertificate(webSiteClient, s));
+                var site = webSiteClient.WebApps.GetSiteOrSlot(azureEnvironment.ResourceGroupName, azureEnvironment.WebAppName, azureEnvironment.SiteSlotName);
+                
+                var tobeRemoved = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(removeXNumberOfDaysBeforeExpiration) && (s.Issuer.Contains("Let's Encrypt") || s.Issuer.Contains("Fake LE")) && !site.HostNameSslStates.Any(hostNameBindings => hostNameBindings.Thumbprint == s.Thumbprint)).ToList();
+                foreach (var cert in tobeRemoved)
+                {
+                    await RemoveCertificate(webSiteClient, cert);
+                }
 
                 return tobeRemoved.Select(s => s.Thumbprint).ToList();
             }
         }
 
-        private void RemoveCertificate(WebSiteManagementClient webSiteClient,  Certificate s)
-        {
-            webSiteClient.Certificates.Delete(azureEnvironment.ServicePlanResourceGroupName, s.Name);
+        private async Task RemoveCertificate(WebSiteManagementClient webSiteClient,  Certificate s)
+        {            
+            await webSiteClient.Certificates.DeleteAsync(azureEnvironment.ServicePlanResourceGroupName, s.Name);
         }
 
         

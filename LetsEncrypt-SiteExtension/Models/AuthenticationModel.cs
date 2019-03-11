@@ -46,7 +46,7 @@ namespace LetsEncrypt.SiteExtension.Models
             get; set;
         }
 
-        [Display(Name = "Update Application Settings")]
+        [Display(Name = "Update Application Settings and Virtual Directory (if needed)")]
         public bool UpdateAppSettings
         {
             get;set;
@@ -87,6 +87,13 @@ namespace LetsEncrypt.SiteExtension.Models
             get;set;
         }
 
+        public string WebRootPath
+        {
+            get; set;
+        }
+
+        public bool RunFromPackage { get; set; }
+
         public static explicit operator AuthenticationModel(AppSettingsAuthConfig config)
         {
             return new AuthenticationModel()
@@ -103,7 +110,9 @@ namespace LetsEncrypt.SiteExtension.Models
                 AzureWebSitesDefaultDomainName = config.AzureWebSitesDefaultDomainName,
                 ManagementEndpoint = config.ManagementEndpoint,
                 TokenAudience = config.TokenAudience,
-                SiteSlotName = config.SiteSlotName
+                SiteSlotName = config.SiteSlotName,
+                WebRootPath = config.WebRootPath,
+                RunFromPackage = config.RunFromPackage,
             };
         }
     }

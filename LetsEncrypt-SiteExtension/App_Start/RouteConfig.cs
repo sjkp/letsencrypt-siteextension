@@ -11,6 +11,7 @@ namespace LetsEncrypt.SiteExtension
     {
         public static void RegisterRoutes(RouteCollection routes)
         {
+            SwaggerConfig.Register();
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(

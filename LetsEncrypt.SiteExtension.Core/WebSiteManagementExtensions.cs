@@ -21,5 +21,15 @@ namespace LetsEncrypt.Azure.Core
             var m = r.Match(serverFarmId);            
             return m.Groups[1].Value;
         }
+
+        public static string ServerFarmName(this Site site)
+        {
+            return ServerFarmNameFromServerFarmId(site.ServerFarmId);
+        }
+
+        public static string ServerFarmNameFromServerFarmId(string serverFarmId)
+        {
+            return serverFarmId.Split(new[] { '/' }).Last();
+        }
     }
 }

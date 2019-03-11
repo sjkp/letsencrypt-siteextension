@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Hosting;
 using Newtonsoft.Json;
 using LetsEncrypt.Azure.Core.Models;
+using System.Diagnostics;
 
 namespace LetsEncrypt.Azure.Core
 {
@@ -43,13 +44,24 @@ namespace LetsEncrypt.Azure.Core
         }
 
         public List<SettingEntry> Load()
-        {
+        {            
             if (File.Exists(_settingsFilePath))
             {
-                return JsonConvert.DeserializeObject<List<SettingEntry>>(File.ReadAllText(_settingsFilePath));
+                Trace.TraceInformation($"Trying to load setttings from {_settingsFilePath}");
+                string contents = String.Empty;
+                try
+                {
+                    contents = File.ReadAllText(_settingsFilePath);
+                    return JsonConvert.DeserializeObject<List<SettingEntry>>(contents);
+                } catch(Exception e)
+                {
+                    Trace.TraceError($"Unable to deserialize content from {_settingsFilePath} contents was: '{contents}'");
+                    return new List<SettingEntry>();
+                }
             }
             else
             {
+                Trace.TraceInformation($"Settings not found at {_settingsFilePath} returning empty settings");
                 return new List<SettingEntry>();
             }
         }

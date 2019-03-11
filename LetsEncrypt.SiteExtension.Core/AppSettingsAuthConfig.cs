@@ -21,6 +21,7 @@ namespace LetsEncrypt.Azure.Core.Models
         public const string acmeBaseUriKey = "letsencrypt:AcmeBaseUri";
         public const string siteSlotNameKey = "letsencrypt:SiteSlot";
         public const string webAppNameKey = "WEBSITE_SITE_NAME";
+        public const string webRootPath = "letsencrypt:WebRootPath";
         public const string servicePlanResourceGroupNameKey = "letsencrypt:ServicePlanResourceGroupName";
         public const string rsaKeyLengthKey = "letsencrypt:RSAKeyLength";
         private readonly WebAppEnviromentVariables environemntVariables;
@@ -31,6 +32,9 @@ namespace LetsEncrypt.Azure.Core.Models
         public const string managementEndpointKey = "letsencrypt:AzureManagementEndpoint";
         public const string azureDefaultWebSiteDomainName = "letsencrypt:AzureDefaultWebSiteDomainName";
         public const string disableWebConfigUpdateKey = "letsencrypt:DisableWebConfigUpdate";
+        public const string authorizationChallengeBlobStorageAccount = "letsencrypt:AuthorizationChallengeBlobStorageAccount";
+        public const string authorizationChallengeBlobStorageContainer = "letsencrypt:AuthorizationChallengeBlobStorageContainer";
+        public const string disableVirtualApplication = "letsencrypt:DisableVirtualApplication";
 
         public AppSettingsAuthConfig()
         {
@@ -102,6 +106,14 @@ namespace LetsEncrypt.Azure.Core.Models
             get
             {
                 return ConfigurationManager.AppSettings[webAppNameKey]; 
+            }
+        }
+
+        public string WebRootPath
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings[webRootPath];
             }
         }
 
@@ -292,7 +304,7 @@ namespace LetsEncrypt.Azure.Core.Models
                 }
                 return domain;
             }
-        }
+        }        
 
         #endregion
 
@@ -303,6 +315,30 @@ namespace LetsEncrypt.Azure.Core.Models
             result = new List<ValidationResult>();
 
             return Validator.TryValidateObject(this, context, result, true);
+        }
+
+        public bool RunFromPackage
+        {
+            get
+            {
+                return RunFromZip;
+            }
+        }
+
+        /// <summary>
+        /// Uses the environment variables to determine in site is using run from zip/package deployment.
+        /// </summary>
+        private static bool RunFromZip
+        {
+            get
+            {
+                var runFromZip = ConfigurationManager.AppSettings["WEBSITE_RUN_FROM_PACKAGE"];
+                if (string.IsNullOrEmpty(runFromZip))
+                {
+                    runFromZip = ConfigurationManager.AppSettings["WEBSITE_RUN_FROM_ZIP"]; //The old variable name
+                }
+                return "1".Equals(runFromZip) || (runFromZip?.StartsWith("http", StringComparison.InvariantCultureIgnoreCase) ?? false);
+            }
         }
     }
 }

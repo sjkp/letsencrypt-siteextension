@@ -1,6 +1,3 @@
 [submodule "ACMESharp"]
 	path = ACMESharp
 	url = https://github.com/sjkp/ACMESharp.git
-[submodule "DnsClient.NET"]
-	path = DnsClient.NET
-	url = https://github.com/sjkp/DnsClient.NET.git

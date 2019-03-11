@@ -1,6 +1,6 @@
-﻿using LetsEncrypt.Azure.Core.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -13,17 +13,14 @@ namespace LetsEncrypt.Azure.Core
         private readonly string baseUri;
         private HttpClient client;
         private string publishingPassword;
-        private string publishingUserName;
-        private string webAppName;
+        private string publishingUserName;        
 
-        public KuduRestClient(IAzureWebAppEnvironment azureEnvironment, string publishingUserName, string publishingPassword)
+        public KuduRestClient(Uri scmUri, string publishingUserName, string publishingPassword)
         {
-            this.webAppName = string.IsNullOrEmpty(azureEnvironment.SiteSlotName) ? azureEnvironment.WebAppName : azureEnvironment.WebAppName + "-" + azureEnvironment.SiteSlotName;
             this.publishingUserName = publishingUserName;
             this.publishingPassword = publishingPassword;
-            this.baseUri = $"https://{this.webAppName}.scm.{azureEnvironment.AzureWebSitesDefaultDomainName}";
             this.client = new HttpClient();
-            client.BaseAddress = new System.Uri(baseUri);
+            client.BaseAddress = scmUri;
             client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", CreateToken());
         }
 
@@ -70,6 +67,10 @@ namespace LetsEncrypt.Azure.Core
             var res = await client.SendAsync(request);
 
             var body = await res.Content.ReadAsStringAsync();
+
+            Trace.TraceInformation($"KuduClient PutFile responsecode {res.StatusCode} responsebody: {body}");
+
+            res.EnsureSuccessStatusCode();
         }
     }
 }

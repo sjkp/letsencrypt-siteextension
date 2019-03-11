@@ -20,44 +20,31 @@ namespace LetsEncrypt.Azure.Core.Services
     {       
         private readonly IAzureWebAppEnvironment azureEnvironment;
         private readonly IAuthorizationChallengeProviderConfig config;
+        private readonly PathProvider pathProvider;
 
         public LocalFileSystemAuthorizationChallengeProvider(IAzureWebAppEnvironment azureEnvironment, IAuthorizationChallengeProviderConfig config)
         {
             this.azureEnvironment = azureEnvironment;
             this.config = config;
+            this.pathProvider = new PathProvider(azureEnvironment);
         }
 
 
-       
 
-        private static string WebRootPath()
-        {
-            return ConfigurationManager.AppSettings["letsencrypt:WebRootPath"] ?? Path.Combine(Environment.ExpandEnvironmentVariables("%HOME%"), "site", "wwwroot");
-        }
 
-        private string ChallengeDirectory
+        public override async Task EnsureDirectory()
         {
-            get
+            var dir = await this.pathProvider.ChallengeDirectory(false);
+            if (!Directory.Exists(dir))
             {
-                var webRootPath = WebRootPath();
-                var directory = Path.Combine(webRootPath, ".well-known", "acme-challenge");
-                return directory;
+                Directory.CreateDirectory(dir);
             }
         }
 
-        public override Task EnsureDirectory()
+        public override async Task EnsureWebConfig()
         {
-            
-            if (!Directory.Exists(ChallengeDirectory))
-            {
-                Directory.CreateDirectory(ChallengeDirectory);
-            }
-            return Task.CompletedTask;
-        }
-
-        public override Task EnsureWebConfig()
-        {
-            var webConfigPath = Path.Combine(ChallengeDirectory, "web.config");
+            var dir = await this.pathProvider.ChallengeDirectory(false);
+            var webConfigPath = Path.Combine(dir, "web.config");
             if (config.DisableWebConfigUpdate)
             {
                 Trace.TraceInformation($"Disabled updating web.config at {webConfigPath}");
@@ -70,34 +57,32 @@ namespace LetsEncrypt.Azure.Core.Services
                     File.WriteAllText(webConfigPath, webConfig);
                 }
             }
-            return Task.CompletedTask;
         }
 
-        public override Task PersistsChallengeFile(HttpChallenge httpChallenge)
+        public override async Task PersistsChallengeFile(HttpChallenge httpChallenge)
         {
-            string answerPath = GetAnswerPath(httpChallenge);
+            string answerPath = await GetAnswerPath(httpChallenge);
 
             Console.WriteLine($" Writing challenge answer to {answerPath}");
             Trace.TraceInformation("Writing challenge answer to {0}", answerPath);
 
             File.WriteAllText(answerPath, httpChallenge.FileContent);
-            return Task.CompletedTask;
         }
 
-        private static string GetAnswerPath(HttpChallenge httpChallenge)
+        private async Task<string> GetAnswerPath(HttpChallenge httpChallenge)
         {
+            var rootDir = await this.pathProvider.WebRootPath(false);
             // We need to strip off any leading '/' in the path
             var filePath = httpChallenge.FilePath;
             if (filePath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
                 filePath = filePath.Substring(1);
-            var answerPath = Environment.ExpandEnvironmentVariables(Path.Combine(WebRootPath(), filePath));
+            var answerPath = Environment.ExpandEnvironmentVariables(Path.Combine(rootDir, filePath));
             return answerPath;
         }
 
-        public override Task CleanupChallengeFile(HttpChallenge challenge)
+        public override async Task CleanupChallengeFile(HttpChallenge challenge)
         {
-            File.Delete(GetAnswerPath(challenge));
-            return Task.CompletedTask;
+            File.Delete(await GetAnswerPath(challenge));
         }
     }
 }

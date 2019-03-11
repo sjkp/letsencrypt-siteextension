@@ -1,0 +1,287 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containergroupname": {
+            "type": "string",
+            "metadata": {
+                "description": "Name for the container group"
+            }
+        },
+        "containername": {
+            "type": "string",
+            "metadata": {
+                "description": "Name for the container"
+            },
+            "defaultValue": "letsencrypt"
+        },
+        "imagename": {
+            "type": "string",
+            "metadata": {
+                "description": "Name for the image"
+            },
+            "defaultValue": "sjkp/letsencrypt-azure"
+        },
+        "cpuCores": {
+            "type": "string",
+            "metadata": {
+                "description": "The number of CPU cores to allocate to the container."
+            },
+            "defaultValue": "0.5"
+        },
+        "memoryInGB": {
+            "type": "string",
+            "metadata": {
+                "description": "The amount of memory to allocate to the container in gigabytes."
+            },
+            "defaultValue": "0.5"
+        },  
+        "location": {
+            "type": "string",
+            "defaultValue": "West Europe",
+            "allowedValues": [
+                "West US",
+                "East US",
+                "West Europe",
+                "West US 2",
+                "North Europe",
+                "Central US EUAP",
+                "East US 2 EUAP",
+                "Southeast Asia",
+                "East US 2",
+                "Central US",
+                "Australia East",
+                "UK South"
+            ],
+            "metadata": {
+                "description": "The location in which the resources will be created."
+            }
+        },
+        "storageAccountType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+              "Standard_LRS",
+              "Standard_GRS",
+              "Standard_ZRS"
+            ],
+            "metadata": {
+              "description": "Storage Account type"
+            }
+          },
+          "webAppName": {
+              "type": "string",
+              "metadata": {
+                  "description": "the web app to apply the certificate to"
+              }
+          },
+          "webAppresourceGroupName":{
+              "type": "string",
+              "metadata": {
+                  "description": "Name of the resource group of the web app"
+              }
+          },
+          "webAppClientId": {
+            "type": "securestring"
+          },
+          "webAppClientSecret": {
+              "type": "securestring"
+          },
+          "appServiceTenant": {
+              "type": "string"              
+          },
+          "appServiceSubscriptionId": {
+            "type": "string"
+          },
+          "appServiceAzureRegion": {
+              "type": "string",
+              "defaultValue": "AzureGlobalCloud",
+              "allowedValues": [
+                  "AzureGlobalCloud",
+                  "AzureChinaCloud",
+                  "AzureUSGovernment",
+                  "AzureGermanCloud"
+              ]
+          },
+          "csrOrganisation": {
+              "type": "string"
+          },
+          "registrationEmail": {
+              "type": "string"
+          },
+          "host": {
+              "type": "string"
+          },
+          "acmeEnvironment": {
+              "type": "string",
+              "defaultValue": "staging",
+              "allowedValues": [
+                  "production",
+                  "staging"
+              ]
+          },
+          "pfxPassword": {
+              "type": "securestring"
+          },
+          "dnsClientId": {
+            "type": "securestring"
+          },
+          "dnsClientSecret": {
+              "type": "securestring"
+          },
+          "dnsTenant":{
+              "type": "string"
+          },
+          "dnsSubscriptionId": {
+              "type": "string"
+          },
+          "dnsAzureRegion": {
+            "type": "string",
+            "defaultValue": "AzureGlobalCloud",
+            "allowedValues": [
+                "AzureGlobalCloud",
+                "AzureChinaCloud",
+                "AzureUSGovernment",
+                "AzureGermanCloud"
+            ]
+          },
+          "dnsZoneName": {
+              "type": "string"
+          },
+          "dnsResourceGroup": {
+            "type": "string"
+          }          
+    },
+    "variables": {
+        "storageAccountName": "[concat('letsencrypt', uniqueString(resourceGroup().id))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('storageAccountName')]",
+            "apiVersion": "2017-10-01",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('storageAccountType')]"
+            },
+            "kind": "Storage",
+            "properties": {}
+        },
+        {
+            "name": "[parameters('containergroupname')]",
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "apiVersion": "2018-06-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
+            "properties": {
+                "containers": [
+                    {
+                        "name": "[parameters('containername')]",
+                        "properties": {
+                            "command": [],
+                            "image": "[parameters('imagename')]",                            
+                            "resources": {
+                                "requests": {
+                                    "cpu": "[parameters('cpuCores')]",
+                                    "memoryInGB": "[parameters('memoryInGB')]"
+                                }                                
+                            },
+                            "environmentVariables": [
+                                {
+                                    "name": "ConnectionStrings__AzureStorageAccount",
+                                    "secureValue": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')),  '2017-10-01').keys[0].value,';')]"
+                                },
+                                {
+                                    "name": "AzureAppService__WebAppName",
+                                    "value": "[parameters('webAppName')]"
+                                },
+                                {
+                                    "name": "AzureAppService__ResourceGroupName",
+                                    "value": "[parameters('webAppresourceGroupName')]"
+                                },
+                                {
+                                    "name": "AzureAppService__AzureServicePrincipal__ClientId",
+                                    "secureValue": "[parameters('webAppClientId')]"
+                                },
+                                {
+                                    "name": "AzureAppService__AzureServicePrincipal__ClientSecret",
+                                    "secureValue": "[parameters('webAppClientSecret')]"
+                                },
+                                {
+                                    "name": "AzureAppService__AzureSubscription__Tenant",
+                                    "value": "[parameters('appServiceTenant')]"
+                                },
+                                {
+                                    "name": "AzureAppService__AzureSubscription__SubscriptionId",
+                                    "value": "[parameters('appServiceSubscriptionId')]"
+                                },
+                                {
+                                    "name": "AzureAppService__AzureSubscription__AzureRegion",
+                                    "value": "[parameters('appServiceAzureRegion')]"
+                                },
+                                {
+                                    "name": "AcmeDnsRequest__CsrInfo__Organization",
+                                    "value": "[parameters('csrOrganisation')]"
+                                },
+                                {
+                                    "name": "AcmeDnsRequest__RegistrationEmail",
+                                    "value": "[parameters('registrationEmail')]"
+                                },
+                                {
+                                    "name": "AcmeDnsRequest__Host",
+                                    "value": "[parameters('host')]"
+                                },
+                                {
+                                    "name": "AcmeDnsRequest__AcmeEnvironment__Name",
+                                    "value": "[parameters('acmeEnvironment')]"
+                                },
+                                {
+                                    "name": "AcmeDnsRequest__PFXPassword",
+                                    "secureValue": "[parameters('pfxPassword')]"
+                                },
+                                {
+                                    "name": "DnsSettings__AzureServicePrincipal__ClientId",
+                                    "secureValue": "[parameters('dnsClientId')]"
+                                },
+                                {
+                                    "name": "DnsSettings__AzureServicePrincipal__ClientSecret",
+                                    "secureValue": "[parameters('dnsClientSecret')]"
+                                },
+                                {
+                                    "name": "DnsSettings__AzureSubscription__Tenant",
+                                    "value": "[parameters('dnsTenant')]"
+                                },
+                                {
+                                    "name": "DnsSettings__AzureSubscription__SubscriptionId",
+                                    "value": "[parameters('dnsSubscriptionId')]"
+                                },
+                                {
+                                    "name": "DnsSettings__AzureSubscription__AzureRegion",
+                                    "value": "[parameters('dnsAzureRegion')]"
+                                },
+                                {
+                                    "name": "DnsSettings__ZoneName",
+                                    "value": "[parameters('dnsZoneName')]"
+                                },
+                                {
+                                    "name": "DnsSettings__ResourceGroupName",
+                                    "value": "[parameters('dnsResourceGroup')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "osType": "Linux",
+                "restartPolicy": "Never"               
+            }
+        }
+    ],
+    "outputs": {
+        "storageAccountName": {
+            "type": "string",
+            "value": "[variables('storageAccountName')]"
+        }
+    }
+}

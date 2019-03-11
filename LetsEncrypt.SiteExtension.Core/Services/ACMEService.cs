@@ -5,6 +5,7 @@ using ACMESharp.PKI;
 using ACMESharp.PKI.Providers;
 using ACMESharp.PKI.RSA;
 using LetsEncrypt.Azure.Core.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -200,9 +201,9 @@ namespace LetsEncrypt.Azure.Core.Services
 
             Console.WriteLine($"\nRequesting Certificate");
             Trace.TraceInformation("Requesting Certificate");
-            var certRequ = client.RequestCertificate(derB64u);
+            CertificateRequest certRequ = client.RequestCertificate(derB64u);
 
-            Trace.TraceInformation("certRequ {0}", certRequ);
+            Trace.TraceInformation("certRequ {0}", JsonConvert.SerializeObject(certRequ));
 
             Console.WriteLine($" Request Status: {certRequ.StatusCode}");
             Trace.TraceInformation("Request Status: {0}", certRequ.StatusCode);
@@ -299,7 +300,6 @@ namespace LetsEncrypt.Azure.Core.Services
                     {
                         using (var web = new WebClient())
                         {
-
                             var uri = new Uri(new Uri(this.baseURI), upLink.Uri);
                             web.DownloadFile(uri, tmp);
                         }

@@ -20,7 +20,7 @@ namespace LetsEncrypt.SiteExtension.Test
         { 
 
             var model = new AppSettingsAuthConfig();
-            var helper = ArmHelper.GetWebSiteManagementClient(model);
+            var helper = await ArmHelper.GetWebSiteManagementClient(model);
 
             var kuduClient = KuduHelper.GetKuduClient(helper, model);
 
@@ -36,6 +36,15 @@ namespace LetsEncrypt.SiteExtension.Test
                 await kuduClient.PutFile("site/wwwroot/.well-known/acme-challenge2/test.json", ms);
             }
             
+        }
+
+        [TestMethod]
+        public void TestScmUri()
+        {
+            var model = new AppSettingsAuthConfig();
+            var uri = "letsencrypt.azurewebsites.net";
+            var result = KuduHelper.MakeScmUri(uri, model);
+            Assert.AreEqual(new Uri("https://letsencrypt.scm.azurewebsites.net"), result);
         }
     }
 }

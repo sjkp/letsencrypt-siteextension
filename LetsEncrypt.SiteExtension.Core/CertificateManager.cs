@@ -3,8 +3,10 @@ using LetsEncrypt.Azure.Core.Services;
 using Microsoft.Azure.Management.WebSites;
 using Microsoft.Azure.Management.WebSites.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,10 +29,18 @@ namespace LetsEncrypt.Azure.Core
             
             this.settings = config;
             this.acmeConfig = config;
-            this.challengeProvider = new KuduFileSystemAuthorizationChallengeProvider(this.settings, new AuthorizationChallengeProviderConfig()
+            string storageAccount = AuthorizationChallengeBlobStorageAccount();
+            if (string.IsNullOrEmpty(storageAccount))
             {
-                DisableWebConfigUpdate = config.DisableWebConfigUpdate
-            });
+                this.challengeProvider = new KuduFileSystemAuthorizationChallengeProvider(this.settings, new AuthorizationChallengeProviderConfig()
+                {
+                    DisableWebConfigUpdate = config.DisableWebConfigUpdate
+                });
+            }
+            else
+            {
+                this.challengeProvider = NewBlobStorageAuthorizationChallengeProvider();
+            }
             this.certificateService = new WebAppCertificateService(this.settings, new CertificateServiceSettings()
             {
                 UseIPBasedSSL = config.UseIPBasedSSL
@@ -44,6 +54,29 @@ namespace LetsEncrypt.Azure.Core
             this.certificateService = certificateService;
             this.acmeConfig = acmeConfig;
             this.challengeProvider = challengeProvider;
+        }
+
+        /// <summary>
+        /// Returns a <see cref="CertificateManager"/> configured to use HTTP Challenge, placing the challenge file on Azure Blob Storage,
+        /// and assigning the obtained certificate directly to the web app service. 
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="acmeConfig"></param>
+        /// <param name="certSettings"></param>
+        /// <returns></returns>
+        public static CertificateManager CreateBlobWebAppCertificateManager(IAzureWebAppEnvironment settings, IAcmeConfig acmeConfig, IWebAppCertificateSettings certSettings)
+        {
+            return new CertificateManager(settings, acmeConfig, new WebAppCertificateService(settings, certSettings), NewBlobStorageAuthorizationChallengeProvider());
+        }
+
+        private static BlobStorageAuthorizationChallengeProvider NewBlobStorageAuthorizationChallengeProvider()
+        {
+            return new BlobStorageAuthorizationChallengeProvider(AuthorizationChallengeBlobStorageAccount(), ConfigurationManager.AppSettings[AppSettingsAuthConfig.authorizationChallengeBlobStorageContainer]);
+        }
+
+        private static string AuthorizationChallengeBlobStorageAccount()
+        {
+            return ConfigurationManager.AppSettings[AppSettingsAuthConfig.authorizationChallengeBlobStorageAccount];
         }
 
         /// <summary>
@@ -114,15 +147,22 @@ namespace LetsEncrypt.Azure.Core
         {
             Trace.TraceInformation("Checking certificate");
             var ss = SettingsStore.Instance.Load();
-            using (var client = ArmHelper.GetWebSiteManagementClient(settings))
-            using (var httpClient = ArmHelper.GetHttpClient(settings))
+            using (var client = await ArmHelper.GetWebSiteManagementClient(settings))
+            using (var httpClient = await ArmHelper.GetHttpClient(settings))
             {
+                var retryPolicy = ArmHelper.ExponentialBackoff();
+                var body = string.Empty;
                 //Cant just get certificates by resource group, because sites that have been moved, have their certs sitting in the old RG.
                 //Also cant use client.Certificates.List() due to bug in the nuget
-                var response = await httpClient.GetAsync($"/subscriptions/{settings.SubscriptionId}/providers/Microsoft.Web/certificates?api-version=2016-03-01");
+                var response = await retryPolicy.ExecuteAsync(async () =>
+                {
+                    return await httpClient.GetAsync($"/subscriptions/{settings.SubscriptionId}/providers/Microsoft.Web/certificates?api-version=2016-03-01");
+                    
+
+                });
                 response.EnsureSuccessStatusCode();
-                var body = await response.Content.ReadAsStringAsync();
-                IEnumerable<Certificate> certs = JsonConvert.DeserializeObject<Certificate[]>(body, JsonHelper.DefaultSerializationSettings);
+                body = await response.Content.ReadAsStringAsync();
+                IEnumerable<Certificate> certs = ExtractCertificates(body);
 
                 var expiringCerts = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(renewXNumberOfDaysBeforeExpiration) && (s.Issuer.Contains("Let's Encrypt") || s.Issuer.Contains("Fake LE")));
 
@@ -143,24 +183,41 @@ namespace LetsEncrypt.Azure.Core
                     }
                     var target = new AcmeConfig()
                     {
-                     
+
                         RegistrationEmail = this.acmeConfig.RegistrationEmail ?? ss.FirstOrDefault(s => s.Name == "email").Value,
                         Host = sslStates.First().Name,
-                        BaseUri = this.acmeConfig.BaseUri ?? ss.FirstOrDefault(s => s.Name == "baseUri").Value,                        
+                        BaseUri = this.acmeConfig.BaseUri ?? ss.FirstOrDefault(s => s.Name == "baseUri").Value,
                         AlternateNames = sslStates.Skip(1).Select(s => s.Name).ToList(),
                         PFXPassword = this.acmeConfig.PFXPassword,
                         RSAKeyLength = this.acmeConfig.RSAKeyLength
-                        
+
                     };
                     if (!skipInstallCertificate)
                     {
                         res.Add(await RequestAndInstallInternalAsync(target));
-                    }                    
+                    }
                 }
                 return res;
             }
-        }             
+        }
 
+        internal static IEnumerable<Certificate> ExtractCertificates(string body)
+        {
+            
+            var json = JToken.Parse(body);
+            var certs = Enumerable.Empty<Certificate>();
+            // Handle issue #269
+            if (json.Type == JTokenType.Object && json["value"] != null)
+            {
+                certs = JsonConvert.DeserializeObject<Certificate[]>(json["value"].ToString(), JsonHelper.DefaultSerializationSettings);
+            }
+            else
+            {
+                certs = JsonConvert.DeserializeObject<Certificate[]>(body, JsonHelper.DefaultSerializationSettings);
+            }
+
+            return certs;
+        }
 
         internal CertificateInstallModel RequestAndInstallInternal(IAcmeConfig config)
         {
@@ -185,13 +242,13 @@ namespace LetsEncrypt.Azure.Core
         {
             Trace.TraceInformation("RequestAndInstallInternal");
             var model = await RequestInternalAsync(config);
-            this.certificateService.Install(model);
+            await this.certificateService.Install(model);
             return model;
         }
 
-        public List<string> Cleanup()
+        public async Task<List<string>> Cleanup()
         {
-            return this.certificateService.RemoveExpired();
+            return await this.certificateService.RemoveExpired();
         }
     }
 }

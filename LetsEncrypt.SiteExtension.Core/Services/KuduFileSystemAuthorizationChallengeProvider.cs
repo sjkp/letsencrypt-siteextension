@@ -14,15 +14,19 @@ namespace LetsEncrypt.Azure.Core.Services
 {
     public class KuduFileSystemAuthorizationChallengeProvider : BaseHttpAuthorizationChallengeProvider
     {
-        private readonly KuduRestClient kuduClient;
+        
         private readonly IAuthorizationChallengeProviderConfig config;
+        private readonly IAzureWebAppEnvironment azureEnvironment;
+        private readonly PathProvider pathProvider;
 
         public KuduFileSystemAuthorizationChallengeProvider(IAzureWebAppEnvironment azureEnvironment, IAuthorizationChallengeProviderConfig config)
         {
             this.config = config;
-            var website = ArmHelper.GetWebSiteManagementClient(azureEnvironment);
-            this.kuduClient = KuduHelper.GetKuduClient(website, azureEnvironment);
+            
+            this.azureEnvironment = azureEnvironment;
+            this.pathProvider = new PathProvider(azureEnvironment);
         }
+
         public override Task CleanupChallengeFile(HttpChallenge challenge)
         {
             return Task.CompletedTask;
@@ -30,17 +34,18 @@ namespace LetsEncrypt.Azure.Core.Services
 
         public override async Task EnsureWebConfig()
         {
+            var dir = await this.pathProvider.ChallengeDirectory(true);
             if (config.DisableWebConfigUpdate)
             {
-                Trace.TraceInformation($"Disabled updating web.config at {WebRootPath() }");
+                Trace.TraceInformation($"Disabled updating web.config at {dir}");
                 return;
             }
-            await WriteFile(WebRootPath() + "/.well-known/acme-challenge/web.config", webConfig);
+            await WriteFile(dir + "/web.config", webConfig);
         }
 
         public override async Task PersistsChallengeFile(HttpChallenge challenge)
         {
-            var answerPath = GetAnswerPath(challenge);
+            var answerPath = await GetAnswerPath(challenge);
             await WriteFile(answerPath, challenge.FileContent);
         }
 
@@ -51,28 +56,26 @@ namespace LetsEncrypt.Azure.Core.Services
                 var streamwriter = new StreamWriter(ms);
                 streamwriter.Write(content);
                 streamwriter.Flush();
-                await kuduClient.PutFile(answerPath, ms);          
+                await (await GetKuduRestClient()).PutFile(answerPath, ms);          
             }
         }
 
-        private static string GetAnswerPath(HttpChallenge httpChallenge)
+        private async Task<string> GetAnswerPath(HttpChallenge httpChallenge)
         {
+            var root = await this.pathProvider.WebRootPath(true);
             // We need to strip off any leading '/' in the path
             var filePath = httpChallenge.FilePath;
             if (filePath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
                 filePath = filePath.Substring(1);
-            var answerPath = WebRootPath() + "/" +filePath;
+            var answerPath = root + "/" +filePath;
             return answerPath;
         }
 
-        private static string WebRootPath()
+
+        private async Task<KuduRestClient> GetKuduRestClient()
         {
-            
-            var webrootPath = ConfigurationManager.AppSettings["letsencrypt:WebRootPath"];
-            if (string.IsNullOrEmpty(webrootPath))
-                return "site/wwwroot";
-            //Ensure this is a backwards compatible with the LocalFileSystemProvider that was the only option before
-            return webrootPath.Replace(Environment.ExpandEnvironmentVariables("%HOME%"), "").Replace('\\', '/');
+            var website = await ArmHelper.GetWebSiteManagementClient(azureEnvironment);
+            return KuduHelper.GetKuduClient(website, azureEnvironment);
         }
     }
 }

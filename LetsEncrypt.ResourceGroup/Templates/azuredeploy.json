@@ -51,13 +51,6 @@
     "clientSecret": { "type": "string" },
     "hostnames": { "type": "string" },
     "email": { "type": "string" },
-    "siteExtensionFeedUrl": {
-      "type": "string",
-      "defaultValue": "https://www.siteextensions.net/api/v2/",
-      "metadata": {
-        "description": "The nuget feed to download site extensions from"
-      }
-    },
     "acmeUrl": {
       "type": "string",
       "defaultValue": "https://acme-v01.api.letsencrypt.org/",
@@ -97,6 +90,20 @@
       "defaultValue": "",
       "metadata": {
         "description": "The default azure web app domain name used in the selected azure region, when unset it defaults to azurewebsites.net"
+      }
+    },
+    "siteExtensionFeedUrl": {
+      "type": "string",
+      "defaultValue": "https://www.nuget.org/api/v2/",
+      "metadata": {
+        "description": "Url for the nuget feed to download site-extensions from, per default you don't need to change this. Used for overriding with private feed for testing prerelease versions"
+      }
+    },
+    "runFromPackage": {
+      "type": "string",
+      "defaultValue": "0",
+      "metadata": {
+        "description": "Set this to a url for a deployment package or 1 and dump a package in d:\\home\\data\\SitePackages, together with a packagename.txt file which contains the filename of the package in the folder"
       }
     }
   },
@@ -151,7 +158,6 @@
             "[resourceId('Microsoft.Web/Sites', variables('webAppName'))]"
           ],
           "properties": {
-            "SCM_SITEEXTENSIONS_FEED_URL": "[parameters('siteExtensionFeedUrl')]",
             "letsencrypt:Hostnames": "[parameters('hostnames')]",
             "letsencrypt:Email": "[parameters('email')]",
             "letsencrypt:AcmeBaseUri": "[parameters('acmeUrl')]",
@@ -164,7 +170,9 @@
             "letsencrypt:AzureAuthenticationEndpoint": "[parameters('authenticationEndpoint')]",
             "letsencrypt:AzureTokenAudience": "[parameters('tokenAudience')]",
             "letsencrypt:AzureManagementEndpoint": "[parameters('managementEndpoint')]",
-            "letsencrypt:AzureDefaultWebSiteDomainName": "[parameters('webSitesDefaultDomainName')]"
+            "letsencrypt:AzureDefaultWebSiteDomainName": "[parameters('webSitesDefaultDomainName')]",
+            "SCM_SITEEXTENSIONS_FEED_URL ": "[parameters('siteExtensionFeedUrl')]",
+            "WEBSITE_RUN_FROM_PACKAGE": "[parameters('runFromPackage')]"
           }
         },
         {
@@ -213,7 +221,7 @@
       }
     },
     {
-      "apiVersion": "2015-08-01",
+      "apiVersion": "2018-02-01",
       "type": "Microsoft.Web/sites/hostNameBindings",
       "name": "[concat(variables('webAppName'),'/', split(parameters('hostnames'), ',')[copyIndex()])]",
       "dependsOn": [
@@ -229,6 +237,8 @@
       },
       "copy": {
         "name": "hostnameloop",
+        "mode": "serial",
+        "batchSize": 1,
         "count": "[length(split(parameters('hostnames'),','))]"
       }
     }
