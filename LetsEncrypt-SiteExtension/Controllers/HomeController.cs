@@ -188,9 +188,9 @@ namespace LetsEncrypt.SiteExtension.Controllers
             return View(model);
         }
 
-        public ActionResult Install()
+        public async Task<ActionResult> Install()
         {
-            SetViewBagHostnames();
+            await SetViewBagHostnames();
             var emailSettings = SettingsStore.Instance.Load().FirstOrDefault(s => s.Name == "email");
             string email = string.Empty;
             if (emailSettings != null)
