@@ -10,7 +10,7 @@ namespace LetsEncrypt.Azure.Core.V2.CertificateStores
     public abstract class FileSystemBase : ICertificateStore
     {
         private readonly IFileSystem fileSystem;
-
+        private const string fileExtension = ".pfx";
 
         public FileSystemBase(IFileSystem fileSystem)
         {
@@ -20,9 +20,10 @@ namespace LetsEncrypt.Azure.Core.V2.CertificateStores
 
         public async Task<CertificateInfo> GetCertificate(string name, string password)
         {
-            if (! await this.fileSystem.Exists(name))
+            var filename = name + fileExtension;
+            if (! await this.fileSystem.Exists(filename))
                 return null;
-            var pfx = await this.fileSystem.Read(name);
+            var pfx = await this.fileSystem.Read(filename);
             return new CertificateInfo()
             {
                 PfxCertificate = pfx,
@@ -34,7 +35,21 @@ namespace LetsEncrypt.Azure.Core.V2.CertificateStores
 
         public Task SaveCertificate(CertificateInfo certificate)
         {
-            this.fileSystem.Write(certificate.Name, certificate.PfxCertificate);
+            this.fileSystem.Write(certificate.Name+fileExtension, certificate.PfxCertificate);
+            return Task.CompletedTask;
+        }
+
+        public async Task<string> GetSecret(string name)
+        {
+            var filename = name + fileExtension;
+            if (!await this.fileSystem.Exists(filename))
+                return null;
+            return System.Text.Encoding.UTF8.GetString(await this.fileSystem.Read(filename));
+        }
+
+        public Task SaveSecret(string name, string secret)
+        {
+            this.fileSystem.Write(name + fileExtension, Encoding.UTF8.GetBytes(secret));
             return Task.CompletedTask;
         }
     }

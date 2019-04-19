@@ -1,60 +1,62 @@
 ﻿using LetsEncrypt.Azure.Core.V2.CertificateStores;
-using LetsEncrypt.Azure.Core.V2.DnsProviders;
 using LetsEncrypt.Azure.Core.V2.Models;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
+using System.Threading.Tasks;
 
 namespace LetsEncrypt.Azure.Core.V2
 {
-    public static class LetsencryptService
+    public class LetsencryptService
     {
-        public static IServiceCollection AddAcmeClient<TDnsProvider>(this IServiceCollection serviceCollection, object dnsProviderConfig, string azureStorageConnectionString = null) where TDnsProvider : class, IDnsProvider
-        {
-            if (serviceCollection == null)
-            {
-                throw new ArgumentNullException(nameof(serviceCollection));
-            }
+        private readonly AcmeClient acmeClient;
+        private readonly ICertificateStore certificateStore;
+        private readonly AzureWebAppService azureWebAppService;
+        private readonly ILogger<LetsencryptService> logger;
 
-            if (dnsProviderConfig == null)
-            {
-                throw new ArgumentNullException(nameof(dnsProviderConfig));
-            }
-            if (string.IsNullOrEmpty(azureStorageConnectionString))
-            {
-                serviceCollection
-                    .AddTransient<IFileSystem, FileSystem>()
-                    .AddTransient<ICertificateStore, FileSystemCertificateStore>();
-            }
-            else
-            {
-                serviceCollection
-                    .AddTransient<IFileSystem, AzureBlobStorage>(s =>
-                    {
-                        return new AzureBlobStorage(azureStorageConnectionString);
-                    })
-                    .AddTransient<AzureBlobStorage, AzureBlobStorage>(s =>
-                    {
-                        return new AzureBlobStorage(azureStorageConnectionString);
-                    })
-                    .AddTransient<ICertificateStore, AzureBlobCertificateStore>();
-            }
-            return serviceCollection
-                .AddTransient<AcmeClient>()
-                .AddTransient<DnsLookupService>()                
-                .AddSingleton(dnsProviderConfig.GetType(), dnsProviderConfig)
-                .AddTransient<IDnsProvider, TDnsProvider>();               
+        public LetsencryptService(AcmeClient acmeClient, ICertificateStore certificateStore, AzureWebAppService azureWebAppService, ILogger<LetsencryptService> logger = null)
+        {
+            this.acmeClient = acmeClient;
+            this.certificateStore = certificateStore;
+            this.azureWebAppService = azureWebAppService;
+            this.logger = logger ?? NullLogger<LetsencryptService>.Instance;
         }
-
-        public static IServiceCollection AddAzureAppService(this IServiceCollection serviceCollection, params AzureWebAppSettings[] settings)
+        public async Task Run(AcmeDnsRequest acmeDnsRequest, int renewXNumberOfDaysBeforeExpiration)
         {
-            if (settings == null || settings.Length == 0)
+            try
             {
-                throw new ArgumentNullException(nameof(settings));
-            }
+                CertificateInstallModel model = null;
+                
+                var certname = acmeDnsRequest.Host.Substring(2) + "-" + acmeDnsRequest.AcmeEnvironment.Name;
+                var cert = await certificateStore.GetCertificate(certname, acmeDnsRequest.PFXPassword);
+                if (cert == null || cert.Certificate.NotAfter < DateTime.UtcNow.AddDays(renewXNumberOfDaysBeforeExpiration)) //Cert doesnt exist or expires in less than renewXNumberOfDaysBeforeExpiration days, lets renew.
+                {
+                    logger.LogInformation("Certificate store didn't contain certificate or certificate was expired starting renewing");
+                    model = await acmeClient.RequestDnsChallengeCertificate(acmeDnsRequest);
+                    model.CertificateInfo.Name = certname;
+                    await certificateStore.SaveCertificate(model.CertificateInfo);
+                }
+                else
+                {
+                    logger.LogInformation("Certificate expires in more than {renewXNumberOfDaysBeforeExpiration} days, reusing certificate from certificate store", renewXNumberOfDaysBeforeExpiration);
+                    model = new CertificateInstallModel()
+                    {
+                        CertificateInfo = cert,
+                        Host = acmeDnsRequest.Host
+                    };
+                }
+                await azureWebAppService.Install(model);
 
-            return serviceCollection
-                .AddSingleton(settings)
-                .AddTransient<AzureWebAppService>();
+                logger.LogInformation("Removing expired certificates");
+                var expired = azureWebAppService.RemoveExpired();
+                logger.LogInformation("The following certificates was removed {Thumbprints}", string.Join(", ", expired.ToArray()));
+                
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Failed");
+                throw;
+            }
         }
     }
 }

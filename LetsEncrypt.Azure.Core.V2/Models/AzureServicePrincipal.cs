@@ -7,6 +7,7 @@ namespace LetsEncrypt.Azure.Core.V2.Models
 {
     public class AzureServicePrincipal 
     {
+        public bool UseManagendIdentity { get; set; }
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
         public byte[] Certificate { get; set; }

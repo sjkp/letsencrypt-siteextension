@@ -1,8 +1,6 @@
 ﻿using LetsEncrypt.Azure.Core.V2.Models;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LetsEncrypt.Azure.Core.V2
 {
@@ -18,6 +16,11 @@ namespace LetsEncrypt.Azure.Core.V2
             if (azureSubscription == null)
             {
                 throw new ArgumentNullException(nameof(azureSubscription));
+            }
+
+            if (servicePrincipal.UseManagendIdentity)
+            {
+                return new AzureCredentials(new MSILoginInformation(MSIResourceType.AppService), Microsoft.Azure.Management.ResourceManager.Fluent.AzureEnvironment.FromName(azureSubscription.AzureRegion));
             }
 
             return new AzureCredentials(servicePrincipal.ServicePrincipalLoginInformation,

@@ -58,12 +58,12 @@ namespace LetsEncrypt.Azure.Runner
                 serviceCollection.AddAcmeClient<AzureDnsProvider>(Configuration.GetSection("DnsSettings").Get<AzureDnsSettings>(), azureStorageConnectionString);
             }
 
-            serviceCollection.AddTransient<App>();
+            serviceCollection.AddTransient<LetsencryptService>();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var dnsRequest = Configuration.GetSection("AcmeDnsRequest").Get<AcmeDnsRequest>();
 
-            var app = serviceProvider.GetService<App>();
+            var app = serviceProvider.GetService<LetsencryptService>();
             await app.Run(dnsRequest, Configuration.GetValue<int?>("RenewXNumberOfDaysBeforeExpiration") ?? 22);
         }
     }

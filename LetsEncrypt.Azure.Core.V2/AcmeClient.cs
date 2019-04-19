@@ -1,6 +1,7 @@
 ﻿using Certes;
 using Certes.Acme;
 using Certes.Acme.Resource;
+using LetsEncrypt.Azure.Core.V2.CertificateStores;
 using LetsEncrypt.Azure.Core.V2.DnsProviders;
 using LetsEncrypt.Azure.Core.V2.Models;
 using Microsoft.Extensions.Logging;
@@ -18,15 +19,15 @@ namespace LetsEncrypt.Azure.Core.V2
     {
         private readonly IDnsProvider dnsProvider;
         private readonly DnsLookupService dnsLookupService;
-        private readonly IFileSystem fileSystem;
+        private readonly ICertificateStore certificateStore;
 
         private readonly ILogger<AcmeClient> logger;
 
-        public AcmeClient(IDnsProvider dnsProvider, DnsLookupService dnsLookupService, IFileSystem fileSystem = null, ILogger<AcmeClient> logger = null)
+        public AcmeClient(IDnsProvider dnsProvider, DnsLookupService dnsLookupService, ICertificateStore certifcateStore, ILogger<AcmeClient> logger = null)
         {
             this.dnsProvider = dnsProvider;
             this.dnsLookupService = dnsLookupService;
-            this.fileSystem = fileSystem ?? new FileSystem();
+            this.certificateStore = certifcateStore;
             this.logger = logger ??  NullLogger<AcmeClient>.Instance;
             
         }
@@ -103,22 +104,22 @@ namespace LetsEncrypt.Azure.Core.V2
         private async Task<AcmeContext> GetOrCreateAcmeContext(Uri acmeDirectoryUri, string email)
         {
             AcmeContext acme = null;
-            string filename = $"account{email}--{acmeDirectoryUri.Host}.pem";
-            if (! await fileSystem.Exists(filename))
+            string filename = $"account{email}--{acmeDirectoryUri.Host}";
+            var secret = await this.certificateStore.GetSecret(filename);
+            if (string.IsNullOrEmpty(secret))
             {
                 acme = new AcmeContext(acmeDirectoryUri);
                 var account = acme.NewAccount(email, true);
 
                 // Save the account key for later use
                 var pemKey = acme.AccountKey.ToPem();
-                await fileSystem.WriteAllText(filename, pemKey);
+                await certificateStore.SaveSecret(filename, pemKey);
                 await Task.Delay(10000); //Wait a little before using the new account.
                 acme = new AcmeContext(acmeDirectoryUri, acme.AccountKey, new AcmeHttpClient(acmeDirectoryUri, new HttpClient()));
             }
             else
             {
-                var pemKey = await fileSystem.ReadAllText(filename);
-                var accountKey = KeyFactory.FromPem(pemKey);
+                var accountKey = KeyFactory.FromPem(secret);
                 acme = new AcmeContext(acmeDirectoryUri, accountKey, new AcmeHttpClient(acmeDirectoryUri, new HttpClient()));
             }
 

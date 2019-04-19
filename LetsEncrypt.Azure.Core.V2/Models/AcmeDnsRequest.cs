@@ -71,7 +71,7 @@ namespace LetsEncrypt.Azure.Core.V2.Models
         {
             this.BaseUri = uri;
         }
-        private string name;
+        protected string name;
         public string Name
         {
             get
@@ -97,12 +97,16 @@ namespace LetsEncrypt.Azure.Core.V2.Models
     public class LetsEncryptStagingV2 : AcmeEnvironment
     {
         public LetsEncryptStagingV2() : base(WellKnownServers.LetsEncryptStagingV2)
-        { }
+        {
+            this.name = "staging";
+        }
     }
 
     public class LetsEncryptV2 : AcmeEnvironment
     {
         public LetsEncryptV2() : base(WellKnownServers.LetsEncryptV2)
-        { }
+        {
+            this.name = "production";
+        }
     }
 }

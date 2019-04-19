@@ -8,6 +8,9 @@ namespace LetsEncrypt.Azure.Core.V2.CertificateStores
 {
     public interface ICertificateStore
     {
+        Task<string> GetSecret(string name);
+        Task SaveSecret(string name, string secret);
+
         Task<CertificateInfo> GetCertificate(string name, string password);
         Task SaveCertificate(CertificateInfo certificate);
     }
