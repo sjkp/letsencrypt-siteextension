@@ -27,9 +27,9 @@ namespace LetsEncrypt.Azure.Runner
             try
             {
                 CertificateInstallModel model = null;
-                
+
                 var certname = acmeDnsRequest.Host + "-" + acmeDnsRequest.AcmeEnvironment.Name + ".pfx";
-                var cert = await certificateStore.GetCertificate(certname, acmeDnsRequest.PFXPassword);
+                CertificateInfo cert = await certificateStore.GetCertificate(certname, acmeDnsRequest.PFXPassword);
                 if (cert == null || cert.Certificate.NotAfter < DateTime.UtcNow.AddDays(renewXNumberOfDaysBeforeExpiration)) //Cert doesnt exist or expires in less than 21 days, lets renew.
                 {
                     logger.LogInformation("Certificate store didn't contain certificate or certificate was expired starting renewing");
@@ -46,12 +46,12 @@ namespace LetsEncrypt.Azure.Runner
                         Host = acmeDnsRequest.Host
                     };
                 }
-                 await azureWebAppService.Install(model);
+                await azureWebAppService.Install(model);
 
                 logger.LogInformation("Removing expired certificates");
-                var expired = azureWebAppService.RemoveExpired();
+                System.Collections.Generic.List<string> expired = azureWebAppService.RemoveExpired();
                 logger.LogInformation("The following certificates was removed {Thumbprints}", string.Join(", ", expired.ToArray()));
-                
+
             }
             catch (Exception e)
             {

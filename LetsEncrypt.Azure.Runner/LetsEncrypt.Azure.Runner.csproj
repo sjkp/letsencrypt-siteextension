@@ -19,4 +19,10 @@
     <ProjectReference Include="..\LetsEncrypt.Azure.Core.V2\LetsEncrypt.Azure.Core.V2.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -100,7 +100,8 @@ namespace LetsEncrypt.Azure.Core.V2
 
                 var tobeRemoved = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(removeXNumberOfDaysBeforeExpiration) && (s.Issuer.Contains("Let's Encrypt") || s.Issuer.Contains("Fake LE"))).ToList();
 
-                tobeRemoved.ForEach(s => RemoveCertificate(appServiceManager, s, setting));
+                tobeRemoved.ForEach(s => 
+                    RemoveCertificate(appServiceManager, s, setting) );
 
                 removedCerts.AddRange(tobeRemoved.Select(s => s.Thumbprint).ToList());
             }
@@ -109,7 +110,14 @@ namespace LetsEncrypt.Azure.Core.V2
 
         private void RemoveCertificate(IAppServiceManager webSiteClient, IAppServiceCertificate s, AzureWebAppSettings setting)
         {
-            webSiteClient.AppServiceCertificates.DeleteByResourceGroup(setting.ServicePlanResourceGroupName ?? setting.ResourceGroupName, s.Name);
+            try
+            {
+                webSiteClient.AppServiceCertificates.DeleteByResourceGroup(setting.ServicePlanResourceGroupName ?? setting.ResourceGroupName, s.Name);
+            }
+            catch 
+            {
+
+            }
         }
 
 
