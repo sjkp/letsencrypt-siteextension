@@ -59,6 +59,30 @@ namespace LetsEncrypt.SiteExtension.Test
 
         [TestCategory("Integration")]
         [TestMethod]
+        public async Task AddCertificateHttpChallengeTest()
+        {
+            var config = new AppSettingsAuthConfig();
+
+
+            var dnsEnvironment = new AzureDnsEnvironment(config.Tenant, new Guid("14fe4c66-c75a-4323-881b-ea53c1d86a9d"), config.ClientId, config.ClientSecret, "dns", "ai4bots.com", "letsencrypt");
+            var mgr = new CertificateManager(config, new AcmeConfig()
+            {
+                Host = "letsencrypt.sjkp.dk",
+                PFXPassword = "Simon123",
+                RegistrationEmail = "mail@sjkp.dk",
+                RSAKeyLength = 2048
+            }, new WebAppCertificateService(config, new CertificateServiceSettings()
+            {
+                UseIPBasedSSL = config.UseIPBasedSSL
+            }), new KuduFileSystemAuthorizationChallengeProvider(config, new AuthorizationChallengeProviderConfig()));
+            var result = await mgr.AddCertificate();
+
+            Assert.IsNotNull(result);
+            ValidateCertificate(new[] { result }, "https://letsencrypt.sjkp.dk");
+        }
+
+        [TestCategory("Integration")]
+        [TestMethod]
         public async Task AddCertificateDnsChallengeTest()
         {
             var config = new AppSettingsAuthConfig();

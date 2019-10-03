@@ -14,18 +14,16 @@ namespace LetsEncrypt.SiteExtension.Test
     [TestClass]
     public class BlobStorageAuthorizationChallengeTest
     {
+        const string FileContent = "test";
+        const string FilePath = "/.well-known/acme-challenge/aBAasda234";
         [TestMethod]
         public async Task TestPersistDelete()
         {
             var testObj = new BlobStorageAuthorizationChallengeProvider(ConfigurationManager.AppSettings[AppSettingsAuthConfig.authorizationChallengeBlobStorageAccount]);
 
-            ACMESharp.ACME.HttpChallenge challenge = new ACMESharp.ACME.HttpChallenge("http", new HttpChallengeAnswer())
-            {
-                FileContent = "test",
-                FilePath = "/.well-known/acme-challenge/aBAasda234"
-            };
-            await testObj.PersistsChallengeFile(challenge);
-            await testObj.CleanupChallengeFile(challenge);
+            
+            await testObj.PersistsChallengeFile(FilePath, FileContent);
+            await testObj.CleanupChallengeFile(FilePath);
         }
 
         [TestMethod]
@@ -33,13 +31,9 @@ namespace LetsEncrypt.SiteExtension.Test
         {
             var testObj = new BlobStorageAuthorizationChallengeProvider(ConfigurationManager.AppSettings[AppSettingsAuthConfig.authorizationChallengeBlobStorageAccount], "$web");
 
-            ACMESharp.ACME.HttpChallenge challenge = new ACMESharp.ACME.HttpChallenge("http", new HttpChallengeAnswer())
-            {
-                FileContent = "test",
-                FilePath = "/.well-known/acme-challenge/aBAasda234"
-            };
-            await testObj.PersistsChallengeFile(challenge);
-            await testObj.CleanupChallengeFile(challenge);
+            
+            await testObj.PersistsChallengeFile(FilePath,FileContent);
+            await testObj.CleanupChallengeFile(FilePath);
         }
     }
 }

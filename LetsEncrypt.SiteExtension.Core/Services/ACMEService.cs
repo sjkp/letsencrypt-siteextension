@@ -41,10 +41,11 @@ namespace LetsEncrypt.Azure.Core.Services
             using (var client = Register(signer))
             {
                 IdnMapping idn = new IdnMapping();
-                var auth = await this.authorizeChallengeProvider.Authorize(client, config.Hostnames.Select(s => idn.GetAscii(s)).ToList());
+                authorizeChallengeProvider.RegisterClient(client);
+                var auth = await this.authorizeChallengeProvider.Authorize( config.Hostnames.Select(s => idn.GetAscii(s)).ToList());
 
                 //GetCertificate
-                if (auth.Status == "valid")
+                if (auth == "valid")
                 {
                     var pfxFilename = GetCertificate(client);
 
@@ -63,7 +64,7 @@ namespace LetsEncrypt.Azure.Core.Services
                     };
                 }
 
-                throw new Exception("Unable to complete challenge with Lets Encrypt servers error was: " + auth.Status);
+                throw new Exception("Unable to complete challenge with Lets Encrypt servers error was: " + auth);
             }
         }
 

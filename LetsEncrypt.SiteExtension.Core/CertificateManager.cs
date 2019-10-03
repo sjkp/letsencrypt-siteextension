@@ -226,7 +226,7 @@ namespace LetsEncrypt.Azure.Core
 
         internal async Task<CertificateInstallModel> RequestInternalAsync(IAcmeConfig config)
         {
-            var service = new AcmeService(config, this.challengeProvider);
+            var service = new AcmeServiceV2(config, this.challengeProvider);
 
             var cert = await service.RequestCertificate();
             var model = new CertificateInstallModel()

@@ -1,5 +1,8 @@
 ﻿using ACMESharp;
 using ACMESharp.ACME;
+using Certes;
+using Certes.Acme;
+using Certes.Acme.Resource;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -33,6 +36,8 @@ namespace LetsEncrypt.Azure.Core.Services
     </authorization>
   </system.web>
 </configuration>";
+        private ACMESharp.AcmeClient client;
+        private IOrderContext order;
 
         public virtual Task EnsureDirectory() {
             return Task.CompletedTask;
@@ -43,11 +48,72 @@ namespace LetsEncrypt.Azure.Core.Services
             return Task.CompletedTask;
         }
 
-        public abstract Task PersistsChallengeFile(HttpChallenge challenge);
+        public abstract Task PersistsChallengeFile(string path, string context);
 
-        public abstract Task CleanupChallengeFile(HttpChallenge challenge);
+        public abstract Task CleanupChallengeFile(string path);
 
-        public async Task<AuthorizationState> Authorize(AcmeClient client, List<string> allDnsIdentifiers)
+        public void RegisterClient(object client)
+        {
+            if (client is ACMESharp.AcmeClient)
+                this.client = client as ACMESharp.AcmeClient;
+            else if (client as IOrderContext != null)
+                this.order = client as IOrderContext;
+            else
+                throw new InvalidProgramException($"Unable to determine type of AcmeClient {client.GetType()}");
+        }
+
+        public async Task<string> Authorize(List<string> allDnsIdentifiers)
+        {
+            if (client != null)
+            {
+                return await this.AuthorizeOld(allDnsIdentifiers);
+            }
+            if (order != null)
+            {
+                return await this.AuthorizeNew(allDnsIdentifiers);
+            }
+
+            throw new Exception("order and client are both null");
+        }
+
+        private async Task<string> AuthorizeNew(List<string> allDnsIdentifiers)
+        {
+            await EnsureDirectory();
+            await EnsureWebConfig();
+
+            var auths = await order.Authorizations();
+            foreach (var auth in auths)
+            {                
+
+                var authz = await auth.Http();
+                var tokenRelativeUri = $".well-known/acme-challenge/{authz.Token}";
+                await PersistsChallengeFile(tokenRelativeUri, authz.KeyAuthz);
+                var challengeUri = new Uri($"http://{allDnsIdentifiers.First()}/{tokenRelativeUri}");
+                var retry = await ValidateChallengeFile(challengeUri);
+                if (retry == 0)
+                    throw new Exception($"Unable to validate presence of http challenge at {challengeUri} ensure that it is browsable");
+
+                var response = await authz.Validate(); 
+                retry = 10;
+                while ((response.Status == ChallengeStatus.Pending || response.Status == ChallengeStatus.Processing) && retry-- > 0)
+                {
+                    Trace.TraceInformation($"Dns challenge response status {response.Status} more info at {response.Url.ToString()} retrying in 5 sec");
+                    await Task.Delay(5000);
+                    response = await authz.Resource();
+                }
+
+                Console.WriteLine($" Authorization Result: {response.Status}");
+                Trace.TraceInformation("Auth Result {0}", response.Status);
+
+                if (response.Status != ChallengeStatus.Valid)
+                {
+                    return response.Status.ToString();
+                }
+            }
+            return "valid";
+        }
+
+        public async Task<string> AuthorizeOld(List<string> allDnsIdentifiers)
         {
             List<AuthorizationState> authStatus = new List<AuthorizationState>();
 
@@ -63,34 +129,11 @@ namespace LetsEncrypt.Azure.Core.Services
                 var challenge = client.DecodeChallenge(authzState, AcmeProtocol.CHALLENGE_TYPE_HTTP);
                 var httpChallenge = challenge.Challenge as HttpChallenge;
 
-                await PersistsChallengeFile(httpChallenge);
-
-                var answerUri = new Uri(httpChallenge.FileUrl);
-                Console.WriteLine($" Answer should now be browsable at {answerUri}");
-                Trace.TraceInformation("Answer should now be browsable at {0}", answerUri);
-
+                await PersistsChallengeFile(httpChallenge.FilePath, httpChallenge.FileContent);
                 try
                 {
-                    var retry = 10;
-                    var handler = new WebRequestHandler();
-                    handler.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-
-                    var httpclient = new HttpClient(handler);
-                    while (true)
-                    {
-
-                        //Allow self-signed certs otherwise staging wont work
-
-
-                        await Task.Delay(1000);
-                        var x = await httpclient.GetAsync(answerUri);
-                        Trace.TraceInformation("Checking status {0}", x.StatusCode);
-                        if (x.StatusCode == HttpStatusCode.OK)
-                            break;
-                        if (retry-- == 0)
-                            break;
-                        Trace.TraceInformation("Retrying {0}", retry);
-                    }
+                    var answerUri = new Uri(httpChallenge.FileUrl);
+                    int retry = await ValidateChallengeFile(answerUri);
                     Console.WriteLine(" Submitting answer");
                     Trace.TraceInformation("Submitting answer");
                     authzState.Challenges = new AuthorizeChallenge[] { challenge };
@@ -103,7 +146,7 @@ namespace LetsEncrypt.Azure.Core.Services
                         retry++;
                         Console.WriteLine(" Refreshing authorization attempt " + retry);
                         Trace.TraceInformation("Refreshing authorization attempt " + retry);
-                        await Task.Delay(2000*retry);  // this has to be here to give ACME server a chance to think
+                        await Task.Delay(2000 * retry);  // this has to be here to give ACME server a chance to think
                         var newAuthzState = client.RefreshIdentifierAuthorization(authzState);
                         if (newAuthzState.Status != "pending")
                             authzState = newAuthzState;
@@ -128,7 +171,7 @@ namespace LetsEncrypt.Azure.Core.Services
                     {
                         Console.WriteLine(" Deleting answer");
                         Trace.TraceInformation("Deleting answer");
-                        await CleanupChallengeFile(httpChallenge);
+                        await CleanupChallengeFile(httpChallenge.FilePath);
                     }
                 }
             }
@@ -136,10 +179,40 @@ namespace LetsEncrypt.Azure.Core.Services
             {
                 if (authState.Status != "valid")
                 {
-                    return authState;
+                    return authState.Status;
                 }
             }
-            return new AuthorizationState { Status = "valid" };
+            return "valid";
+        }
+
+        private static async Task<int> ValidateChallengeFile(Uri answerUri)
+        {
+            Console.WriteLine($" Answer should now be browsable at {answerUri}");
+            Trace.TraceInformation("Answer should now be browsable at {0}", answerUri);
+
+
+            var retry = 10;
+            var handler = new WebRequestHandler();
+            handler.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+
+            var httpclient = new HttpClient(handler);
+            while (true)
+            {
+
+                //Allow self-signed certs otherwise staging wont work
+
+
+                await Task.Delay(1000);
+                var x = await httpclient.GetAsync(answerUri);
+                Trace.TraceInformation("Checking status {0}", x.StatusCode);
+                if (x.StatusCode == HttpStatusCode.OK)
+                    break;
+                if (retry-- == 0)
+                    break;
+                Trace.TraceInformation("Retrying {0}", retry);
+            }
+
+            return retry;
         }
     }
 }

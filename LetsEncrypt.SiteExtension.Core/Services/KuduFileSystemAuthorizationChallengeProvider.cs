@@ -27,7 +27,7 @@ namespace LetsEncrypt.Azure.Core.Services
             this.pathProvider = new PathProvider(azureEnvironment);
         }
 
-        public override Task CleanupChallengeFile(HttpChallenge challenge)
+        public override Task CleanupChallengeFile(string filePath)
         {
             return Task.CompletedTask;
         }
@@ -43,10 +43,10 @@ namespace LetsEncrypt.Azure.Core.Services
             await WriteFile(dir + "/web.config", webConfig);
         }
 
-        public override async Task PersistsChallengeFile(HttpChallenge challenge)
+        public override async Task PersistsChallengeFile(string filePath, string fileContent)
         {
-            var answerPath = await GetAnswerPath(challenge);
-            await WriteFile(answerPath, challenge.FileContent);
+            var answerPath = await GetAnswerPath(filePath);
+            await WriteFile(answerPath, fileContent);
         }
 
         private async Task WriteFile(string answerPath, string content)
@@ -60,11 +60,10 @@ namespace LetsEncrypt.Azure.Core.Services
             }
         }
 
-        private async Task<string> GetAnswerPath(HttpChallenge httpChallenge)
+        private async Task<string> GetAnswerPath(string filePath)
         {
             var root = await this.pathProvider.WebRootPath(true);
             // We need to strip off any leading '/' in the path
-            var filePath = httpChallenge.FilePath;
             if (filePath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
                 filePath = filePath.Substring(1);
             var answerPath = root + "/" +filePath;

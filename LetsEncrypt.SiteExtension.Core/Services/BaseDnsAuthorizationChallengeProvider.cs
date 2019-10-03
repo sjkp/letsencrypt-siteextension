@@ -16,7 +16,9 @@ namespace LetsEncrypt.Azure.Core.Services
 {
     public abstract class BaseDnsAuthorizationChallengeProvider : IAuthorizationChallengeProvider
     {
-        public async Task<AuthorizationState> Authorize(AcmeClient client, List<string> allDnsIdentifiers)
+        private AcmeClient client;
+
+        public async Task<string> Authorize(List<string> allDnsIdentifiers)
         {
             List<AuthorizationState> authStatus = new List<AuthorizationState>();
 
@@ -74,14 +76,19 @@ namespace LetsEncrypt.Azure.Core.Services
             {
                 if (authState.Status != "valid")
                 {
-                    return authState;
+                    return authState.Status;
                 }
             }
-            return new AuthorizationState { Status = "valid" };
+            return "valid";
         }
 
         public abstract Task CleanupChallenge(DnsChallenge httpChallenge);
 
         public abstract Task PersistsChallenge(DnsChallenge httpChallenge);
+
+        public void RegisterClient(object client)
+        {
+            this.client = client as AcmeClient; 
+        }        
     }
 }

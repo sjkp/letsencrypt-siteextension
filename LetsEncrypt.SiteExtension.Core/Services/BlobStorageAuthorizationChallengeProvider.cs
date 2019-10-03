@@ -20,22 +20,22 @@ namespace LetsEncrypt.Azure.Core.Services
             this.containerName = string.IsNullOrEmpty(container) ? "letsencrypt-siteextension" : container;            
         }
    
-        public override async Task CleanupChallengeFile(HttpChallenge challenge)
+        public override async Task CleanupChallengeFile(string filePath)
         {
-            var blob = await GetBlob(challenge);
+            var blob = await GetBlob(filePath);
             await blob.DeleteIfExistsAsync();
         }
 
-        public override async Task PersistsChallengeFile(HttpChallenge challenge)
+        public override async Task PersistsChallengeFile(string filePath, string fileContent)
         {
-            CloudBlockBlob blob = await GetBlob(challenge);
+            CloudBlockBlob blob = await GetBlob(filePath);
             blob.Properties.ContentType = "text/plain";
             
-            await blob.UploadTextAsync(challenge.FileContent);
+            await blob.UploadTextAsync(fileContent);
             await blob.SetPropertiesAsync();
         }
 
-        private async Task<CloudBlockBlob> GetBlob(HttpChallenge challenge)
+        private async Task<CloudBlockBlob> GetBlob(string filePath)
         {
             var client = storageAccount.CreateCloudBlobClient();
             var container = client.GetContainerReference(containerName);
@@ -48,7 +48,6 @@ namespace LetsEncrypt.Azure.Core.Services
                 });
             }
             // We need to strip off any leading '/' in the path
-            var filePath = challenge.FilePath;
             if (filePath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
                 filePath = filePath.Substring(1);
             var blob = container.GetBlockBlobReference(filePath);
