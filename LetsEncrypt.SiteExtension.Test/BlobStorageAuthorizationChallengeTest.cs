@@ -1,12 +1,7 @@
-﻿using ACMESharp.ACME;
-using LetsEncrypt.Azure.Core.Models;
+﻿using LetsEncrypt.Azure.Core.Models;
 using LetsEncrypt.Azure.Core.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace LetsEncrypt.SiteExtension.Test

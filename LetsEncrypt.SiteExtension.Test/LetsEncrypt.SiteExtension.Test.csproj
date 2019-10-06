@@ -150,7 +150,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AzureDnsAuthorizationChallengeProviderTest.cs" />
     <Compile Include="BlobStorageAuthorizationChallengeTest.cs" />
     <Compile Include="CertificateControllerTest.cs" />
     <Compile Include="CleanupCertificates.cs" />
@@ -186,14 +185,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ACMESharp\ACMESharp\ACMESharp.PKI.Providers.BouncyCastle\ACMESharp.PKI.Providers.BouncyCastle.csproj">
-      <Project>{473bff7d-c7f0-471d-b7a3-19ad9adfdba9}</Project>
-      <Name>ACMESharp.PKI.Providers.BouncyCastle</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ACMESharp\ACMESharp\ACMESharp\ACMESharp.csproj">
-      <Project>{D551234B-0A8D-4DEE-8178-A81998DF0EDB}</Project>
-      <Name>ACMESharp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LetsEncrypt-SiteExtension\LetsEncrypt.SiteExtension.csproj">
       <Project>{87f0ff62-16c3-43ce-b154-1b9bc28ded67}</Project>
       <Name>LetsEncrypt.SiteExtension</Name>

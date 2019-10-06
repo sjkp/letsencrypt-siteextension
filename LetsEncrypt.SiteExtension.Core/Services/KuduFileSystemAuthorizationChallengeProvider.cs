@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using ACMESharp;
-using ACMESharp.ACME;
-using System.Configuration;
 using System.IO;
 using LetsEncrypt.Azure.Core.Models;
 using System.Diagnostics;

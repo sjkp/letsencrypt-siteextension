@@ -69,9 +69,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
-      <HintPath>..\packages\Portable.BouncyCastle.1.8.1.4\lib\net40\BouncyCastle.Crypto.dll</HintPath>
-    </Reference>
     <Reference Include="Certes, Version=2.3.3.0, Culture=neutral, PublicKeyToken=308b9c08e7effcb1, processorArchitecture=MSIL">
       <HintPath>..\packages\Certes.2.3.3\lib\net45\Certes.dll</HintPath>
     </Reference>
@@ -201,12 +198,9 @@
     <Compile Include="Models\KuduModels.cs" />
     <Compile Include="Models\SettingEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\AcmeServiceV2.cs" />
-    <Compile Include="Services\PathProvider.cs" />
     <Compile Include="Services\AcmeService.cs" />
+    <Compile Include="Services\PathProvider.cs" />
     <Compile Include="Services\AppServiceCerticiateCertificateService.cs" />
-    <Compile Include="Services\AzureDnsAuthorizationChallengeProvider.cs" />
-    <Compile Include="Services\BaseDnsAuthorizationChallengeProvider.cs" />
     <Compile Include="Services\BaseHttpAuthorizationChallengeProvider.cs" />
     <Compile Include="Services\BlobStorageAuthorizationChallengeProvider.cs" />
     <Compile Include="Services\WebAppCertificateService.cs" />
@@ -231,16 +225,6 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ACMESharp\ACMESharp\ACMESharp.PKI.Providers.BouncyCastle\ACMESharp.PKI.Providers.BouncyCastle.csproj">
-      <Project>{473bff7d-c7f0-471d-b7a3-19ad9adfdba9}</Project>
-      <Name>ACMESharp.PKI.Providers.BouncyCastle</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ACMESharp\ACMESharp\ACMESharp\ACMESharp.csproj">
-      <Project>{d551234b-0a8d-4dee-8178-a81998df0edb}</Project>
-      <Name>ACMESharp</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
