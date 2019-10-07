@@ -1,17 +1,7 @@
-﻿using ACMESharp;
-using ACMESharp.ACME;
-using LetsEncrypt.Azure.Core.Models;
-using Newtonsoft.Json;
+﻿using LetsEncrypt.Azure.Core.Models;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace LetsEncrypt.Azure.Core.Services
@@ -59,30 +49,29 @@ namespace LetsEncrypt.Azure.Core.Services
             }
         }
 
-        public override async Task PersistsChallengeFile(HttpChallenge httpChallenge)
+        public override async Task PersistsChallengeFile(string filePath, string fileContent)
         {
-            string answerPath = await GetAnswerPath(httpChallenge);
+            string answerPath = await GetAnswerPath(filePath);
 
             Console.WriteLine($" Writing challenge answer to {answerPath}");
             Trace.TraceInformation("Writing challenge answer to {0}", answerPath);
 
-            File.WriteAllText(answerPath, httpChallenge.FileContent);
+            File.WriteAllText(answerPath, fileContent);
         }
 
-        private async Task<string> GetAnswerPath(HttpChallenge httpChallenge)
+        private async Task<string> GetAnswerPath(string filePath)
         {
             var rootDir = await this.pathProvider.WebRootPath(false);
             // We need to strip off any leading '/' in the path
-            var filePath = httpChallenge.FilePath;
             if (filePath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
                 filePath = filePath.Substring(1);
             var answerPath = Environment.ExpandEnvironmentVariables(Path.Combine(rootDir, filePath));
             return answerPath;
         }
 
-        public override async Task CleanupChallengeFile(HttpChallenge challenge)
+        public override async Task CleanupChallengeFile(string filePath)
         {
-            File.Delete(await GetAnswerPath(challenge));
+            File.Delete(await GetAnswerPath(filePath));
         }
     }
 }

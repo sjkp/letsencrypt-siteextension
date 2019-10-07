@@ -93,32 +93,6 @@ namespace LetsEncrypt.Azure.Core
             return new CertificateManager(settings, acmeConfig, new WebAppCertificateService(settings, certSettings), new KuduFileSystemAuthorizationChallengeProvider(settings, authProviderConfig));
         }
 
-        /// <summary>
-        /// Returns a <see cref="CertificateManager"/> configured to use DNS Challenge, placing the challenge record in Azure DNS,
-        /// and assigning the obtained certificate directly to the web app service. 
-        /// </summary>
-        /// <param name="settings"></param>
-        /// <param name="acmeConfig"></param>
-        /// <param name="certSettings"></param>
-        /// <param name="dnsEnvironment"></param>
-        /// <returns></returns>
-        public static CertificateManager CreateAzureDnsWebAppCertificateManager(IAzureWebAppEnvironment settings, IAcmeConfig acmeConfig, IWebAppCertificateSettings certSettings, IAzureDnsEnvironment dnsEnvironment)
-        {
-            return new CertificateManager(settings, acmeConfig, new WebAppCertificateService(settings, certSettings), new AzureDnsAuthorizationChallengeProvider(dnsEnvironment));
-        }
-
-        /// <summary>
-        /// Request a certificate from lets encrypt using the DNS challenge, placing the challenge record in Azure DNS. 
-        /// The certifiacte is not assigned, but just returned. 
-        /// </summary>
-        /// <param name="azureDnsEnvironment"></param>
-        /// <param name="acmeConfig"></param>
-        /// <returns></returns>
-        public static async Task<CertificateInstallModel> RequestDnsChallengeCertificate(IAzureDnsEnvironment azureDnsEnvironment, IAcmeConfig acmeConfig)
-        {
-            return await new CertificateManager(null, acmeConfig, null, new AzureDnsAuthorizationChallengeProvider(azureDnsEnvironment)).RequestInternalAsync(acmeConfig);
-        }
-
 
         /// <summary>
         /// Used for automatic installation of letsencrypt certificate 
@@ -186,7 +160,8 @@ namespace LetsEncrypt.Azure.Core
 
                         RegistrationEmail = this.acmeConfig.RegistrationEmail ?? ss.FirstOrDefault(s => s.Name == "email").Value,
                         Host = sslStates.First().Name,
-                        BaseUri = this.acmeConfig.BaseUri ?? ss.FirstOrDefault(s => s.Name == "baseUri").Value,
+                        BaseUri = this.acmeConfig.BaseUri,
+                        UseProduction = !bool.Parse(ss.FirstOrDefault(s => s.Name == "useStaging")?.Value ?? false.ToString()),
                         AlternateNames = sslStates.Skip(1).Select(s => s.Name).ToList(),
                         PFXPassword = this.acmeConfig.PFXPassword,
                         RSAKeyLength = this.acmeConfig.RSAKeyLength

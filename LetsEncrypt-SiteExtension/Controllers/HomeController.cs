@@ -230,11 +230,10 @@ namespace LetsEncrypt.SiteExtension.Controllers
                     Name = "email",
                     Value = model.Email
                 });
-                var baseUri = model.UseStaging == false ? "https://acme-v01.api.letsencrypt.org/" : "https://acme-staging.api.letsencrypt.org/";
                 s.Add(new SettingEntry()
                 {
-                    Name = "baseUri",
-                    Value = baseUri
+                    Name = "useStaging",
+                    Value = model.UseStaging.ToString()
                 });
                 SettingsStore.Instance.Save(s);
                 var settings = new AppSettingsAuthConfig();
@@ -242,7 +241,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
                 {                    
                     RegistrationEmail = model.Email,
                     Host = model.Hostnames.First(),                    
-                    BaseUri = baseUri,                    
+                    UseProduction = !model.UseStaging,                    
                     AlternateNames = model.Hostnames.Skip(1).ToList(),
                     PFXPassword = settings.PFXPassword,
                     RSAKeyLength = settings.RSAKeyLength,    
