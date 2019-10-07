@@ -22,7 +22,7 @@ namespace LetsEncrypt.Azure.Core.Services
         private readonly IAuthorizationChallengeProvider authorizeChallengeProvider;
 
         public AcmeService(IAcmeConfig config, IAuthorizationChallengeProvider authorizeChallengeProvider)
-        {
+        {            
             if (string.IsNullOrEmpty(config.BaseUri))
             {
                 this.acmeenvironment = (config.UseProduction ? WellKnownServers.LetsEncryptV2 : WellKnownServers.LetsEncryptStagingV2);
@@ -71,14 +71,15 @@ namespace LetsEncrypt.Azure.Core.Services
                 var certPem = cert.ToPem();
 
                 var pfxBuilder = cert.ToPfx(privateKey);
-                var pfx = pfxBuilder.Build(config.Host, config.PFXPassword);
+                string pFXPassword = config.PFXPassword ?? Guid.NewGuid().ToString().Replace("-", "");
+                var pfx = pfxBuilder.Build(config.Host, pFXPassword);
 
 
                 return new CertificateInfo()
                     {
-                        Certificate = new X509Certificate2(pfx, config.PFXPassword, X509KeyStorageFlags.DefaultKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable),
+                        Certificate = new X509Certificate2(pfx, pFXPassword, X509KeyStorageFlags.DefaultKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable),
                         Name = $"{config.Host} {DateTime.Now}",
-                        Password = config.PFXPassword,
+                        Password = pFXPassword,
                         PfxCertificate = pfx
                     };
 
