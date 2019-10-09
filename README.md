@@ -42,7 +42,7 @@ To use the Fully Automated Installation the following Web App settings must be a
 | letsencrypt:ClientSecret	| The secret for the service principal
 | letsencrypt:ResourceGroupName |	The name of the resource group this web app belongs to
 | letsencrypt:ServicePlanResourceGroupName |	The name of the resource group with the app service plan that hosts the web app, if the app service plan is in the same plan as the web app, then this property is optional. 
-| letsencrypt:AcmeBaseUri |	The url to Let's Encrypt servers e.g. https://acme-v01.api.letsencrypt.org/ or https://acme-staging.api.letsencrypt.org/ (defaults to this)
+| letsencrypt:AcmeBaseUri |	The url to Let's Encrypt servers e.g. https://acme-v02.api.letsencrypt.org/directory or https://acme-staging-v02.api.letsencrypt.org/directory (defaults to this)
 | letsencrypt:Email	| The Email used for registering with Let's Encrypt
 | letsencrypt:Hostnames |	Comma separated list of custom hostnames (externally hosted setup with CNames), that should automatically be configured for the site.
 | letsencrypt:WebRootPath | Use this setting, if you are not serving the website from site\wwwroot, then you can specify the other folder that serves your website here - should be in the format d:\home\site\wwwroot\public or where ever your files are located on the web server. 
