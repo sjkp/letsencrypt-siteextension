@@ -69,17 +69,17 @@ namespace LetsEncrypt.Azure.Core.Services
                 retry = 10;
                 while ((response.Status == ChallengeStatus.Pending || response.Status == ChallengeStatus.Processing) && retry-- > 0)
                 {
-                    Trace.TraceInformation($"Dns challenge response status {response.Status} more info at {response.Url.ToString()} retrying in 5 sec");
+                    Trace.TraceInformation($"Http challenge response status {response.Status} more info at {response.Url.ToString()} retrying in 5 sec");
                     await Task.Delay(5000);
                     response = await authz.Resource();
                 }
 
-                Console.WriteLine($" Authorization Result: {response.Status}");
-                Trace.TraceInformation("Auth Result {0}", response.Status);
+                Console.WriteLine($"Authorization Result: {response.Status}, more info at {response.Url}");
+                Trace.TraceInformation($"Auth Result {response.Status}, more info at {response.Url}");
                 if (response.Status != ChallengeStatus.Valid)
                 {
 
-                    return (false, JsonConvert.SerializeObject(response.Error));
+                    return (false, JsonConvert.SerializeObject(response));
                 }
                 i++;
             }
@@ -95,15 +95,12 @@ namespace LetsEncrypt.Azure.Core.Services
 
             var retry = 10;
             var handler = new WebRequestHandler();
+            //Allow self-signed certs otherwise staging wont work
             handler.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
 
             var httpclient = new HttpClient(handler);
             while (true)
             {
-
-                //Allow self-signed certs otherwise staging wont work
-
-
                 await Task.Delay(1000);
                 var x = await httpclient.GetAsync(answerUri);
                 Trace.TraceInformation("Checking status {0}", x.StatusCode);
