@@ -1,6 +1,7 @@
 ﻿using Certes;
 using Certes.Acme;
 using Certes.Acme.Resource;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -46,7 +47,7 @@ namespace LetsEncrypt.Azure.Core.Services
         public abstract Task CleanupChallengeFile(string path);
 
 
-        public async Task<string> Authorize(IOrderContext order, List<string> allDnsIdentifiers)
+        public async Task<(bool success, string errorMsg)> Authorize(IOrderContext order, List<string> allDnsIdentifiers)
         {
             await EnsureDirectory();
             await EnsureWebConfig();
@@ -75,14 +76,14 @@ namespace LetsEncrypt.Azure.Core.Services
 
                 Console.WriteLine($" Authorization Result: {response.Status}");
                 Trace.TraceInformation("Auth Result {0}", response.Status);
-
                 if (response.Status != ChallengeStatus.Valid)
                 {
-                    return response.Status.ToString();
+
+                    return (false, JsonConvert.SerializeObject(response.Error));
                 }
                 i++;
             }
-            return "valid";
+            return (true, string.Empty);
         }
 
 
