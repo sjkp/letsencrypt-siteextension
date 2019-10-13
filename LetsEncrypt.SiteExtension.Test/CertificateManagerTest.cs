@@ -89,7 +89,9 @@ namespace LetsEncrypt.SiteExtension.Test
         private void ValidateCertificate(IEnumerable<CertificateInstallModel> certs, string uri)
         {
             //Do webrequest to get info on secure site            
+            
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            request.ServerCertificateValidationCallback = delegate { return true; };
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
             response.Close();
 
