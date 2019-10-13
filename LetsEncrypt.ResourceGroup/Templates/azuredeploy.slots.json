@@ -60,9 +60,9 @@
     },
     "acmeUrl": {
       "type": "string",
-      "defaultValue": "https://acme-v01.api.letsencrypt.org/",
+      "defaultValue": "https://acme-v02.api.letsencrypt.org/directory",
       "metadata": {
-        "description": "The url of the lets encrypt servers. Staging: (https://acme-staging.api.letsencrypt.org/)"
+        "description": "The url of the lets encrypt servers. Staging: (https://acme-staging-v02.api.letsencrypt.org/directory)"
       }
     },
     "principalId": {

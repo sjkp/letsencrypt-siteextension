@@ -216,9 +216,19 @@ namespace LetsEncrypt.Azure.Core
         internal async Task<CertificateInstallModel> RequestAndInstallInternalAsync(IAcmeConfig config)
         {
             Trace.TraceInformation("RequestAndInstallInternal");
-            var model = await RequestInternalAsync(config);
-            await this.certificateService.Install(model);
-            return model;
+            try
+            {
+                var model = await RequestInternalAsync(config);
+                await this.certificateService.Install(model);
+                return model;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error during Request or install certificate {e.ToString()}");
+                Trace.TraceError($"Error during Request or install certificate {e.ToString()}");
+                throw;
+            }
         }
 
         public async Task<List<string>> Cleanup()

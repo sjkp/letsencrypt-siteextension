@@ -54,7 +54,7 @@ namespace LetsEncrypt.Azure.Core.Services
             
             var response = await authorizeChallengeProvider.Authorize(order, domains);
 
-            if (response == "valid")
+            if (response.success == true)
             {
 
                 var privateKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
@@ -84,7 +84,7 @@ namespace LetsEncrypt.Azure.Core.Services
                     };
 
             }
-            throw new Exception("Unable to complete challenge with Lets Encrypt servers error was: " + response);
+            throw new Exception("Unable to complete challenge with Lets Encrypt servers error was: " + response.errorMsg);
         }
 
         private async Task<AcmeContext> GetOrCreateAcmeContext(Uri acmeDirectoryUri, string email)

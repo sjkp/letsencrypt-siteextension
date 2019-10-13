@@ -10,6 +10,6 @@ namespace LetsEncrypt.Azure.Core.Services
         /// </summary>
         /// <param name="dnsIdentifiers"></param>
         /// <returns></returns>
-        Task<string> Authorize(Certes.Acme.IOrderContext context, List<string> dnsIdentifiers);    
+        Task<(bool success, string errorMsg)> Authorize(Certes.Acme.IOrderContext context, List<string> dnsIdentifiers);    
     }
 }

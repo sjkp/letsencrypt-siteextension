@@ -1,7 +1,0 @@
-{
-  "profiles": {
-    "Letsencrypt.Azure.Core.Test": {
-      "commandName": "Project"
-    }
-  }
-}
