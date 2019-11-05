@@ -5,6 +5,8 @@ This Azure Web App Site Extension enables easy installation and configuration of
 
 The site extension requires that you have configured a DNS entry for your custom domain to point to Azure Web App. 
 
+November 2019 - Microsoft finally acknowledge that maybe it is in due time that they add first level support for free SSL certificates, see this announcement about [App Service Managed Certificates](https://azure.microsoft.com/en-us/updates/secure-your-custom-domains-at-no-cost-with-app-service-managed-certificates-preview/), be aware that it is in preview and currently **doesn't support** the apex/naked domain. 
+
 ## How to install
 https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install
 
