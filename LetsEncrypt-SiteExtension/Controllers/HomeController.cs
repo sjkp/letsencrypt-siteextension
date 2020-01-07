@@ -62,6 +62,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
                             return View(model);
                         }
                         var webappsettings = client.WebApps.ListSiteOrSlotAppSettings(model.ResourceGroupName, model.WebAppName, model.SiteSlotName);
+                        var connectionStrings = client.WebApps.ListConnectionStrings(model.ResourceGroupName, model.WebAppName);
                         if (model.UpdateAppSettings)
                         {
                             var newAppSettingsValues = new Dictionary<string, string>{
@@ -74,6 +75,13 @@ namespace LetsEncrypt.SiteExtension.Controllers
                                 { AppSettingsAuthConfig.servicePlanResourceGroupNameKey, model.ServicePlanResourceGroupName },
                                 { AppSettingsAuthConfig.useIPBasedSSL, model.UseIPBasedSSL.ToString().ToLowerInvariant() }
                             };
+
+                            var newConnectionStrings = new Dictionary<string, string>
+                            {
+                                { AppSettingsAuthConfig.webjobDashboard, model.DashboardConnectionString },
+                                { AppSettingsAuthConfig.webjobStorage, model.StorageConnectionString }
+                            };
+
                             foreach (var appsetting in newAppSettingsValues)
                             {
                                 if (!webappsettings.Properties.ContainsKey(appsetting.Key))
@@ -86,8 +94,22 @@ namespace LetsEncrypt.SiteExtension.Controllers
                                 }
                             }
 
+                            foreach (var connString in newConnectionStrings)
+                            {
+                                if (!connectionStrings.Properties.ContainsKey(connString.Key))
+                                {
+                                    connectionStrings.Properties.Add(connString.Key, new ConnStringValueTypePair(connString.Value, ConnectionStringType.Custom));
+                                }
+                                else
+                                {
+                                    connectionStrings.Properties[connString.Key] = new ConnStringValueTypePair(connString.Value, ConnectionStringType.Custom);
+                                }
+                            }
+
                             client.WebApps.UpdateSiteOrSlotAppSettings(model.ResourceGroupName, model.WebAppName, model.SiteSlotName, webappsettings);
+                            client.WebApps.UpdateConnectionStrings(model.ResourceGroupName, model.WebAppName, connectionStrings);
                             ConfigurationManager.RefreshSection("appSettings");
+                            ConfigurationManager.RefreshSection("connectionStrings");
                             
                             await path.ChallengeDirectory(true);
                         }
