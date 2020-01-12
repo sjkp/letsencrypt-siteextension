@@ -116,7 +116,7 @@ namespace LetsEncrypt.Azure.Core.Models
         {
             get
             {
-                return ConfigurationManager.ConnectionStrings[webjobDashboard].ConnectionString;
+                return ConfigurationManager.ConnectionStrings[webjobDashboard]?.ConnectionString;
             }
         }
 
@@ -125,7 +125,7 @@ namespace LetsEncrypt.Azure.Core.Models
         {
             get
             {
-                return ConfigurationManager.ConnectionStrings[webjobStorage].ConnectionString;
+                return ConfigurationManager.ConnectionStrings[webjobStorage]?.ConnectionString;
             }
         }
 
