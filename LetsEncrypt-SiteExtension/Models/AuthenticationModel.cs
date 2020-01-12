@@ -46,6 +46,18 @@ namespace LetsEncrypt.SiteExtension.Models
             get; set;
         }
 
+        [Required]
+        public string DashboardConnectionString
+        {
+            get; set;
+        }
+
+        [Required]
+        public string StorageConnectionString
+        {
+            get; set;
+        }
+
         [Display(Name = "Update Application Settings and Virtual Directory (if needed)")]
         public bool UpdateAppSettings
         {
@@ -113,6 +125,8 @@ namespace LetsEncrypt.SiteExtension.Models
                 SiteSlotName = config.SiteSlotName,
                 WebRootPath = config.WebRootPath,
                 RunFromPackage = config.RunFromPackage,
+                DashboardConnectionString = config.DashboardConnectionString,
+                StorageConnectionString = config.StorageConnectionString,
             };
         }
     }

@@ -35,6 +35,8 @@ namespace LetsEncrypt.Azure.Core.Models
         public const string authorizationChallengeBlobStorageAccount = "letsencrypt:AuthorizationChallengeBlobStorageAccount";
         public const string authorizationChallengeBlobStorageContainer = "letsencrypt:AuthorizationChallengeBlobStorageContainer";
         public const string disableVirtualApplication = "letsencrypt:DisableVirtualApplication";
+        public const string webjobDashboard = "AzureWebJobsDashboard";
+        public const string webjobStorage = "AzureWebJobsStorage";
 
         public AppSettingsAuthConfig()
         {
@@ -106,6 +108,24 @@ namespace LetsEncrypt.Azure.Core.Models
             get
             {
                 return ConfigurationManager.AppSettings[webAppNameKey]; 
+            }
+        }
+
+        [Required(ErrorMessage = webjobDashboard + " connectionString is required")]
+        public string DashboardConnectionString
+        {
+            get
+            {
+                return ConfigurationManager.ConnectionStrings[webjobDashboard].ConnectionString;
+            }
+        }
+
+        [Required(ErrorMessage = webjobStorage + " connectionString is required")]
+        public string StorageConnectionString
+        {
+            get
+            {
+                return ConfigurationManager.ConnectionStrings[webjobStorage].ConnectionString;
             }
         }
 

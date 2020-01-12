@@ -113,21 +113,21 @@
 
     @if (Model.RunFromPackage && string.IsNullOrEmpty(Environment.GetEnvironmentVariable(LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.webRootPath)))
     {
-    <div class="alert alert-warning" role="alert">
-        <p>Web Site was deployed using "Run From Package", the site extension will have to configure a virtual directory to ensure the challenge file can be browsable at http://your-site/.well-known/acme-challenge. </p>
+        <div class="alert alert-warning" role="alert">
+            <p>Web Site was deployed using "Run From Package", the site extension will have to configure a virtual directory to ensure the challenge file can be browsable at http://your-site/.well-known/acme-challenge. </p>
 
-        <p>If you already host content under /.well-known then you should not continue, instead you should follow the manual setup procedure at <a href="https://github.com/sjkp/letsencrypt-siteextension/wiki/Run-From-Package">https://github.com/sjkp/letsencrypt-siteextension/wiki/Run-From-Package</a></p>
-    </div>
+            <p>If you already host content under /.well-known then you should not continue, instead you should follow the manual setup procedure at <a href="https://github.com/sjkp/letsencrypt-siteextension/wiki/Run-From-Package">https://github.com/sjkp/letsencrypt-siteextension/wiki/Run-From-Package</a></p>
+        </div>
     }
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @{
-    var authModel = (Model as LetsEncrypt.SiteExtension.Models.AuthenticationModel);
+        var authModel = (Model as LetsEncrypt.SiteExtension.Models.AuthenticationModel);
     }
     @if (authModel != null && authModel.Error)
     {
-    <div class="alert alert-danger" role="alert">
-        @authModel.ErrorMessage
-    </div>
+        <div class="alert alert-danger" role="alert">
+            @authModel.ErrorMessage
+        </div>
     }
     <div class="form-group">
         @Html.LabelFor(model => model.Tenant, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -196,6 +196,20 @@
         <div class="col-md-10">
             @Html.EditorFor(model => model.SiteSlotName, new { htmlAttributes = new { @class = "form-control" } })
             @Html.ValidationMessageFor(model => model.SiteSlotName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.DashboardConnectionString, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.DashboardConnectionString, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.DashboardConnectionString, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.StorageConnectionString, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.StorageConnectionString, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.StorageConnectionString, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
