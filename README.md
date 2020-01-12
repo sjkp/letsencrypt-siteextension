@@ -19,6 +19,7 @@ https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install
 * If you publish your project from Visual Studio with the "Delete Existing files" option, you will remove the web jobs the site extension uses to renew the certificate once they expire every 3 months (you can renew them manually or install the site extension again after publish). 
 * The site-extension can now work with [Azure App Service Local Cache](https://azure.microsoft.com/en-us/documentation/articles/app-service-local-cache/), however you must do a little manual work, see https://github.com/sjkp/letsencrypt-siteextension/wiki/Azure-Function,-Multi-Region,-Local-Cache-support
 * If you use the "Run From Zip" deployment method, please take a look at this: https://github.com/sjkp/letsencrypt-siteextension/issues/239#issuecomment-440785470 
+* Wildcard domains are not supported (yet), to track the progress of the feature: https://github.com/sjkp/letsencrypt-siteextension/issues/183
 
 ## How to troubleshoot
 https://github.com/sjkp/letsencrypt-siteextension/wiki/Troubleshoot
