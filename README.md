@@ -20,6 +20,7 @@ https://github.com/sjkp/letsencrypt-siteextension/wiki/How-to-install
 * The site-extension can now work with [Azure App Service Local Cache](https://azure.microsoft.com/en-us/documentation/articles/app-service-local-cache/), however you must do a little manual work, see https://github.com/sjkp/letsencrypt-siteextension/wiki/Azure-Function,-Multi-Region,-Local-Cache-support
 * If you use the "Run From Zip" deployment method, please take a look at this: https://github.com/sjkp/letsencrypt-siteextension/issues/239#issuecomment-440785470 
 * Wildcard domains are not supported, (and will not be supposed in the site-extension), if you are interested in wildcard support check https://github.com/sjkp/letsencrypt-azure
+* If you have picked .net core as the runtime on a brand new web site, the extension will not work properly https://github.com/sjkp/letsencrypt-siteextension/issues/349
 
 ## How to troubleshoot
 https://github.com/sjkp/letsencrypt-siteextension/wiki/Troubleshoot
