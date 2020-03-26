@@ -117,7 +117,10 @@ namespace LetsEncrypt.Azure.Core
             return null;
         }
 
-        public async Task<List<CertificateInstallModel>> RenewCertificate(bool skipInstallCertificate = false, int renewXNumberOfDaysBeforeExpiration = 0)
+        public async Task<List<CertificateInstallModel>> RenewCertificate(
+            bool skipInstallCertificate = false, 
+            int renewXNumberOfDaysBeforeExpiration = 0,
+            bool throwOnRenewalFailure = true)
         {
             Trace.TraceInformation("Checking certificate");
             var ss = SettingsStore.Instance.Load();
@@ -170,7 +173,7 @@ namespace LetsEncrypt.Azure.Core
                         {
                             res.Add(await RequestAndInstallInternalAsync(target));
                         }
-                        catch (Exception e) when (this.settings.ThrowOnRenewalFailure)
+                        catch (Exception e) when (throwOnRenewalFailure)
                         {
                             Console.WriteLine($"Error during Request or install certificate {e.ToString()}");
                             Trace.TraceError($"Error during Request or install certificate {e.ToString()}");
