@@ -88,8 +88,9 @@ namespace LetsEncrypt.Azure.Core.Services
             {
                 var certs = webSiteClient.Certificates.ListByResourceGroup(azureEnvironment.ServicePlanResourceGroupName);
                 var site = webSiteClient.WebApps.GetSiteOrSlot(azureEnvironment.ResourceGroupName, azureEnvironment.WebAppName, azureEnvironment.SiteSlotName);
-                
-                var tobeRemoved = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(removeXNumberOfDaysBeforeExpiration) && (s.Issuer.Contains("Let's Encrypt") || s.Issuer.Contains("Fake LE")) && !site.HostNameSslStates.Any(hostNameBindings => hostNameBindings.Thumbprint == s.Thumbprint)).ToList();
+
+                var issuerNames = new[] { "Fake LE", "Let's Encrypt", "R3", "R4", "E1", "E2" };
+                var tobeRemoved = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(removeXNumberOfDaysBeforeExpiration) && issuerNames.Any(i => s.Issuer.StartsWith(i, StringComparison.InvariantCulture)) && !site.HostNameSslStates.Any(hostNameBindings => hostNameBindings.Thumbprint == s.Thumbprint)).ToList();
                 foreach (var cert in tobeRemoved)
                 {
                     await RemoveCertificate(webSiteClient, cert);

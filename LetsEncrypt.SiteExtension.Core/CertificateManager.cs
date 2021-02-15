@@ -138,7 +138,11 @@ namespace LetsEncrypt.Azure.Core
                 body = await response.Content.ReadAsStringAsync();
                 IEnumerable<Certificate> certs = ExtractCertificates(body);
 
-                var expiringCerts = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(renewXNumberOfDaysBeforeExpiration) && (s.Issuer.Contains("Let's Encrypt") || s.Issuer.Contains("Fake LE")));
+
+                var issuerNames = new[] { "Fake LE", "Let's Encrypt", "R3", "R4", "E1", "E2" };
+                var letsEncryptCerts = ExtractCertificates(body).Where(s => issuerNames.Any(i => s.Issuer.StartsWith(i, StringComparison.InvariantCulture)));
+
+                var expiringCerts = certs.Where(s => s.ExpirationDate < DateTime.UtcNow.AddDays(renewXNumberOfDaysBeforeExpiration) && issuerNames.Any(i => s.Issuer.StartsWith(i)));
 
                 if (expiringCerts.Count() == 0)
                 {
