@@ -46,6 +46,11 @@ namespace LetsEncrypt.SiteExtension.Models
             get; set;
         }
 
+        public bool ThrowOnRenewalFailure
+        {
+            get; set;
+        }
+
         [Required]
         public string DashboardConnectionString
         {

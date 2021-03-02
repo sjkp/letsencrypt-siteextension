@@ -20,9 +20,9 @@ namespace LetsEncrypt.Azure.Core.Models
     }
 
     public interface IAzureWebAppEnvironment : IAzureEnvironment
-    {
-       
+    {       
         string WebAppName { get; }
+
         string ResourceGroupName { get; }
 
         string ServicePlanResourceGroupName { get; }
@@ -30,6 +30,8 @@ namespace LetsEncrypt.Azure.Core.Models
         string SiteSlotName { get; }
 
         string AzureWebSitesDefaultDomainName { get; }
+
+        bool ThrowOnRenewalFailure { get; }
 
         string WebRootPath { get; }
 
@@ -212,5 +214,10 @@ namespace LetsEncrypt.Azure.Core.Models
         {
             get;set;
         }
+
+        public bool ThrowOnRenewalFailure
+        {
+            get; set;
+        } = true;
     }
 }

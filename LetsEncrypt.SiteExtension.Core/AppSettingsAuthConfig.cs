@@ -35,6 +35,7 @@ namespace LetsEncrypt.Azure.Core.Models
         public const string authorizationChallengeBlobStorageAccount = "letsencrypt:AuthorizationChallengeBlobStorageAccount";
         public const string authorizationChallengeBlobStorageContainer = "letsencrypt:AuthorizationChallengeBlobStorageContainer";
         public const string disableVirtualApplication = "letsencrypt:DisableVirtualApplication";
+        public const string throwOnRenewalFailure = "letsencrypt:ThrowOnRenewalFailure";
         public const string webjobDashboard = "AzureWebJobsDashboard";
         public const string webjobStorage = "AzureWebJobsStorage";
 
@@ -192,6 +193,20 @@ namespace LetsEncrypt.Azure.Core.Models
                 }
 
                 return false;
+            }
+        }
+
+        public bool ThrowOnRenewalFailure
+        {
+            get
+            {
+                bool b;
+                if (bool.TryParse(ConfigurationManager.AppSettings[throwOnRenewalFailure], out b))
+                {
+                    return b;
+                }
+
+                return true;
             }
         }
 

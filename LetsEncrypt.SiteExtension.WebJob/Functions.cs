@@ -65,8 +65,11 @@ namespace LetsEncrypt.SiteExtension
         {
             Console.WriteLine("Renew certificate");
             var config = new AppSettingsAuthConfig();
-            var count = (await new CertificateManager(new AppSettingsAuthConfig()).RenewCertificate(renewXNumberOfDaysBeforeExpiration: config.RenewXNumberOfDaysBeforeExpiration)).Count();
-            Console.WriteLine($"Completed renewal of '{count}' certificates");
+            var certManager = new CertificateManager(new AppSettingsAuthConfig());
+
+            var renewedCerts = await certManager.RenewCertificate(renewXNumberOfDaysBeforeExpiration: config.RenewXNumberOfDaysBeforeExpiration, throwOnRenewalFailure: config.ThrowOnRenewalFailure);
+
+            Console.WriteLine($"Completed renewal of '{renewedCerts.Count()}' certificates");
         }   
         
         public static async Task Cleanup([TimerTrigger(typeof(MyDailySchedule), RunOnStartup = true)] TimerInfo timerInfo)
