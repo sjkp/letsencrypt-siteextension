@@ -27,6 +27,8 @@ namespace LetsEncrypt.Azure.Core.Models
 
         string ServicePlanResourceGroupName { get; }
 
+        string TipSlotName { get; }
+
         string SiteSlotName { get; }
 
         string AzureWebSitesDefaultDomainName { get; }
@@ -179,7 +181,15 @@ namespace LetsEncrypt.Azure.Core.Models
                 _servicePlanResourceGroupName = value;
             }
         }
-        
+
+        /// <summary>
+        /// The site slot where the challenge file is installed. Only required if multiple slots are used with testing-in-Production.
+        /// </summary>
+        public string TipSlotName
+        {
+            get; set;
+        }
+
         /// <summary>
         /// The site slot to install the certificate on. Only required if multiple slots is used.
         /// </summary>

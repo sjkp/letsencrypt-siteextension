@@ -49,6 +49,10 @@
             <td>Check this if you want the certificate to be bound to the WebApps' IP address instead of using SNI. With IP based SSL additional costs might be charged.</td>
         </tr>
         <tr>
+            <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.tipSlotNameKey</td>
+            <td>(Optional) Use this setting if you are using Testing-In-Production and you are currently serving from a deployment slot. The value should be the name of the slot (and the extension should be installed in <b>PRODUCTION</b> kudu portal)</td>
+        </tr>
+        <tr>
             <td>@LetsEncrypt.Azure.Core.Models.AppSettingsAuthConfig.siteSlotNameKey</td>
             <td>(Optional) Use this setting if you want to use the extension to setup SSL certificate for deployment slots, the value should be the name of the slot (and the extension should be installed in that slots kudu portal)</td>
         </tr>
@@ -189,6 +193,13 @@
         <div class="col-md-10">
             @Html.EditorFor(model => model.WebAppName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
             @Html.ValidationMessageFor(model => model.WebAppName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.TipSlotName, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.TipSlotName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.TipSlotName, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">

@@ -35,6 +35,10 @@ namespace LetsEncrypt.SiteExtension.Models
         {
             get; set;
         }
+        public string TipSlotName
+        {
+            get; set;
+        }
         public string SiteSlotName
         {
             get; set;
@@ -122,6 +126,7 @@ namespace LetsEncrypt.SiteExtension.Models
                 AzureWebSitesDefaultDomainName = config.AzureWebSitesDefaultDomainName,
                 ManagementEndpoint = config.ManagementEndpoint,
                 TokenAudience = config.TokenAudience,
+                TipSlotName = config.TipSlotName,
                 SiteSlotName = config.SiteSlotName,
                 WebRootPath = config.WebRootPath,
                 RunFromPackage = config.RunFromPackage,
