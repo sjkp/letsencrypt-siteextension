@@ -8,8 +8,8 @@ namespace LetsEncrypt.Azure.Core
     {
         public static KuduRestClient GetKuduClient(this WebSiteManagementClient client, IAzureWebAppEnvironment settings)
         {
-            var user = client.WebApps.GetPublsihingCredentialSiteOrSlot(settings.ResourceGroupName, settings.WebAppName, settings.SiteSlotName);
-            var site = client.WebApps.GetSiteOrSlot(settings.ResourceGroupName, settings.WebAppName, settings.SiteSlotName);
+            var user = client.WebApps.GetPublsihingCredentialSiteOrSlot(settings.ResourceGroupName, settings.WebAppName, settings.TipSlotName);
+            var site = client.WebApps.GetSiteOrSlot(settings.ResourceGroupName, settings.WebAppName, settings.TipSlotName);
             var defaultHostName = site.DefaultHostName;
 
             return new KuduRestClient(MakeScmUri(defaultHostName,settings), user.PublishingUserName, user.PublishingPassword);

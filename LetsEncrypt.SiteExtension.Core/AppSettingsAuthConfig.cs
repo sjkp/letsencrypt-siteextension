@@ -19,6 +19,7 @@ namespace LetsEncrypt.Azure.Core.Models
         public const string useIPBasedSSL = "letsencrypt:UseIPBasedSSL";
         public const string emailKey = "letsencrypt:Email";
         public const string acmeBaseUriKey = "letsencrypt:AcmeBaseUri";
+        public const string tipSlotNameKey = "letsencrypt:TipSlot";
         public const string siteSlotNameKey = "letsencrypt:SiteSlot";
         public const string webAppNameKey = "WEBSITE_SITE_NAME";
         public const string webRootPath = "letsencrypt:WebRootPath";
@@ -134,6 +135,14 @@ namespace LetsEncrypt.Azure.Core.Models
             get
             {
                 return ConfigurationManager.AppSettings[webRootPath];
+            }
+        }
+
+        public string TipSlotName
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings[tipSlotNameKey];
             }
         }
 

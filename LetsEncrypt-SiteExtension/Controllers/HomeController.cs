@@ -71,6 +71,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
                                 { AppSettingsAuthConfig.subscriptionIdKey, model.SubscriptionId.ToString() },
                                 { AppSettingsAuthConfig.tenantKey, model.Tenant },
                                 { AppSettingsAuthConfig.resourceGroupNameKey, model.ResourceGroupName },
+                                { AppSettingsAuthConfig.tipSlotNameKey, model.TipSlotName},
                                 { AppSettingsAuthConfig.siteSlotNameKey, model.SiteSlotName},
                                 { AppSettingsAuthConfig.servicePlanResourceGroupNameKey, model.ServicePlanResourceGroupName },
                                 { AppSettingsAuthConfig.useIPBasedSSL, model.UseIPBasedSSL.ToString().ToLowerInvariant() }
@@ -121,6 +122,7 @@ namespace LetsEncrypt.SiteExtension.Controllers
                             !ValidateModelVsAppSettings("ResourceGroupName", appSetting.ResourceGroupName, model.ResourceGroupName) ||
                             !ValidateModelVsAppSettings("SubScriptionId", appSetting.SubscriptionId.ToString(), model.SubscriptionId.ToString()) ||
                             !ValidateModelVsAppSettings("Tenant", appSetting.Tenant, model.Tenant) ||
+                            !ValidateModelVsAppSettings("TipSlotName", appSetting.TipSlotName, model.TipSlotName) ||
                             !ValidateModelVsAppSettings("SiteSlotName", appSetting.SiteSlotName, model.SiteSlotName) ||
                             !ValidateModelVsAppSettings("ServicePlanResourceGroupName", appSetting.ServicePlanResourceGroupName, model.ServicePlanResourceGroupName) ||
                             !ValidateModelVsAppSettings("UseIPBasedSSL", appSetting.UseIPBasedSSL.ToString().ToLowerInvariant(), model.UseIPBasedSSL.ToString().ToLowerInvariant()))
