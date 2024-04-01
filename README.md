@@ -1,3 +1,7 @@
+> [!IMPORTANT]   
+> You should migrate off this extension and instead use the free SSL certificates offered by Microsoft https://learn.microsoft.com/en-us/azure/app-service/configure-ssl-certificate?tabs=apex#create-a-free-managed-certificate
+> If you feel like you still need the extension, let me know why. 
+
 # Let's Encrypt Site Extension
 [![Build status](https://dev.azure.com/letsencrypt/letsencrypt/_apis/build/status/LetsEncrypt.SiteExtension.FullFramework)](https://dev.azure.com/letsencrypt/letsencrypt/_build/latest?definitionId=2)
 
