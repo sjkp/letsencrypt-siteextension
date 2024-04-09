@@ -26,10 +26,10 @@ namespace LetsEncrypt.Azure.Core
         /// <param name="config"></param>
         public CertificateManager(AppSettingsAuthConfig config)
         {
-            
             this.settings = config;
             this.acmeConfig = config;
             string storageAccount = AuthorizationChallengeBlobStorageAccount();
+
             if (string.IsNullOrEmpty(storageAccount))
             {
                 this.challengeProvider = new KuduFileSystemAuthorizationChallengeProvider(this.settings, new AuthorizationChallengeProviderConfig()
@@ -46,7 +46,7 @@ namespace LetsEncrypt.Azure.Core
                 UseIPBasedSSL = config.UseIPBasedSSL
             });
 
-        } 
+        }
 
         public CertificateManager(IAzureWebAppEnvironment settings, IAcmeConfig acmeConfig, ICertificateService certificateService, IAuthorizationChallengeProvider challengeProvider)
         {
@@ -117,7 +117,10 @@ namespace LetsEncrypt.Azure.Core
             return null;
         }
 
-        public async Task<List<CertificateInstallModel>> RenewCertificate(bool skipInstallCertificate = false, int renewXNumberOfDaysBeforeExpiration = 0)
+        public async Task<List<CertificateInstallModel>> RenewCertificate(
+            bool skipInstallCertificate = false, 
+            int renewXNumberOfDaysBeforeExpiration = 0,
+            bool throwOnRenewalFailure = true)
         {
             Trace.TraceInformation("Checking certificate");
             var ss = SettingsStore.Instance.Load();
@@ -131,8 +134,6 @@ namespace LetsEncrypt.Azure.Core
                 var response = await retryPolicy.ExecuteAsync(async () =>
                 {
                     return await httpClient.GetAsync($"/subscriptions/{settings.SubscriptionId}/providers/Microsoft.Web/certificates?api-version=2016-03-01");
-                    
-
                 });
                 response.EnsureSuccessStatusCode();
                 body = await response.Content.ReadAsStringAsync();
@@ -161,7 +162,6 @@ namespace LetsEncrypt.Azure.Core
                     }
                     var target = new AcmeConfig()
                     {
-
                         RegistrationEmail = this.acmeConfig.RegistrationEmail ?? ss.FirstOrDefault(s => s.Name == "email").Value,
                         Host = sslStates.First().Name,
                         BaseUri = this.acmeConfig.BaseUri,
@@ -173,7 +173,16 @@ namespace LetsEncrypt.Azure.Core
                     };
                     if (!skipInstallCertificate)
                     {
-                        res.Add(await RequestAndInstallInternalAsync(target));
+                        try
+                        {
+                            res.Add(await RequestAndInstallInternalAsync(target));
+                        }
+                        catch (Exception e) when (throwOnRenewalFailure)
+                        {
+                            Console.WriteLine($"Error during Request or install certificate {e.ToString()}");
+                            Trace.TraceError($"Error during Request or install certificate {e.ToString()}");
+                            throw;
+                        }
                     }
                 }
                 return res;
@@ -182,7 +191,7 @@ namespace LetsEncrypt.Azure.Core
 
         internal static IEnumerable<Certificate> ExtractCertificates(string body)
         {
-            
+
             var json = JToken.Parse(body);
             var certs = Enumerable.Empty<Certificate>();
             // Handle issue #269
@@ -200,7 +209,7 @@ namespace LetsEncrypt.Azure.Core
 
         internal CertificateInstallModel RequestAndInstallInternal(IAcmeConfig config)
         {
-           return RequestAndInstallInternalAsync(config).GetAwaiter().GetResult();
+            return RequestAndInstallInternalAsync(config).GetAwaiter().GetResult();
         }
 
         internal async Task<CertificateInstallModel> RequestInternalAsync(IAcmeConfig config)
